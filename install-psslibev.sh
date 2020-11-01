@@ -304,7 +304,7 @@ pre_install(){
     done
     # read -p "Which cipher you'd select(Default: ${ciphers[0]}):" pick
     # [ -z "$pick" ] && pick=1
-    pick=13
+    pick=14
     expr ${pick} + 1 &>/dev/null
     if [ $? -ne 0 ]; then
         echo -e "[${red}Error${plain}] Please enter a number"
