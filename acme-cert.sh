@@ -1,5 +1,5 @@
 #!/bin/bash
-yum update && yum install curl -y && yum install socat –y
+yum -y update && yum install curl -y && yum install socat –y
 curl https://get.acme.sh | sh
 export DP_Id='192193'
 export DP_Key='dc85648992cf2d738ee22815979e8a15'
