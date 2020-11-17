@@ -1,5 +1,6 @@
 #!/bin/bash
-server='185.238.251.62'
+# server='185.238.251.62'
+server=$1
 share=''
 function v2share(){    
     temp=`echo -n $v2s|base64 --wrap=0`
