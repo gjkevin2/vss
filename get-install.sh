@@ -15,7 +15,7 @@ red(){
 systempwd="/usr/lib/systemd/system/"
 
 function getall(){
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/acme-cert.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/get-cert-web.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-v2ray.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-trojan-after.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/creat-ref.sh
@@ -25,7 +25,7 @@ function getall(){
 }
 
 function get_cert_bbr(){
-    bash acme-cert.sh
+    bash get-cert-web.sh
     bash bbr.sh
 }
 
