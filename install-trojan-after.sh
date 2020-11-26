@@ -1,8 +1,4 @@
 #!/bin/bash
-aconf=$(ls /etc/nginx/conf.d |grep -v default)
-domain=${aconf%.*}
-serverip=$(ip addr | awk '/^[0-9]+: / {}; /inet.*global/ {print gensub(/(.*)\/(.*)/, "\\1", "g", $2)}')
-
 cat > /usr/local/etc/v2ray/config.json <<-EOF
 {
   "inbounds": [
@@ -125,10 +121,3 @@ EOF
     systemctl start trojan.service
     systemctl enable trojan.service
 fi
-
-wget -O /usr/share/nginx/html/static/config.yaml https://raw.githubusercontent.com/gjkevin2/vss/master/config.yaml
-sed -i 's/serverip/'$serverip'/g' /usr/share/nginx/html/static/config.yaml
-sed -i 's/serverdomain/'$domain'/g' /usr/share/nginx/html/static/config.yaml
-
-#生成ss，vmess订阅
-bash creat-ref.sh $serverip
