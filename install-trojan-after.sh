@@ -1,8 +1,7 @@
 #!/bin/bash
 aconf=$(ls /etc/nginx/conf.d |grep -v default)
 domain=${aconf%.*}
-echo '请输入ip地址'
-read serverip
+serverip=$(ip addr | awk '/^[0-9]+: / {}; /inet.*global/ {print gensub(/(.*)\/(.*)/, "\\1", "g", $2)}')
 
 cat > /usr/local/etc/v2ray/config.json <<-EOF
 {
