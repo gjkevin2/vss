@@ -6,11 +6,6 @@ bash <(curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/
 # 安裝最新發行的 geoip.dat 和 geosite.dat,只更新 .dat 資料檔
 bash <(curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-dat-release.sh)
 
-# alias cp='cp'
-# cp -f config.json /usr/local/etc/v2ray/
-echo '请输入域名'
-read domain
-
 cat > /usr/local/etc/v2ray/config.json <<-EOF
 {
   "inbounds": [
@@ -95,46 +90,3 @@ sed -i "s/User=nobody//" /etc/systemd/system/v2ray.service
 systemctl daemon-reload
 systemctl start v2ray
 systemctl enable v2ray
-
-cat >/etc/yum.repos.d/nginx.repo<<-EOF
-[nginx-stable]
-name=nginx stable repo
-baseurl=http://nginx.org/packages/centos/\$releasever/\$basearch/
-gpgcheck=1
-enabled=1
-gpgkey=https://nginx.org/keys/nginx_signing.key
-module_hotfixes=true
-
-[nginx-mainline]
-name=nginx mainline repo
-baseurl=http://nginx.org/packages/mainline/centos/\$releasever/\$basearch/
-gpgcheck=1
-enabled=0
-gpgkey=https://nginx.org/keys/nginx_signing.key
-module_hotfixes=true
-EOF
-yum -y install  nginx
-
-mkdir /usr/share/nginx/html/static >/dev/null 2>&1
-cd /etc/nginx/conf.d
-aconf=$(ls |grep -v default)
-rm -rf $aconf
-cat > $domain.conf <<-EOF
-server {
-    listen 80;
-    server_name $domain;
-    root /usr/share/nginx/html;
-    location / {
-        proxy_ssl_server_name on;
-        proxy_pass https://imeizi.me;
-    }
-    location = /robots.txt {
-    }
-    location ^~ /subscribe/  {
-        alias /usr/share/nginx/html/static/;
-    }
-}
-EOF
-systemctl enable nginx
-systemctl stop nginx
-systemctl start nginx
