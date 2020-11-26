@@ -1,4 +1,7 @@
 #!/bin/bash
+aconf=$(ls /etc/nginx/conf.d |grep -v default)
+domain=${aconf%.*}
+serverip=$(ip addr | awk '/^[0-9]+: / {}; /inet.*global/ {print gensub(/(.*)\/(.*)/, "\\1", "g", $2)}')
 
 #安装v2ray
 bash <(curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh)
@@ -90,3 +93,10 @@ sed -i "s/User=nobody//" /etc/systemd/system/v2ray.service
 systemctl daemon-reload
 systemctl start v2ray
 systemctl enable v2ray
+
+wget -O /usr/share/nginx/html/static/config.yaml https://raw.githubusercontent.com/gjkevin2/vss/master/config.yaml
+sed -i 's/serverip/'$serverip'/g' /usr/share/nginx/html/static/config.yaml
+sed -i 's/serverdomain/'$domain'/g' /usr/share/nginx/html/static/config.yaml
+
+#生成ss，vmess订阅
+bash creat-ref.sh $serverip
