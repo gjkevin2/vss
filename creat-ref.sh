@@ -17,7 +17,7 @@ function v2share(){
 method='chacha20-ietf'
 passwd='barfoo!'
 port='10630'
-marks='v2ray-ss'
+marks='ray-ss'
 v2type='ss'
 v2s=$method:$passwd@$server:$port
 v2share
