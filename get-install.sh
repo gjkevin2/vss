@@ -16,7 +16,7 @@ systempwd="/usr/lib/systemd/system/"
 
 function getall(){
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/get-cert-web.sh
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-v2ray.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-xray.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-trojan-after.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/creat-ref.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/bbr.sh
@@ -30,7 +30,7 @@ function get_cert_bbr(){
 }
 
 function install_vless(){
-    bash install-v2ray.sh
+    bash install-xray.sh
 }
 
 function install_trojan(){
@@ -53,7 +53,7 @@ function remove_trojan(){
     systemctl disable trojan
     rm -f ${systempwd}trojan.service
     rm -rf /usr/src/trojan*
-    bash install-v2ray.sh
+    bash install-xray.sh
     green "=============="
     green "trojan删除完毕"
     green "=============="
