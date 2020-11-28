@@ -1,5 +1,6 @@
 #!/bin/bash
-cat > /usr/local/etc/v2ray/config.json <<-EOF
+systemctl stop xray
+cat > /usr/local/etc/xray/config.json <<-EOF
 {
   "inbounds": [
     {
@@ -43,7 +44,6 @@ cat > /usr/local/etc/v2ray/config.json <<-EOF
   }
 }
 EOF
-systemctl restart v2ray
 
 systempwd="/usr/lib/systemd/system/"
 yum -y install net-tools socat wget unzip zip curl tar >/dev/null 2>&1
@@ -121,3 +121,4 @@ EOF
     systemctl start trojan.service
     systemctl enable trojan.service
 fi
+systemctl start xray
