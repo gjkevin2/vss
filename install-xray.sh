@@ -122,7 +122,8 @@ systemctl enable xray
 
 wget -O /usr/share/nginx/html/static/config.yaml https://raw.githubusercontent.com/gjkevin2/vss/master/config.yaml
 sed -i 's/serverip/'$serverip'/g' /usr/share/nginx/html/static/config.yaml
-sed -i 's/serverdomain/'$domain'/g' /usr/share/nginx/html/static/config.yaml
+wget -O /usr/share/nginx/html/static/config.json https://raw.githubusercontent.com/gjkevin2/vss/master/config.json
+sed -i 's/serverip/'$serverip'/g' /usr/share/nginx/html/static/config.json
 
 #生成ss，vmess订阅
 bash creat-ref.sh $serverip
