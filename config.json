@@ -1,25 +1,14 @@
 {
   "dns": {
-   "servers": [
-     {
-       "address": "119.29.29.29",
-       "port": 53,
-       "domains": [
-         "geosite:cn"
-       ],
-       "expectIPs": [
-         "geoip:cn"
-       ]
-     },
-     {
-       "address": "8.8.8.8",
+    "servers": [
+      "119.29.29.29",
+      {
+       "address": "1.1.1.1",
        "port": 53,
        "domains": [
          "geosite:geolocation-!cn"
        ]
-     },
-     "1.1.1.1",
-     "localhost"
+      }
    ]
  },
   "inbounds": [
@@ -38,30 +27,40 @@
   ],
   "outbounds": [
     {
-      "protocol": "vmess",
+      "tag": "proxy",
+      "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "185.238.251.62",
-            "port": 23282,  
+            "address": "serverip",
+            "port": 443,
             "users": [
               {
-                "id": "74a2e3cf-2b2c-4afe-b4c9-fec7124bc941",
-                "alterId": 0
+                "id": "dc8dd6af-62fa-480d-81bb-53eec20f58d5",
+                "alterId": 0,
+                "security": "auto",
+                "encryption": "none",
+                "flow": "xtls-rprx-direct"
               }
             ]
           }
         ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "xtls",
+        "xtlsSettings": {
+          "allowInsecure": true
+        }
       }
     },
     {
       "protocol": "freedom",
-      "settings": {},
       "tag": "direct"
     }    
   ],
   "routing": {
-    "domainStrategy": "IPOnDemand",
+    "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
         "type": "field",
@@ -72,6 +71,7 @@
         "type": "field",
         "outboundTag": "direct",
         "ip": [
+          "119.29.29.29/32",
           "geoip:cn",
           "geoip:private"
         ]
