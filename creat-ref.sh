@@ -1,23 +1,20 @@
 #!/bin/bash
 # server='185.238.251.62'
 server=$1
-share=''
+share=""
 function v2share(){    
     temp=`echo -n $v2s|base64 --wrap=0`
     #repalce '-' and '_' with '+' and '/'
     temp=${temp//-/+}
     temp=${temp//_/\/}
-    v2="${v2type}://${temp}#"$marks
-    share=$share$(echo $v2|base64 --wrap=0)
-    if [[ "$v2type" = "ss" ]]; then
-        share=${share%??}"0K"
-    fi
+    v2="${v2type}://${temp}"$marks
+    share=$share$v2"\r\n"
 }
 
 method='chacha20-ietf'
 passwd='barfoo!'
 port='10630'
-marks='ray-ss'
+marks='#ray-ss'
 v2type='ss'
 v2s=$method:$passwd@$server:$port
 v2share
@@ -25,7 +22,7 @@ v2share
 method='chacha20-ietf-poly1305'
 passwd='barfoo!'
 port='8388'
-marks='ss-libev'
+marks='#ss-libev'
 v2type='ss'
 v2s=$method:$passwd@$server:$port
 v2share
@@ -52,6 +49,8 @@ v2s='{
 }'
 v2share
 
+last=$(echo -e $share|base64 --wrap=0)
+echo $last
 cat >/usr/share/nginx/html/static/subs.md<<EOF
-$share
+$last
 EOF
