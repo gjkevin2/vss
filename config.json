@@ -1,16 +1,27 @@
 {
   "dns": {
     "servers": [
-      "119.29.29.29",
       {
-       "address": "1.1.1.1",
+       "address": "119.29.29.29",
+       "port": 53,
+       "domains": [
+         "geosite:cn"
+       ],
+       "expectIPs": [
+         "geoip:cn"
+       ]
+      },
+      {
+       "address": "8.8.8.8",
        "port": 53,
        "domains": [
          "geosite:geolocation-!cn"
        ]
-      }
-   ]
- },
+      },
+      "1.1.1.1",
+      "localhost"
+    ]
+  },
   "inbounds": [
     {
       "port": 10808,
@@ -64,6 +75,11 @@
     "rules": [
       {
         "type": "field",
+        "outboundTag": "proxy",
+        "ip": ["8.8.8.8"] 
+      },
+      {
+        "type": "field",
         "outboundTag": "direct",
         "domain": ["geosite:cn"] 
       },
@@ -72,6 +88,7 @@
         "outboundTag": "direct",
         "ip": [
           "119.29.29.29/32",
+          "1.1.1.1",
           "geoip:cn",
           "geoip:private"
         ]
