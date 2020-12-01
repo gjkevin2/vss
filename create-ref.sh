@@ -2,7 +2,8 @@
 # server='185.238.251.62'
 server=$1
 share=""
-function v2share(){    
+function v2share(){
+    # do not output '\r\n', no need to encode '\r\n',use echo -n
     temp=`echo -n $v2s|base64 --wrap=0`
     #repalce '-' and '_' with '+' and '/'
     temp=${temp//-/+}
@@ -49,6 +50,8 @@ v2s='{
 }'
 v2share
 
+# '\r\n' need to explain, use echo -e
+share=${share%\\r\\n} # reduce last '\r\n'
 last=$(echo -e $share|base64 --wrap=0)
 echo $last
 cat >/usr/share/nginx/html/static/subs.md<<EOF
