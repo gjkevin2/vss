@@ -126,4 +126,4 @@ wget -O /usr/share/nginx/html/static/config.json https://raw.githubusercontent.c
 sed -i 's/serverip/'$serverip'/g' /usr/share/nginx/html/static/config.json
 
 #生成ss，vmess订阅
-bash creat-ref.sh $serverip
+bash create-ref.sh $serverip
