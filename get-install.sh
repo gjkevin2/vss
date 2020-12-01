@@ -18,7 +18,7 @@ function getall(){
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/get-cert-web.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-xray.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-trojan-after.sh
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/creat-ref.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/create-ref.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/bbr.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/os8-install-snap.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/os8-install-sslibev.sh
