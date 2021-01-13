@@ -1,6 +1,7 @@
 #!/bin/bash
 apt -y install snapd haveged gawk
-snap install core shadowsocks-libev
+snap install core 
+snap install shadowsocks-libev
 ipaddr=$(ip addr | awk '/^[0-9]+: / {}; /inet.*global/ {print gensub(/(.*)\/(.*)/, "\\1", "g", $2)}')
 cat > /snap/bin/config.json <<-EOF
 {
