@@ -2,23 +2,66 @@
 cd ~
 lurl='https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest'
 latest_version=`curl $lurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
-
-wget https://github.com/trojan-gfw/trojan/releases/download/v${latest_version}/trojan-${latest_version}-linux-amd64.tar.xz
 wget https://github.com/shadowsocks/shadowsocks-rust/releases/download/v${latest_version}/shadowsocks-v${latest_version}.x86_64-unknown-linux-gnu.tar.xz
-tar xf shadowsocks-v${latest_version}.x86_64-unknown-linux-gnu.tar.xz
+tar xf shadowsocks-v${latest_version}.x86_64-unknown-linux-gnu.tar.xz -C /usr/local/bin
 
+#v2plugin
+vurl='https://api.github.com/repos/shadowsocks/v2ray-plugin/releases'
+latest_version2=`curl $vurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
+wget https://github.com/shadowsocks/v2ray-plugin/releases/download/v${latest_version}/v2ray-plugin-linux-amd64-v${latest_version}.tar.gz
+tar xf v2ray-plugin-linux-amd64-v${latest_version}.tar.gz -C /usr/local/bin
+mv /usr/local/bin/v2ray-plugin_linux_amd64 /usr/local/bin/v2ray-plugin
 
 # creat configfile-folder
 mkdir /etc/shadowsocks-rust && cd /etc/shadowsocks-rust
 
 # config.json
-ipaddr=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
+#ipaddr=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
 cat > /etc/shadowsocks-rust/config.json <<-EOF
 {
-    "server": "$ipaddr",
-    "server_port": 8388,
-    "password": "barfoo!",
-    "method": "chacha20-ietf-poly1305",
+    "servers": [
+        {
+            "address": "127.0.0.1",
+            "port": 8388,
+            "password": "barfoo!",
+            "method": "chacha20-ietf-poly1305",
+            "timeout": 7200
+        },
+        {
+            "server":"127.0.0.1",
+            "server_port":9000,
+            "timeout":300,
+            "method":"none",
+            "password":"password0",
+            "fast_open":false,
+            "nameserver":"dns.google",
+            "mode":"tcp_only",
+            "plugin":"v2ray-plugin",
+            "plugin_opts":"server;path=/uri"
+        }
+    ]
+}
+EOF
+
+#nginx config
+cat >/etc/nginx/conf.d/ssrust.conf<<-EOF
+server {
+        listen 443 ssl;
+        server_name sli.flyrain.tk;
+        ssl_certificate  /root/cert/fullchain.cer;
+        ssl_certificate_key /root/cert/privkey.key;
+        ssl_session_timeout 5m;
+        ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_prefer_server_ciphers on;
+        location / {
+            proxy_ssl_server_name on;
+            proxy_pass https://imeizi.me;
+        }
+        location /uri {
+            proxy_ssl_server_name on;
+            proxy_pass http://127.0.0.1:9000;
+        }
 }
 EOF
 
@@ -29,12 +72,12 @@ Description=Shadowsocks Server
 After=network.target
 [Service]
 Restart=on-abnormal
-ExecStart=/usr/local/bin/ssserver -c /etc/shadowsocks-rust/config.json
-StandardOutput=null
+ExecStart=/usr/local/bin/ssserver -c /etc/shadowsocks-rust/config.json > /dev/null 2>&1
 [Install]
 WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload
+systemctl reload nginx
 systemctl start ss.service
 systemctl enable ss.service
