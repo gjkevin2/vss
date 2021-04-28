@@ -47,22 +47,30 @@ EOF
 #nginx config
 cat >/etc/nginx/conf.d/ssrust.conf<<-EOF
 server {
-        listen 443 ssl;
-        server_name sli.flyrain.tk;
-        ssl_certificate  /root/cert/fullchain.cer;
-        ssl_certificate_key /root/cert/privkey.key;
-        ssl_session_timeout 5m;
-        ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
-        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-        ssl_prefer_server_ciphers on;
-        location / {
-            proxy_ssl_server_name on;
-            proxy_pass https://imeizi.me;
-        }
-        location /uri {
-            proxy_ssl_server_name on;
-            proxy_pass http://127.0.0.1:9000;
-        }
+    listen 443 ssl;
+    server_name sli.flyrain.tk;
+    ssl_certificate  /root/cert/fullchain.cer;
+    ssl_certificate_key /root/cert/privkey.key;
+    ssl_session_timeout 5m;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+    location / {
+        proxy_set_header Host $host;   
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-F $proxy_add_x_forwarded_for;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_pass https://imeizi.me;
+    }
+    location /uri {
+        proxy_set_header Host $host;   
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-F $proxy_add_x_forwarded_for;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_pass http://127.0.0.1:9000;
+    }
 }
 EOF
 
