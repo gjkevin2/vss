@@ -29,8 +29,8 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "timeout": 7200
         },
         {
-            "server":"127.0.0.1",
-            "server_port":9000,
+            "address":"127.0.0.1",
+            "port":9000,
             "timeout":300,
             "method":"chacha20-ietf",
             "password":"password0",
