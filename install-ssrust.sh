@@ -6,7 +6,7 @@ wget https://github.com/shadowsocks/shadowsocks-rust/releases/download/v${latest
 tar xf shadowsocks-v${latest_version}.x86_64-unknown-linux-gnu.tar.xz -C /usr/local/bin
 
 #v2plugin
-vurl='https://api.github.com/repos/shadowsocks/v2ray-plugin/releases'
+vurl='https://api.github.com/repos/shadowsocks/v2ray-plugin/releases/latest'
 latest_version2=`curl $vurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
 wget https://github.com/shadowsocks/v2ray-plugin/releases/download/v${latest_version2}/v2ray-plugin-linux-amd64-v${latest_version2}.tar.gz
 tar xf v2ray-plugin-linux-amd64-v${latest_version2}.tar.gz -C /usr/local/bin
