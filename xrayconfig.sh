@@ -82,7 +82,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
             "port":10630,
             "protocol":"shadowsocks",
             "settings":{
-                "method":"chacha20-ietf",
+                "method":"aes-256-gcm",
                 "password":"barfoo!"
             }
         }
