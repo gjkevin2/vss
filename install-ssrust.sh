@@ -6,12 +6,12 @@ latest_version=`curl $lurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
 wget https://github.com/shadowsocks/shadowsocks-rust/releases/download/v${latest_version}/shadowsocks-v${latest_version}.x86_64-unknown-linux-gnu.tar.xz
 tar xf shadowsocks-v${latest_version}.x86_64-unknown-linux-gnu.tar.xz -C /usr/local/bin
 
-#v2plugin
-vurl='https://api.github.com/repos/shadowsocks/v2ray-plugin/releases/latest'
-latest_version2=`curl $vurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
-wget https://github.com/shadowsocks/v2ray-plugin/releases/download/v${latest_version2}/v2ray-plugin-linux-amd64-v${latest_version2}.tar.gz
-tar xf v2ray-plugin-linux-amd64-v${latest_version2}.tar.gz -C /usr/local/bin
-mv /usr/local/bin/v2ray-plugin_linux_amd64 /usr/local/bin/v2ray-plugin
+# #v2plugin
+# vurl='https://api.github.com/repos/shadowsocks/v2ray-plugin/releases/latest'
+# latest_version2=`curl $vurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
+# wget https://github.com/shadowsocks/v2ray-plugin/releases/download/v${latest_version2}/v2ray-plugin-linux-amd64-v${latest_version2}.tar.gz
+# tar xf v2ray-plugin-linux-amd64-v${latest_version2}.tar.gz -C /usr/local/bin
+# mv /usr/local/bin/v2ray-plugin_linux_amd64 /usr/local/bin/v2ray-plugin
 
 # creat configfile-folder
 mkdir /etc/shadowsocks-rust >/dev/null 2>&1
@@ -27,56 +27,8 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "password": "barfoo!",
             "method": "chacha20-ietf-poly1305",
             "timeout": 7200
-        },
-        {
-            "address":"127.0.0.1",
-            "port":9000,
-            "timeout":300,
-            "method":"chacha20-ietf",
-            "password":"password0",
-            "no_delay": true,
-            "mode": "tcp_and_udp",
-            "plugin": "v2ray-plugin",
-            "plugin_opts":"server;path=/uri;mode=websocket;host=flyrain.tk"
         }
     ]
-}
-EOF
-
-#nginx config
-cat >/etc/nginx/conf.d/ssrust.conf<<-EOF
-server {
-    #listen              80;
-    #listen              443 ssl;
-    #server_name         sli.flyrain.tk;
-    #ssl_certificate     /root/cert/fullchain.cer;
-    #ssl_certificate_key /root/cert/privkey.key;
-    #ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
-    #ssl_ciphers         HIGH:!aNULL:!MD5;
-
-    listen 80;
-    server_name sli.flyrain.tk;
-    #root /usr/share/nginx/html;
-    location / {
-        proxy_ssl_server_name on;
-        proxy_pass https://imeizi.me;
-    }
-
- # 转发https协议
-    # location / {
-    #     proxy_pass  https://imeizi.me;
-    #     proxy_set_header X-Real-IP $remote_addr;
-    #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    # }
-
-    # 转发wss协议
-#     location /uri {
-#         proxy_pass http://127.0.0.1:9000;
-#         proxy_http_version 1.1;
-#         proxy_set_header Upgrade $http_upgrade;
-#         proxy_set_header Connection "Upgrade";
-#         proxy_set_header X-Real-IP $remote_addr;
-#     }
 }
 EOF
 
@@ -94,6 +46,5 @@ WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload
-systemctl reload nginx
 systemctl start ss.service
 systemctl enable ss.service
