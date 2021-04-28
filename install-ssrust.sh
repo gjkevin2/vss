@@ -56,7 +56,7 @@ server {
     ssl_ciphers         HIGH:!aNULL:!MD5;
 
  # 转发https协议
-    location /{
+    location / {
         proxy_pass https://imeizi.me;
         proxy_set_header   X-Real-IP        $remote_addr;
         proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
