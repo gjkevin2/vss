@@ -34,11 +34,8 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "timeout":300,
             "method":"chacha20-ietf",
             "password":"password0",
-            "fast_open":false,
-            "nameserver":"dns.google",
-            "mode":"tcp_only",
             "plugin":"v2ray-plugin",
-            "plugin_opts":"server;path=/uri"
+            "plugin_opts":"server;tls;path=/uri"
         }
     ]
 }
