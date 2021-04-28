@@ -21,11 +21,6 @@ cat > /usr/local/etc/xray/config.json <<-EOF
                     {
                         "dest": 1310,
                         "xver": 1
-                    },
-                    {
-                        "path": "/uri", 
-                        "dest": 9000,
-                        "xver": 1
                     }
                 ]
             },
