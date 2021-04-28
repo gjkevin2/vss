@@ -12,7 +12,7 @@ function v2share(){
     share=$share$v2"\r\n"
 }
 
-method='chacha20-ietf'
+method='aes-256-gcm'
 passwd='barfoo!'
 port='10630'
 marks='#ray-ss'
@@ -23,7 +23,7 @@ v2share
 method='chacha20-ietf-poly1305'
 passwd='barfoo!'
 port='8388'
-marks='#ss-libev'
+marks='#ss-rust'
 v2type='ss'
 v2s=$method:$passwd@$server:$port
 v2share
