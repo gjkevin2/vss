@@ -32,7 +32,7 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "server":"127.0.0.1",
             "server_port":9000,
             "timeout":300,
-            "method":"none",
+            "method":"chacha20-ietf",
             "password":"password0",
             "fast_open":false,
             "nameserver":"dns.google",
