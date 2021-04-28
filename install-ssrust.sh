@@ -13,7 +13,7 @@ tar xf v2ray-plugin-linux-amd64-v${latest_version2}.tar.gz -C /usr/local/bin
 mv /usr/local/bin/v2ray-plugin_linux_amd64 /usr/local/bin/v2ray-plugin
 
 # creat configfile-folder
-mkdir /etc/shadowsocks-rust && cd /etc/shadowsocks-rust
+mkdir /etc/shadowsocks-rust >/dev/null 2>&1
 
 # config.json
 #ipaddr=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
