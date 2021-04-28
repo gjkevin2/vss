@@ -16,12 +16,12 @@ server {
     }
 
     # 拦截websocket请求
-    location /websocket {
-        proxy_pass http://127.0.0.1:9000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
+   # location /websocket {
+   #     proxy_pass http://127.0.0.1:9000;
+   #     proxy_http_version 1.1;
+   #     proxy_set_header Upgrade \$http_upgrade;
+   #     proxy_set_header Connection "upgrade";
+   # }
 }
 EOF
 systemctl daemon-reload
