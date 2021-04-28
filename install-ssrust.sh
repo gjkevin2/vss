@@ -47,14 +47,13 @@ EOF
 #nginx config
 cat >/etc/nginx/conf.d/ssrust.conf<<-EOF
 server {
-    listen 443 ssl;
-    server_name sli.flyrain.tk;
-    ssl_certificate  /root/cert/fullchain.cer;
+    listen              80;
+    listen              443 ssl;
+    server_name         sli.flyrain.tk;
+    ssl_certificate     /root/cert/fullchain.cer;
     ssl_certificate_key /root/cert/privkey.key;
-    ssl_session_timeout 5m;
-    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-    ssl_prefer_server_ciphers on;
+    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
 
  # 转发https协议
     location /{
