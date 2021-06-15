@@ -46,5 +46,6 @@ WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload
+systemctl stop ss.service
 systemctl start ss.service
 systemctl enable ss.service
