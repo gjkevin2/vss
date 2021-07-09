@@ -6,18 +6,18 @@ latest_version=`curl $lurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
 wget https://github.com/shadowsocks/shadowsocks-rust/releases/download/v${latest_version}/shadowsocks-v${latest_version}.x86_64-unknown-linux-gnu.tar.xz
 tar xf shadowsocks-v${latest_version}.x86_64-unknown-linux-gnu.tar.xz -C /usr/local/bin
 
-# #v2plugin
-# vurl='https://api.github.com/repos/shadowsocks/v2ray-plugin/releases/latest'
-# latest_version2=`curl $vurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
-# wget https://github.com/shadowsocks/v2ray-plugin/releases/download/v${latest_version2}/v2ray-plugin-linux-amd64-v${latest_version2}.tar.gz
-# tar xf v2ray-plugin-linux-amd64-v${latest_version2}.tar.gz -C /usr/local/bin
-# mv /usr/local/bin/v2ray-plugin_linux_amd64 /usr/local/bin/v2ray-plugin
+# v2plugin
+vurl='https://api.github.com/repos/shadowsocks/v2ray-plugin/releases/latest'
+latest_version2=`curl $vurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
+wget https://github.com/shadowsocks/v2ray-plugin/releases/download/v${latest_version2}/v2ray-plugin-linux-amd64-v${latest_version2}.tar.gz
+tar xf v2ray-plugin-linux-amd64-v${latest_version2}.tar.gz -C /usr/local/bin
+mv /usr/local/bin/v2ray-plugin_linux_amd64 /usr/local/bin/v2ray-plugin
 
 # creat configfile-folder
 mkdir /etc/shadowsocks-rust >/dev/null 2>&1
 
 # config.json
-#ipaddr=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
+ipaddr=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
 cat > /etc/shadowsocks-rust/config.json <<-EOF
 {
     "servers": [
@@ -25,7 +25,7 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "address": "127.0.0.1",
             "port": 8388,
             "password": "barfoo!",
-            "method": "chacha20-ietf-poly1305",
+            "method": "none",
             "timeout": 7200
         }
     ]
@@ -39,7 +39,7 @@ Description=Shadowsocks Server
 After=network.target
 [Service]
 Restart=on-abnormal
-ExecStart=/usr/local/bin/ssserver -c /etc/shadowsocks-rust/config.json
+ExecStart=/usr/local/bin/ssserver -c /etc/shadowsocks-rust/config.json -p 443 --plugin v2ray-plugin --plugin-opts "server;mode=quic;host=$ipaddr"
 StandardOutput=null
 [Install]
 WantedBy=multi-user.target
