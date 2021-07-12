@@ -142,7 +142,7 @@ proxies:
     port: 443
     password: "461ece30"
     # udp: true
-    # sni: example.com # aka server name
+    sni: t.flyrain.tk
     alpn:
       - h2
       - http/1.1
