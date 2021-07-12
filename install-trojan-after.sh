@@ -13,7 +13,7 @@ if test -s $HOME/cert/fullchain.cer; then
     cat > /usr/src/trojan/server.conf <<-EOF
 {
     "run_type": "server",
-    "local_addr": "0.0.0.0",
+    "local_addr": "127.0.0.1",
     "local_port": 50002,
     "remote_addr": "127.0.0.1",
     "remote_port": 80,
