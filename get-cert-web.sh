@@ -1,7 +1,8 @@
 #!/bin/bash
 apt update && apt -y upgrade && apt -y install socat
-apt -y install curl
-curl https://get.acme.sh | sh
+apt -y install curl gawk
+curl https://get.acme.sh | sh -s email=gjkevin@163.com
+~/.acme.sh/acme.sh --upgrade --auto-upgrade
 export DP_Id='192193'
 export DP_Key='dc85648992cf2d738ee22815979e8a15'
 
@@ -25,6 +26,53 @@ apt update
 #systemctl unmask nginx.service
 apt -y install nginx
 
+# set sni bypass
+serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
+cat >>/etc/nginx/nginx.conf<<-EOF
+stream {
+        # SNI recognize
+        map \$ssl_preread_server_name \$stream_map {
+                x.$domain beforextls;
+                t.$domain beforetrojan;
+                s.$domain beforess;
+                www.$domain web;
+        }
+        upstream beforextls { # remove "Proxy protocol"
+                server 127.0.0.1:50011;
+        }
+        upstream xtls {
+                server 127.0.0.1:50001;
+        }
+        upstream beforetrojan {
+                server 127.0.0.1:50012; 
+        }
+        upstream trojan {
+                server 127.0.0.1:50002; 
+        }
+        upstream beforess {
+                server 127.0.0.1:50013;
+        }
+        upstream ss {
+                server 127.0.0.1:50003;
+        }
+        upstream web { # just local port 443
+                server 127.0.0.1:443;
+        }
+        server {
+                listen $serverip:443      reuseport;  # listen server port 443
+                # listen [::]:443 reuseport;
+                proxy_pass      \$stream_map;
+                ssl_preread     on;
+                proxy_protocol on;                    # start Proxy protocol
+        }
+        # remove proxy protocol
+        server {
+                listen 127.0.0.1:50011 proxy_protocol;
+                proxy_pass xtls;   # redirect to xtls 
+  }
+}
+EOF
+
 mkdir /usr/share/nginx/html/static >/dev/null 2>&1
 cd /etc/nginx/conf.d
 aconf=$(ls |grep -v default)
@@ -43,6 +91,21 @@ server {
     location ^~ /subscribe/  {
         alias /usr/share/nginx/html/static/;
     }
+}
+server {
+    listen 80;
+    server_name x.$domain;
+    return 301 https://$domain;                
+}
+server {
+    listen 80;
+    server_name t.$domain;
+    return 301 https://$domain;                
+}
+server {
+    listen 80;
+    server_name s.$domain;
+    return 301 https://$domain;                
 }
 EOF
 systemctl enable nginx

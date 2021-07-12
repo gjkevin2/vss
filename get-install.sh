@@ -20,7 +20,7 @@ function getall(){
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-trojan-after.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/create-ref.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/bbr.sh
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-sslibev.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-ssrust.sh
 }
 
 function get_cert_bbr(){
@@ -37,7 +37,7 @@ function install_trojan(){
 }
 
 function install_sslibev(){
-    bash install-sslibev.sh
+    bash install-ssrust.sh
 }
 
 function remove_trojan(){

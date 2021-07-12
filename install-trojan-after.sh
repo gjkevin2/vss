@@ -1,50 +1,4 @@
 #!/bin/bash
-systemctl stop xray
-cat > /usr/local/etc/xray/config.json <<-EOF
-{
-  "inbounds": [
-    {
-        "port": 23282,
-        "protocol": "vmess",
-        "settings": {
-            "clients": [
-                {
-                    "id": "74a2e3cf-2b2c-4afe-b4c9-fec7124bc941",
-                    "level": 1,
-                    "alterId": 0
-                }
-            ]
-        }
-    },
-    {
-        "port":10630,
-        "protocol":"shadowsocks",
-        "settings":{
-            "method":"chacha20-ietf",
-            "password":"barfoo!"
-        }
-    }
-  ],
-  "outbounds": [{
-    "protocol": "freedom",
-    "settings": {}
-  },{
-    "protocol": "blackhole",
-    "settings": {},
-    "tag": "blocked"
-  }],
-  "routing": {
-    "rules": [
-      {
-        "type": "field",
-        "ip": ["geoip:private"],
-        "outboundTag": "blocked"
-      }
-    ]
-  }
-}
-EOF
-
 systempwd="/usr/lib/systemd/system/"
 apt -y install net-tools socat wget unzip zip curl tar >/dev/null 2>&1
 if test -s $HOME/cert/fullchain.cer; then
@@ -60,7 +14,7 @@ if test -s $HOME/cert/fullchain.cer; then
 {
     "run_type": "server",
     "local_addr": "0.0.0.0",
-    "local_port": 443,
+    "local_port": 50002,
     "remote_addr": "127.0.0.1",
     "remote_port": 80,
     "password": [

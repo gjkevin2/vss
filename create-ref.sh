@@ -20,13 +20,14 @@ v2type='ss'
 v2s=$method:$passwd@$server:$port
 v2share
 
-method='chacha20-ietf-poly1305'
-passwd='barfoo!'
-port='8388'
-marks='#ss-rust'
-v2type='ss'
-v2s=$method:$passwd@$server:$port
-v2share
+# # method='chacha20-ietf-poly1305'
+# method='aes-256-gcm'
+# passwd='barfoo!'
+# port='8388'
+# marks='#ss-rust'
+# v2type='ss'
+# v2s=$method:$passwd@$server:$port
+# v2share
 
 port='23282'
 uuid='74a2e3cf-2b2c-4afe-b4c9-fec7124bc941'
