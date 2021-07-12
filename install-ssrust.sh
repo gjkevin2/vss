@@ -28,7 +28,7 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "timeout":7200,
             "method": "chacha20-ietf-poly1305",
             "fast_open":false,
-            "mode":"tcp_only",
+            "mode":"websocket",
             "plugin":"v2ray-plugin",
             "plugin_opts":"server;path=/uri"
         }
