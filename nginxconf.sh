@@ -24,6 +24,9 @@ server {
    # }
 }
 EOF
+# debian完全卸载nginx
+# apt-get remove --purge nginx 
+touch /var/run/nginx.pid
 systemctl daemon-reload
 systemctl stop nginx
 systemctl start nginx
