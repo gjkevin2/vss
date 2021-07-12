@@ -41,7 +41,7 @@ stream {
         }
         # 脱去proxy伪装
         server {
-                listen 127.0.0.1:7999 proxy_protocol;# 开启Proxy protocol
+                listen 127.0.0.1:50011 proxy_protocol;# 开启Proxy protocol
                 proxy_pass xtls; # 以真实的XTLS作为上游，这一层是与XTLS交互的“媒人”
   }
 }
