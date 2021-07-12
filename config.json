@@ -1,44 +1,60 @@
 {
-  "dns": {
+  "log": {
+    "loglevel": "warning"
+  },
+"dns": {
+    "hosts": {
+      "dns.google": "8.8.8.8",
+      "dns.pub": "119.29.29.29",
+      "dns.alidns.com": "223.5.5.5",
+      "geosite:category-ads-all": "127.0.0.1"
+    },
     "servers": [
+      "https://dns.google/dns-query",
       {
-       "address": "119.29.29.29",
-       "port": 53,
-       "domains": [
-         "geosite:cn"
-       ],
-       "expectIPs": [
-         "geoip:cn"
-       ]
+        "address": "https+local://223.5.5.5/dns-query",
+        "domains": [
+          "geosite:cn",
+          "geosite:icloud"
+        ],
+        "expectIPs": [
+          "geoip:cn"
+        ]
       },
       {
-       "address": "8.8.8.8",
-       "port": 53,
-       "domains": [
-         "geosite:geolocation-!cn"
-       ]
-      },
-      "1.1.1.1",
-      "localhost"
+        "address": "https://1.1.1.1/dns-query",
+        "domains": [
+          "geosite:geolocation-!cn"
+        ]
+      }
     ]
   },
   "inbounds": [
     {
-      "port": 10808,
       "protocol": "socks",
+      "port": 10808,
+      "tag": "Socks-In",
+      "settings": {
+        "udp": true
+      },
       "sniffing": {
         "enabled": true,
         "destOverride": ["http", "tls"]
-      },
-      "settings": {
-        "auth": "noauth",
-        "udp": true
+      }
+    },
+    {
+      "protocol": "http",
+      "port": 10809,
+      "tag": "Http-In",
+      "sniffing": {
+        "enabled": true,
+        "destOverride": ["http", "tls"]
       }
     }
   ],
   "outbounds": [
     {
-      "tag": "proxy",
+      "tag":"Proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
@@ -61,37 +77,78 @@
         "network": "tcp",
         "security": "xtls",
         "xtlsSettings": {
-          "allowInsecure": true
+         "serverName": "servername"
         }
       }
     },
     {
+      "protocol": "dns",
+      "tag": "Dns-Out"
+    },
+    {
       "protocol": "freedom",
-      "tag": "direct"
-    }    
+      "tag": "Direct",
+      "settings": {
+        "domainStrategy": "UseIPv4"
+      }
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "Reject",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      }
+    }
   ],
   "routing": {
     "domainStrategy": "IPIfNonMatch",
     "rules": [
       {
         "type": "field",
-        "outboundTag": "proxy",
-        "ip": ["8.8.8.8"] 
+        "outboundTag": "Dns-Out",
+        "inboundTag": [
+          "Socks-In",
+          "Http-In"
+        ],
+        "network": "udp",
+        "port": 53
       },
       {
         "type": "field",
-        "outboundTag": "direct",
-        "domain": ["geosite:cn"] 
+        "outboundTag": "Reject",
+        "domain": [
+          "geosite:category-ads-all"
+        ]
       },
       {
         "type": "field",
-        "outboundTag": "direct",
+        "outboundTag": "Proxy",
+        "domain": [
+          "geosite:geolocation-!cn"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "Direct",
+        "domain": [
+          "geosite:cn",
+          "geosite:private"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "Direct",
         "ip": [
-          "119.29.29.29/32",
-          "1.1.1.1/32",
           "geoip:cn",
           "geoip:private"
         ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "Proxy",
+        "network": "tcp,udp"
       }
     ]
   }
