@@ -31,7 +31,7 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "nameserver":"8.8.8.8",
             "mode":"tcp_and_udp",
             "plugin":"v2ray-plugin",
-            "plugin_opts":"server;path=/uri;mode=websocket;host=s.flyrain.tk;mux=0"
+            "plugin_opts":"server;path=/uri;mode=websocket;host=s.flyrain.tk"
         }
     ]
 }
