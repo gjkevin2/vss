@@ -70,7 +70,15 @@ stream {
         server {
                 listen 127.0.0.1:50011 proxy_protocol;
                 proxy_pass xtls;   # redirect to xtls 
-  }
+        }
+        server {
+                listen 127.0.0.1:50012 proxy_protocol;
+                proxy_pass trojan;   # redirect to trojan 
+        }
+        server {
+                listen 127.0.0.1:50013 proxy_protocol;
+                proxy_pass ss;   # redirect to ss 
+        }
 }
 EOF
 
