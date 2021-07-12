@@ -28,6 +28,7 @@ apt -y install nginx
 
 # set sni bypass
 serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
+sed -i '/^stream {/,$d' /etc/nginx/nginx.conf
 cat >>/etc/nginx/nginx.conf<<-EOF
 stream {
         # SNI recognize
