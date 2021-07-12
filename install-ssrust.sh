@@ -23,14 +23,15 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
     "servers": [
         {
             "address": "127.0.0.1",
-            "port": 50003,
+            "nameserver": "8.8.8.8",
+            "server_port": 50003,
             "password": "barfoo!",
-            "timeout":7200,
             "method": "chacha20-ietf-poly1305",
-            "fast_open":false,
-            "mode":"websocket",
-            "plugin":"v2ray-plugin",
-            "plugin_opts":"server;path=/uri"
+            "timeout": 400
+            "no_delay": true,
+            "mode": "tcp_and_udp",
+            "plugin": "v2ray-plugin",
+            "plugin_opts": "server;tls;fast-open;host=s.flyrain.tk;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key;loglevel=none"
         }
     ]
 }
