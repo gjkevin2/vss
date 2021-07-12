@@ -26,7 +26,7 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "port": 50003,
             "password": "barfoo!",
             "timeout":7200,
-            "method": "none",
+            "method": "chacha20-ietf-poly1305",
             "fast_open":false,
             "mode":"tcp_only",
             "plugin":"v2ray-plugin",
