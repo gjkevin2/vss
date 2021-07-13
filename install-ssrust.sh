@@ -17,7 +17,7 @@ mv /usr/local/bin/v2ray-plugin_linux_amd64 /usr/local/bin/v2ray-plugin
 mkdir /etc/shadowsocks-rust >/dev/null 2>&1
 
 # config.json
-ipaddr=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
+servername=$(ls /etc/nginx/conf.d |grep -v default|head -c -6)
 cat > /etc/shadowsocks-rust/config.json <<-EOF
 {
     "servers": [
@@ -27,11 +27,10 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "password": "barfoo!",
             "timeout":300,
             "method": "chacha20-ietf-poly1305",
-            "fast_open":false,
-            "nameserver":"8.8.8.8",
+            "no_delay": true,
             "mode":"tcp_and_udp",
             "plugin":"v2ray-plugin",
-            "plugin_opts":"server;path=/uri;mode=websocket;host=s.flyrain.tk"
+            "plugin_opts":"server;tls;fast-open;path=/uri;mode=websocket;host=s.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
         }
     ]
 }

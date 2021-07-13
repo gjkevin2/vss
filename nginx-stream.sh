@@ -43,7 +43,15 @@ stream {
         server {
                 listen 127.0.0.1:50011 proxy_protocol;# 开启Proxy protocol
                 proxy_pass xtls; # 以真实的XTLS作为上游，这一层是与XTLS交互的“媒人”
-  }
+        }
+        server {
+                listen 127.0.0.1:50012 proxy_protocol;
+                proxy_pass trojan;   # redirect to trojan 
+        }
+        server {
+                listen 127.0.0.1:50013 proxy_protocol;
+                proxy_pass ss;   # redirect to ss 
+        }
 }
 EOF
 cat > /etc/nginx/conf.d/v2ray.conf <<-EOF

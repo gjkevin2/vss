@@ -118,9 +118,10 @@ systemctl enable xray
 
 apt -y install gawk
 serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
-servername=$(ls /etc/nginx/conf.d |grep -v default|tr -d ".conf")
+servername=$(ls /etc/nginx/conf.d |grep -v default|head -c -6)
 wget -O /usr/share/nginx/html/static/config.yaml https://raw.githubusercontent.com/gjkevin2/vss/master/config.yaml
 sed -i 's/serverip/'$serverip'/g' /usr/share/nginx/html/static/config.yaml
+sed -i 's/maindomain/'$servername'/g' /usr/share/nginx/html/static/config.yaml
 wget -O /usr/share/nginx/html/static/config.json https://raw.githubusercontent.com/gjkevin2/vss/master/config.json
 sed -i 's/serverip/'$serverip'/g' /usr/share/nginx/html/static/config.json
 sed -i 's/servername/'$servername'/g' /usr/share/nginx/html/static/config.json
