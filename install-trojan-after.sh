@@ -75,4 +75,3 @@ EOF
     systemctl start trojan.service
     systemctl enable trojan.service
 fi
-systemctl start xray
