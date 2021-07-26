@@ -18,6 +18,7 @@ function getall(){
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/get-cert-web.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-xray.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-trojan-after.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-trojango-after.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/create-ref.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/bbr.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-ssrust.sh
@@ -36,7 +37,11 @@ function install_trojan(){
     bash install-trojan-after.sh
 }
 
-function install_sslibev(){
+function install_trojango(){
+    bash install-trojango-after.sh
+}
+
+function install_ssrust(){
     bash install-ssrust.sh
 }
 
@@ -54,6 +59,20 @@ function remove_trojan(){
     green "=============="
 }
 
+function remove_trojango(){
+    red "================================"
+    red "即将卸载trojango"
+    red "================================"
+    systemctl stop trojan-go
+    systemctl disable trojan-go
+    rm -f ${systempwd}trojan-go.service
+    rm -rf /usr/local/bin/trojan-go
+    bash install-xray.sh
+    green "=============="
+    green "trojango删除完毕"
+    green "=============="
+}
+
 start_menu(){
     clear
     red " ===================================="
@@ -67,7 +86,11 @@ start_menu(){
     red " ===================================="
     yellow " 5. 卸载trojan"
     red " ===================================="
-    yellow " 6. 安装sslibev"
+    yellow " 6. 加装trojango"
+    red " ===================================="
+    yellow " 7. 卸载trojango"
+    red " ===================================="
+    yellow " 8. 安装ssrust"
     red " ===================================="
     yellow " 0. 退出脚本"
     red " ===================================="
@@ -90,7 +113,13 @@ start_menu(){
     remove_trojan
     ;;
     6)
-    install_sslibev
+    install_trojango
+    ;;
+    7)
+    remove_trojango
+    ;;
+    8)
+    install_ssrust
     ;;
     0)
     exit 1

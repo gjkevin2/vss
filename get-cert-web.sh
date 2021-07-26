@@ -35,6 +35,7 @@ stream {
         map \$ssl_preread_server_name \$stream_map {
                 x.$domain beforextls;
                 t.$domain beforetrojan;
+                tg.$domain beforetrojango;
                 s.$domain beforess;
                 www.$domain web;
         }
@@ -49,6 +50,12 @@ stream {
         }
         upstream trojan {
                 server 127.0.0.1:50002; 
+        }
+        upstream beforetrojango {
+                server 127.0.0.1:50019; 
+        }
+        upstream trojango {
+                server 127.0.0.1:50009; 
         }
         upstream beforess {
                 server 127.0.0.1:50013;
@@ -74,6 +81,10 @@ stream {
         server {
                 listen 127.0.0.1:50012 proxy_protocol;
                 proxy_pass trojan;   # redirect to trojan 
+        }
+        server {
+                listen 127.0.0.1:50019 proxy_protocol;
+                proxy_pass trojango;   # redirect to trojango
         }
         server {
                 listen 127.0.0.1:50013 proxy_protocol;
@@ -104,17 +115,22 @@ server {
 server {
     listen 80;
     server_name x.$domain;
-    return 301 https://$domain;                
+    return 301 https://$domain;
 }
 server {
     listen 80;
     server_name t.$domain;
-    return 301 https://$domain;                
+    return 301 https://$domain;
+}
+server {
+    listen 80;
+    server_name tg.$domain;
+    return 301 https://$domain;
 }
 server {
     listen 80;
     server_name s.$domain;
-    return 301 https://$domain;                
+    return 301 https://$domain;
 }
 EOF
 systemctl enable nginx
