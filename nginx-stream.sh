@@ -107,8 +107,5 @@ server {
     return 301 https://$domain;
 }
 EOF
-systemctl enable nginx
 systemctl stop nginx
 systemctl start nginx
-
-
