@@ -5,7 +5,7 @@ apt -y install wget unzip zip curl tar >/dev/null 2>&1
 if test -s $HOME/cert/fullchain.cer; then
     lurl='https://api.github.com/repos/p4gefau1t/trojan-go/releases/latest'
     latest_version=`curl $lurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
-    wget https://github.com/p4gefau1t/trojan-go/releases/download/${latest_version}/trojan-go-linux-amd64.zip
+    wget https://github.com/p4gefau1t/trojan-go/releases/download/v${latest_version}/trojan-go-linux-amd64.zip
     unzip -o trojan-go-linux-amd64.zip -d /usr/local/bin/trojan-go
     rm trojan-go-linux-amd64.zip
 
