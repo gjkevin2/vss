@@ -1,17 +1,19 @@
 #!/bin/bash
-maindomain=flyrain.tk
+domain=flyrain.tk
+# set sni bypass
 serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
+sed -i '/^stream {/,$d' /etc/nginx/nginx.conf
 cat >>/etc/nginx/nginx.conf<<-EOF
 stream {
-        # SNI识别，将一个个域名映射成一个配置名
+        # SNI recognize
         map \$ssl_preread_server_name \$stream_map {
-                x.$maindomain beforextls;
-                t.$maindomain beforetrojan;
-                s.$maindomain beforess;
-                www.$maindomain web;
+                x.$domain beforextls;
+                t.$domain beforetrojan;
+                tg.$domain beforetrojango;
+                s.$domain beforess;
+                www.$domain web;
         }
-        # upstream,也就是流量上游的配置
-        upstream beforextls { # 在流量到达XTLS之前，先用stream模块将Proxy protocol的外衣扒掉
+        upstream beforextls { # remove "Proxy protocol"
                 server 127.0.0.1:50011;
         }
         upstream xtls {
@@ -23,30 +25,40 @@ stream {
         upstream trojan {
                 server 127.0.0.1:50002; 
         }
+        upstream beforetrojango {
+                server 127.0.0.1:50019; 
+        }
+        upstream trojango {
+                server 127.0.0.1:50009; 
+        }
         upstream beforess {
                 server 127.0.0.1:50013;
         }
         upstream ss {
                 server 127.0.0.1:50003;
         }
-        upstream web { # web服务器只监听本地443端口
+        upstream web { # just local port 443
                 server 127.0.0.1:443;
         }
         server {
-                listen $serverip:443      reuseport;
+                listen $serverip:443      reuseport;  # listen server port 443
                 # listen [::]:443 reuseport;
                 proxy_pass      \$stream_map;
                 ssl_preread     on;
-                proxy_protocol on; # 开启Proxy protocol
+                proxy_protocol on;                    # start Proxy protocol
         }
-        # 脱去proxy伪装
+        # remove proxy protocol
         server {
-                listen 127.0.0.1:50011 proxy_protocol;# 开启Proxy protocol
-                proxy_pass xtls; # 以真实的XTLS作为上游，这一层是与XTLS交互的“媒人”
+                listen 127.0.0.1:50011 proxy_protocol;
+                proxy_pass xtls;   # redirect to xtls 
         }
         server {
                 listen 127.0.0.1:50012 proxy_protocol;
                 proxy_pass trojan;   # redirect to trojan 
+        }
+        server {
+                listen 127.0.0.1:50019 proxy_protocol;
+                proxy_pass trojango;   # redirect to trojango
         }
         server {
                 listen 127.0.0.1:50013 proxy_protocol;
@@ -54,30 +66,49 @@ stream {
         }
 }
 EOF
-cat > /etc/nginx/conf.d/v2ray.conf <<-EOF
+
+mkdir /usr/share/nginx/html/static >/dev/null 2>&1
+cd /etc/nginx/conf.d
+aconf=$(ls |grep -v default)
+rm -rf $aconf
+cat > $domain.conf <<-EOF
 server {
     listen 80;
-    server_name $maindomain;
+    server_name $domain;
+    root /usr/share/nginx/html;
     location / {
         proxy_ssl_server_name on;
         proxy_pass https://imeizi.me;
     }
+    location = /robots.txt {
+    }
+    location ^~ /subscribe/  {
+        alias /usr/share/nginx/html/static/;
+    }
 }
 server {
-        return 301 https://x.$maindomain;
-                listen 80;
-                server_name x.$maindomain;
+    listen 80;
+    server_name x.$domain;
+    return 301 https://$domain;
 }
 server {
-        return 301 https://t.$maindomain;
-                listen 80;
-                server_name t.$maindomain;
+    listen 80;
+    server_name t.$domain;
+    return 301 https://$domain;
 }
 server {
-        return 301 https://s.$maindomain;
-                listen 80;
-                server_name s.$maindomain;
+    listen 80;
+    server_name tg.$domain;
+    return 301 https://$domain;
+}
+server {
+    listen 80;
+    server_name s.$domain;
+    return 301 https://$domain;
 }
 EOF
+systemctl enable nginx
 systemctl stop nginx
 systemctl start nginx
+
+
