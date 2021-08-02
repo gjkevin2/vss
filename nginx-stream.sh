@@ -7,11 +7,11 @@ cat >>/etc/nginx/nginx.conf<<-EOF
 stream {
         # SNI recognize
         map \$ssl_preread_server_name \$stream_map {
-                x.$domain xtls;
+                x.$domain beforextls;
                 g.$domain grpc;
-                t.$domain trojan;
-                tg.$domain trojango;
-                s.$domain ss;
+                t.$domain beforetrojan;
+                tg.$domain beforetrojango;
+                s.$domain beforess;
                 www.$domain web;
         }
         upstream beforextls { # remove "Proxy protocol"
