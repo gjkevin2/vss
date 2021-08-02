@@ -53,9 +53,6 @@ stream {
                 proxy_pass      \$stream_map;
                 ssl_preread     on;
                 proxy_protocol on;                    # start Proxy protocol
-                location /test {
-                    grpc_pass grpc://localhost:50008;
-                  }                
         }
         # remove proxy protocol
         server {
@@ -87,48 +84,53 @@ aconf=$(ls |grep -v default)
 rm -rf $aconf
 cat > $domain.conf <<-EOF
 server {
-    listen 80;
-    server_name $domain;
-    root /usr/share/nginx/html;
-    location / {
+        listen 80;
+        server_name $domain;
+        root /usr/share/nginx/html;
+        location / {
         proxy_ssl_server_name on;
         proxy_pass https://imeizi.me;
-    }
-    location = /robots.txt {
-    }
-    location ^~ /subscribe/  {
+        }
+        location = /robots.txt {
+        }
+        location ^~ /subscribe/  {
         alias /usr/share/nginx/html/static/;
-    }
+        }
 }
 server {
-    listen 80;
-    server_name x.$domain;
-    return 301 https://$domain;
+        listen 80;
+        server_name x.$domain;
+        return 301 https://$domain;
 }
 server {
-  listen 80;
-  server_name g.$domain;
-  # ssl_certificate $HOME/cert/fullchain.cer;
-  # ssl_certificate_key $HOME/cert/privkey.key;
-  return 301 https://$domain;
-  # location /test {
-  #   grpc_pass grpc://localhost:50008;
-  # }
+        listen 80;
+        server_name g.$domain;
+        return 301 https://$domain;
 }
 server {
-    listen 80;
-    server_name t.$domain;
-    return 301 https://$domain;
+        listen 50008 ssl http2;
+        server_name g.$domain;
+        ssl_certificate $HOME/cert/fullchain.cer;
+        ssl_certificate_key $HOME/cert/privkey.key;
+        location /test {
+            grpc_pass grpc://localhost:50008;
+        }
+        return 301 https://$domain;
 }
 server {
-    listen 80;
-    server_name tg.$domain;
-    return 301 https://$domain;
+        listen 80;
+        server_name t.$domain;
+        return 301 https://$domain;
 }
 server {
-    listen 80;
-    server_name s.$domain;
-    return 301 https://$domain;
+        listen 80;
+        server_name tg.$domain;
+        return 301 https://$domain;
+}
+server {
+        listen 80;
+        server_name s.$domain;
+        return 301 https://$domain;
 }
 EOF
 systemctl stop nginx
