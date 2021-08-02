@@ -107,20 +107,19 @@ server {
 
         ssl_certificate /root/cert/fullchain.cer; 
         ssl_certificate_key /root/cert/privkey.key;
-        ssl_protocols TLSv1.2 TLSv1.3;
-        ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
-        ssl_prefer_server_ciphers on;
+        # ssl_protocols TLSv1.2 TLSv1.3;
+        # ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
+        # ssl_prefer_server_ciphers on;
 
-        location /test { #与vless+grpc应用中serviceName对应
-            grpc_pass grpc://127.0.0.1:50008; 
-        }
-
-        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; #启用HSTS
-
+        # add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; #启用HSTS
         root /usr/share/nginx/html;
         location / {
                 proxy_ssl_server_name on;
                 proxy_pass https://imeizi.me;
+        }
+
+        location /test { #与vless+grpc应用中serviceName对应
+            grpc_pass grpc://127.0.0.1:50008; 
         }
 }
 server {
