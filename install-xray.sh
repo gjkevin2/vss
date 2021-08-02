@@ -5,6 +5,11 @@ bash <(curl -L https://raw.githubusercontent.com/XTLS/Xray-install/main/install-
 # 安裝最新發行的 geoip.dat 和 geosite.dat,只更新 .dat 資料檔
 bash <(curl -L https://raw.githubusercontent.com/XTLS/Xray-install/main/install-dat-release.sh)
 
+# 获取ip和域名
+apt -y install gawk
+serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
+servername=$(ls /etc/nginx/conf.d |grep -v default|head -c -6)
+
 cat > /usr/local/etc/xray/config.json <<-EOF
 {
     "log": {
@@ -45,6 +50,25 @@ cat > /usr/local/etc/xray/config.json <<-EOF
                     ]
                 }
             }
+        },
+        {
+          "port": 50008,
+          "listen": "127.0.0.1",
+          "protocol": "vless",
+          "settings": {
+            "clients": [
+              {
+                "id": "0c131050-d263-45cf-8d84-db3785197031"
+              }
+            ],
+            "decryption": "none"
+          },
+          "streamSettings": {
+            "network": "grpc",
+            "grpcSettings": {
+              "serviceName": "g.flyrain.tk"
+            }
+          }
         },
         {
             "port": 1310,
@@ -116,9 +140,7 @@ systemctl daemon-reload
 systemctl start xray
 systemctl enable xray
 
-apt -y install gawk
-serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
-servername=$(ls /etc/nginx/conf.d |grep -v default|head -c -6)
+#修改配置文件
 wget -O /usr/share/nginx/html/static/config.yaml https://raw.githubusercontent.com/gjkevin2/vss/master/config.yaml
 sed -i 's/serverip/'$serverip'/g' /usr/share/nginx/html/static/config.yaml
 sed -i 's/maindomain/'$servername'/g' /usr/share/nginx/html/static/config.yaml
