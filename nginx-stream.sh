@@ -24,7 +24,7 @@ stream {
                 server 127.0.0.1:50018;
         }
         upstream grpc {
-                server 127.0.0.1:50008;
+                server 127.0.0.1:50028;
         }
         upstream beforetrojan {
                 server 127.0.0.1:50012; 
@@ -108,7 +108,7 @@ server {
         return 301 https://$domain;
 }
 server {
-        listen 50008 ssl http2;
+        listen 50028 ssl http2;
         server_name g.$domain;
         ssl_certificate $HOME/cert/fullchain.cer;
         ssl_certificate_key $HOME/cert/privkey.key;
