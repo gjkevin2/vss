@@ -53,6 +53,9 @@ stream {
                 proxy_pass      \$stream_map;
                 ssl_preread     on;
                 proxy_protocol on;                    # start Proxy protocol
+                location /test {
+                    grpc_pass grpc://localhost:50008;
+                  }                
         }
         # remove proxy protocol
         server {
@@ -104,14 +107,13 @@ server {
 }
 server {
   listen 80;
-  listen 443 ssl http2;
   server_name g.$domain;
-  ssl_certificate $HOME/cert/fullchain.cer;
-  ssl_certificate_key $HOME/cert/privkey.key;
-
-  location /test {
-    grpc_pass grpc://localhost:50008;
-  }
+  # ssl_certificate $HOME/cert/fullchain.cer;
+  # ssl_certificate_key $HOME/cert/privkey.key;
+  return 301 https://$domain;
+  # location /test {
+  #   grpc_pass grpc://localhost:50008;
+  # }
 }
 server {
     listen 80;
