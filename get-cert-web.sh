@@ -129,9 +129,15 @@ server {
     return 301 https://$domain;
 }
 server {
-    listen 80;
-    server_name g.$domain;
-    return 301 https://$domain;
+  listen 80;
+  listen 443 ssl http2;
+  server_name g.$domain;
+  ssl_certificate $HOME/cert/fullchain.cer;
+  ssl_certificate_key $HOME/cert/privkey.key;
+
+  location /test {
+    grpc_pass grpc://localhost:50008;
+  }
 }
 server {
     listen 80;
