@@ -63,7 +63,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
           "streamSettings": {
             "network": "grpc",
             "grpcSettings": {
-              "serviceName": "g.flyrain.tk"
+              "serviceName": "/test"
             }
           }
         },
