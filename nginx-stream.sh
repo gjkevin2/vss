@@ -61,7 +61,7 @@ stream {
         }
         server {
                 listen 127.0.0.1:50018 proxy_protocol;
-                grpc_pass grpc://localhost:50008;   # redirect to grpc
+                proxy_pass grpc;   # redirect to grpc
         }
         server {
                 listen 127.0.0.1:50012 proxy_protocol;
