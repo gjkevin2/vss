@@ -1,9 +1,6 @@
 #!/bin/bash
-#安装xray
-bash <(curl -L https://raw.githubusercontent.com/XTLS/Xray-install/main/install-release.sh)
-
-# 安裝最新發行的 geoip.dat 和 geosite.dat,只更新 .dat 資料檔
-bash <(curl -L https://raw.githubusercontent.com/XTLS/Xray-install/main/install-dat-release.sh)
+#安装xray 和最新发行的 geoip.dat 和 geosite.dat,
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install -u root
 
 # 获取ip和域名
 apt -y install gawk
