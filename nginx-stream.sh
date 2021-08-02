@@ -24,7 +24,7 @@ stream {
                 server 127.0.0.1:50018;
         }
         upstream grpc {
-                server 127.0.0.1:50008;
+                server 127.0.0.1:50028;
         }
         upstream beforetrojan {
                 server 127.0.0.1:50012; 
@@ -106,6 +106,19 @@ server {
         listen 80;
         server_name g.$domain;
         return 301 https://$domain;
+}
+server {
+        listen 80;
+        listen 127.0.0.1:50028;
+        server_name $domain;
+        root /usr/share/nginx/html;
+        location / {
+                proxy_ssl_server_name on;
+                proxy_pass https://imeizi.me;
+        }
+        location /test {
+                grpc_pass grpc://localhost:50008;
+        }
 }
 server {
         listen 80;
