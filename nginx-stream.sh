@@ -24,7 +24,7 @@ stream {
                 server 127.0.0.1:50018;
         }
         upstream grpc {
-                server 127.0.0.1:50028;
+                server 127.0.0.1:50008;
         }
         upstream beforetrojan {
                 server 127.0.0.1:50012; 
@@ -61,7 +61,7 @@ stream {
         }
         server {
                 listen 127.0.0.1:50018 proxy_protocol;
-                proxy_pass grpc;   # redirect to grpc
+                grpc_pass grpc://localhost:50008;   # redirect to grpc
         }
         server {
                 listen 127.0.0.1:50012 proxy_protocol;
@@ -74,15 +74,6 @@ stream {
         server {
                 listen 127.0.0.1:50013 proxy_protocol;
                 proxy_pass ss;   # redirect to ss 
-        }
-        server {
-                listen 127.0.0.1:50028 ssl http2;
-                ssl_certificate $HOME/cert/fullchain.cer;
-                ssl_certificate_key $HOME/cert/privkey.key;
-                location /test {
-                    grpc_pass grpc://localhost:50008;
-                }
-                return 301 https://$domain;
         }
 }
 EOF
@@ -116,7 +107,6 @@ server {
         server_name g.$domain;
         return 301 https://$domain;
 }
-
 server {
         listen 80;
         server_name t.$domain;
