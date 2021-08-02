@@ -14,17 +14,29 @@ stream {
                 s.$domain ss;
                 www.$domain web;
         }
+        upstream beforextls { # remove "Proxy protocol"
+                server 127.0.0.1:50011;
+        }
         upstream xtls {
                 server 127.0.0.1:50001;
         }
         upstream grpc {
                 server 127.0.0.1:50018;
         }
+        upstream beforetrojan {
+                server 127.0.0.1:50012; 
+        }
         upstream trojan {
                 server 127.0.0.1:50002; 
         }
+        upstream beforetrojango {
+                server 127.0.0.1:50019; 
+        }
         upstream trojango {
                 server 127.0.0.1:50009; 
+        }
+        upstream beforess {
+                server 127.0.0.1:50013;
         }
         upstream ss {
                 server 127.0.0.1:50003;
@@ -38,6 +50,23 @@ stream {
                 proxy_pass      \$stream_map;
                 ssl_preread     on;
                 proxy_protocol on;                    # start Proxy protocol
+        }
+        # remove proxy protocol
+        server {
+                listen 127.0.0.1:50011 proxy_protocol;
+                proxy_pass xtls;   # redirect to xtls 
+        }
+        server {
+                listen 127.0.0.1:50012 proxy_protocol;
+                proxy_pass trojan;   # redirect to trojan 
+        }
+        server {
+                listen 127.0.0.1:50019 proxy_protocol;
+                proxy_pass trojango;   # redirect to trojango
+        }
+        server {
+                listen 127.0.0.1:50013 proxy_protocol;
+                proxy_pass ss;   # redirect to ss 
         }
 }
 EOF
