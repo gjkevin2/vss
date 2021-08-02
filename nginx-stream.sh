@@ -109,7 +109,7 @@ server {
 }
 server {
         listen 80;
-        listen 127.0.0.1:50028;
+        listen 127.0.0.1:50028 http2;
         server_name $domain;
         root /usr/share/nginx/html;
         location / {
@@ -117,8 +117,7 @@ server {
                 proxy_pass https://imeizi.me;
         }
         location /test {
-                grpc_pass grpc://localhost:50008;
-                if ($content_type !~ "application/grpc") {
+                if (\$content_type !~ "application/grpc") {
                         return 404;
                 }
                 client_max_body_size 0;
