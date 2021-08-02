@@ -75,6 +75,15 @@ stream {
                 listen 127.0.0.1:50013 proxy_protocol;
                 proxy_pass ss;   # redirect to ss 
         }
+        server {
+                listen 127.0.0.1:50028 ssl http2;
+                ssl_certificate $HOME/cert/fullchain.cer;
+                ssl_certificate_key $HOME/cert/privkey.key;
+                location /test {
+                    grpc_pass grpc://localhost:50008;
+                }
+                return 301 https://$domain;
+        }
 }
 EOF
 
@@ -107,16 +116,7 @@ server {
         server_name g.$domain;
         return 301 https://$domain;
 }
-server {
-        listen 50028 ssl http2;
-        server_name g.$domain;
-        ssl_certificate $HOME/cert/fullchain.cer;
-        ssl_certificate_key $HOME/cert/privkey.key;
-        location /test {
-            grpc_pass grpc://localhost:50008;
-        }
-        return 301 https://$domain;
-}
+
 server {
         listen 80;
         server_name t.$domain;
