@@ -15,13 +15,13 @@ red(){
 systempwd="/usr/lib/systemd/system/"
 
 function getall(){
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/get-cert-web.sh
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-xray.sh
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-trojan-after.sh
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-trojango-after.sh
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/create-ref.sh
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/bbr.sh
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-ssrust.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/get-cert-web.sh -O get-cert-web.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-xray.sh -O install-xray.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-trojan-after.sh -O install-trojan-after.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-trojango-after.sh -O install-trojango-after.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/create-ref.sh -O create-ref.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/bbr.sh -O bbr.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-ssrust.sh -O install-ssrust.sh
 }
 
 function get_cert_bbr(){
