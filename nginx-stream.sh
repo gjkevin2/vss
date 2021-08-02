@@ -111,7 +111,7 @@ server {
         # ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
         # ssl_prefer_server_ciphers on;
 
-        # add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; #启用HSTS
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; #启用HSTS
         root /usr/share/nginx/html;
         location / {
                 proxy_ssl_server_name on;
