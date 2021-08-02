@@ -7,39 +7,24 @@ cat >>/etc/nginx/nginx.conf<<-EOF
 stream {
         # SNI recognize
         map \$ssl_preread_server_name \$stream_map {
-                x.$domain beforextls;
-                g.$domain beforegrpc;
-                t.$domain beforetrojan;
-                tg.$domain beforetrojango;
-                s.$domain beforess;
+                x.$domain xtls;
+                g.$domain grpc;
+                t.$domain trojan;
+                tg.$domain trojango;
+                s.$domain ss;
                 www.$domain web;
-        }
-        upstream beforextls { # remove "Proxy protocol"
-                server 127.0.0.1:50011;
         }
         upstream xtls {
                 server 127.0.0.1:50001;
         }
-        upstream beforegrpc {
-                server 127.0.0.1:50018;
-        }
         upstream grpc {
-                server 127.0.0.1:50028;
-        }
-        upstream beforetrojan {
-                server 127.0.0.1:50012; 
+                server 127.0.0.1:50018;
         }
         upstream trojan {
                 server 127.0.0.1:50002; 
         }
-        upstream beforetrojango {
-                server 127.0.0.1:50019; 
-        }
         upstream trojango {
                 server 127.0.0.1:50009; 
-        }
-        upstream beforess {
-                server 127.0.0.1:50013;
         }
         upstream ss {
                 server 127.0.0.1:50003;
@@ -53,27 +38,6 @@ stream {
                 proxy_pass      \$stream_map;
                 ssl_preread     on;
                 proxy_protocol on;                    # start Proxy protocol
-        }
-        # remove proxy protocol
-        server {
-                listen 127.0.0.1:50011 proxy_protocol;
-                proxy_pass xtls;   # redirect to xtls 
-        }
-        server {
-                listen 127.0.0.1:50018 proxy_protocol;
-                proxy_pass grpc;   # redirect to grpc
-        }
-        server {
-                listen 127.0.0.1:50012 proxy_protocol;
-                proxy_pass trojan;   # redirect to trojan 
-        }
-        server {
-                listen 127.0.0.1:50019 proxy_protocol;
-                proxy_pass trojango;   # redirect to trojango
-        }
-        server {
-                listen 127.0.0.1:50013 proxy_protocol;
-                proxy_pass ss;   # redirect to ss 
         }
 }
 EOF
@@ -108,22 +72,26 @@ server {
         return 301 https://$domain;
 }
 server {
-        listen 80;
-        listen 127.0.0.1:50028 http2;
-        server_name $domain;
+        listen 127.0.0.1:50018 ssl http2 proxy_protocol;
+        set_real_ip_from 127.0.0.1;
+        server_name g.$domain;
+
+        ssl_certificate /root/cert/fullchain.cer; 
+        ssl_certificate_key /root/cert/privkey.key;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
+        ssl_prefer_server_ciphers on;
+
+        location /test { #与vless+grpc应用中serviceName对应
+            grpc_pass grpc://127.0.0.1:50008; 
+        }
+
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; #启用HSTS
+
         root /usr/share/nginx/html;
         location / {
                 proxy_ssl_server_name on;
                 proxy_pass https://imeizi.me;
-        }
-        location /test {
-                if (\$content_type !~ "application/grpc") {
-                        return 404;
-                }
-                client_max_body_size 0;
-                client_body_timeout 1071906480m;
-                grpc_read_timeout 1071906480m;
-                grpc_pass grpc://127.0.0.1:50008;
         }
 }
 server {
