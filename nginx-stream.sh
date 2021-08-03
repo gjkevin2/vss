@@ -8,6 +8,7 @@ stream {
         # SNI recognize
         map \$ssl_preread_server_name \$stream_map {
                 x.$domain beforextls;
+                tx.$domain beforetrojanxtls;
                 g.$domain grpc;
                 t.$domain beforetrojan;
                 tg.$domain beforetrojango;
@@ -19,6 +20,12 @@ stream {
         }
         upstream xtls {
                 server 127.0.0.1:50001;
+        }
+        upstream beforetrojanxtls {
+                server 127.0.0.1:50017;
+        }
+        upstream trojanxtls {
+                server 127.0.0.1:1310;
         }
         upstream grpc {
                 server 127.0.0.1:50018;
@@ -57,6 +64,10 @@ stream {
                 proxy_pass xtls;   # redirect to xtls 
         }
         server {
+                listen 127.0.0.1:50017 proxy_protocol;
+                proxy_pass trojanxtls;   # redirect to trojanxtls 
+        }
+        server {
                 listen 127.0.0.1:50012 proxy_protocol;
                 proxy_pass trojan;   # redirect to trojan 
         }
@@ -93,6 +104,11 @@ server {
 server {
         listen 80;
         server_name x.$domain;
+        return 301 https://$domain;
+}
+server {
+        listen 80;
+        server_name tx.$domain;
         return 301 https://$domain;
 }
 server {

@@ -86,9 +86,17 @@ cat > /usr/local/etc/xray/config.json <<-EOF
             },
             "streamSettings": {
                 "network": "tcp",
-                "security": "none",
-                "tcpSettings": {
-                    "acceptProxyProtocol": true
+                "security": "xtls",
+                "xtlsSettings": {
+                    "alpn": [
+                        "http/1.1"
+                    ],
+                    "certificates": [
+                        {
+                            "certificateFile": "/root/cert/fullchain.cer",
+                            "keyFile": "/root/cert/privkey.key" 
+                        }
+                    ]
                 }
             }
         },
