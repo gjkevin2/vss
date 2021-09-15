@@ -75,6 +75,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
                 "clients": [
                     {
                         "password": "461ece30",
+                        "flow": "xtls-rprx-direct",
                         "level": 0
                     }
                 ],
