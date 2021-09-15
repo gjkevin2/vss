@@ -1,5 +1,8 @@
 #!/bin/bash
 check_sys(){
+    local checkType=$1
+    local value=$2
+
     local release=''
     local systemPackage=''
 
@@ -25,10 +28,28 @@ check_sys(){
         release='centos'
         systemPackage='yum'
     fi
+
+    if [[ "${checkType}" == 'sysRelease' ]]; then
+        if [ "${value}" == "${release}" ]; then
+            return 0
+        else
+            return 1
+        fi
+    elif [[ "${checkType}" == 'packageManager' ]]; then
+        if [ "${value}" == "${systemPackage}" ]; then
+            return 0
+        else
+            return 1
+        fi
+    fi
 }
 
-check_sys
-${systemPackage} install git
+if check_sys packageManager yum; then
+    yum install -y git > /dev/null 2>&1
+elif check_sys packageManager apt; then
+    apt -y update > /dev/null 2>&1
+    apt -y install git > /dev/null 2>&1
+fi
 
 curldown(){
     if [ ! -f $1 ];then
