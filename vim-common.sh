@@ -11,8 +11,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'Yggdroot/indentLine'
 Plug 'scrooloose/nerdtree'
 Plug 'scrooloose/nerdcommenter'
-"Plug 'tomasiser/vim-code-dark'
-"Plug 'morhetz/gruvbox'
 Plug 'sainnhe/edge'
 Plug 'vim-airline/vim-airline'
 call plug#end()
