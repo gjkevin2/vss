@@ -161,7 +161,7 @@ server {
         }
 
         location /test { #与vless+grpc应用中serviceName对应
-            if ($content_type !~ "application/grpc"){
+            if (\$content_type !~ "application/grpc") {
                 return 404;
             }
             client_max_body_size 0;
