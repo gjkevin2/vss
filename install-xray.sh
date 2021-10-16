@@ -62,6 +62,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
           },
           "streamSettings": {
             "network": "grpc",
+            "security":"none",
             "grpcSettings": {
               "serviceName": "test"
             }
