@@ -44,7 +44,6 @@ After=network.target
 [Service]
 Restart=on-abnormal
 ExecStart=/usr/local/bin/ssserver -c /etc/shadowsocks-rust/config.json
-StandardOutput=null
 [Install]
 WantedBy=multi-user.target
 EOF
