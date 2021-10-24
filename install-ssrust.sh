@@ -25,12 +25,12 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "address": "127.0.0.1",
             "server_port":50003,
             "password": "barfoo!",
-            "timeout":300,
-            "method": "chacha20-ietf-poly1305",
-            "no_delay": true,
-            "mode":"tcp_and_udp",
+            "method":"aes-256-gcm",
+            // "no_delay": true,
+            // "mode":"tcp_and_udp",
             "plugin":"v2ray-plugin",
-            "plugin_opts":"server;tls;path=/uri;host=s.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
+            "plugin_opts":"server;tls;path=/uri;host=s.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key",
+            "timeout":7200
         }
     ]
 }
