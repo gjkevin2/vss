@@ -39,6 +39,7 @@ stream {
                 t.$domain beforetrojan;
                 tg.$domain beforetrojango;
                 s.$domain beforess;
+                sx.$domain beforessx
                 www.$domain web;
         }
         upstream beforextls { # remove "Proxy protocol"
@@ -74,6 +75,12 @@ stream {
         upstream ss {
                 server 127.0.0.1:50003;
         }
+        upstream beforessx {
+                server 127.0.0.1:50213;
+        }
+        upstream ssx {
+                server 127.0.0.1:50203;
+        }
         upstream web { # just local port 443
                 server 127.0.0.1:443;
         }
@@ -104,6 +111,10 @@ stream {
         server {
                 listen 127.0.0.1:50013 proxy_protocol;
                 proxy_pass ss;   # redirect to ss 
+        }
+        server {
+                listen 127.0.0.1:50213 proxy_protocol;
+                proxy_pass ssx;   # redirect to ssx
         }
 }
 EOF
@@ -183,6 +194,11 @@ server {
 server {
         listen 80;
         server_name s.$domain;
+        return 301 https://$domain;
+}
+server {
+        listen 80;
+        server_name sx.$domain;
         return 301 https://$domain;
 }
 EOF
