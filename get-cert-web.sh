@@ -39,7 +39,7 @@ stream {
                 t.$domain beforetrojan;
                 tg.$domain beforetrojango;
                 s.$domain beforess;
-                sx.$domain beforessx
+                sx.$domain beforessx;
                 www.$domain web;
         }
         upstream beforextls { # remove "Proxy protocol"
