@@ -45,7 +45,7 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "password": "barfoo!",
             "method":"aes-256-gcm",
             "plugin":"xray-plugin",
-            "plugin_opts":"server;mode=grpc;serviceName=test;tls;host=sx.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
+            "plugin_opts":"server;mode=grpc;tls;host=sx.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
         }
     ]
 }
