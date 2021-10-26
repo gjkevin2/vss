@@ -202,6 +202,9 @@ server {
         return 301 https://$domain;
 }
 EOF
+# repair pid file
+sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
+# (re)start nginx
 systemctl enable nginx
 systemctl stop nginx
 systemctl start nginx
