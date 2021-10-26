@@ -28,6 +28,7 @@ mkdir /etc/shadowsocks-rust >/dev/null 2>&1
 
 # config.json
 servername=$(ls /etc/nginx/conf.d |grep -v default|head -c -6)
+# grpc has config "serviceName"
 cat > /etc/shadowsocks-rust/config.json <<-EOF
 {
     "servers": [
