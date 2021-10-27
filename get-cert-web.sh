@@ -141,17 +141,17 @@ server {
 server {
         listen 80;
         server_name x.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 server {
         listen 80;
         server_name tx.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 server {
         listen 80;
         server_name g.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 server {
         listen 127.0.0.1:50018 ssl http2 proxy_protocol;
@@ -184,22 +184,22 @@ server {
 server {
         listen 80;
         server_name t.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 server {
         listen 80;
         server_name tg.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 server {
         listen 80;
         server_name s.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 server {
         listen 80;
         server_name sx.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 EOF
 # repair pid file
