@@ -120,38 +120,43 @@ stream {
 EOF
 
 mkdir /usr/share/nginx/html/static >/dev/null 2>&1
+if [ ! -e /usr/share/nginx/html/index.html ];then
+        cd /usr/share/nginx/html/
+        wget https://raw.githubusercontent.com/gjkevin2/vss/master/fakesite.zip >/dev/null 2>&1
+        unzip fakesite.zip >/dev/null 2>&1
+fi
+
 cd /etc/nginx/conf.d
 aconf=$(ls |grep -v default)
 rm -rf $aconf
 cat > $domain.conf <<-EOF
 server {
         listen 80;
-        server_name $domain;
-        root /usr/share/nginx/html;
+        server_name $domain;        
         location / {
-        proxy_ssl_server_name on;
-        proxy_pass https://imeizi.me;
+                root /usr/share/nginx/html;
+                index index.html;
         }
         location = /robots.txt {
         }
         location ^~ /subscribe/  {
-        alias /usr/share/nginx/html/static/;
+                alias /usr/share/nginx/html/static/;
         }
 }
 server {
         listen 80;
         server_name x.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 server {
         listen 80;
         server_name tx.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 server {
         listen 80;
         server_name g.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 server {
         listen 127.0.0.1:50018 ssl http2 proxy_protocol;
@@ -165,10 +170,9 @@ server {
         # ssl_prefer_server_ciphers on;
 
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; #启用HSTS
-        root /usr/share/nginx/html;
         location / {
-                proxy_ssl_server_name on;
-                proxy_pass https://imeizi.me;
+                root /usr/share/nginx/html;
+                index index.html;
         }
 
         location /test { #与vless+grpc应用中serviceName对应
@@ -184,25 +188,26 @@ server {
 server {
         listen 80;
         server_name t.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 server {
         listen 80;
         server_name tg.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 server {
         listen 80;
         server_name s.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 server {
         listen 80;
         server_name sx.$domain;
-        return 301 https://$domain;
+        return 301 http://$domain;
 }
 EOF
 # repair pid file
+sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
 sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
 # (re)start nginx
 systemctl enable nginx
