@@ -130,7 +130,7 @@ server {
         root /usr/share/nginx/html;
         location / {
         proxy_ssl_server_name on;
-        proxy_pass https://imeizi.me;
+        proxy_pass https://www.flightnetwork.com;
         }
         location = /robots.txt {
         }
@@ -168,7 +168,7 @@ server {
         root /usr/share/nginx/html;
         location / {
                 proxy_ssl_server_name on;
-                proxy_pass https://imeizi.me;
+                proxy_pass https://www.flightnetwork.com;
         }
 
         location /test { #与vless+grpc应用中serviceName对应
@@ -203,6 +203,7 @@ server {
 }
 EOF
 # repair pid file
+sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
 sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
 # (re)start nginx
 systemctl enable nginx
