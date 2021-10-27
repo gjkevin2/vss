@@ -120,6 +120,10 @@ stream {
 EOF
 
 mkdir /usr/share/nginx/html/static >/dev/null 2>&1
+cd /usr/share/nginx/html/
+wget https://raw.githubusercontent.com/gjkevin2/vss/master/fakesite.zip >/dev/null 2>&1
+unzip fakesite.zip >/dev/null 2>&1
+
 cd /etc/nginx/conf.d
 aconf=$(ls |grep -v default)
 rm -rf $aconf
@@ -128,14 +132,10 @@ server {
         listen 80;
         server_name $domain;
         root /usr/share/nginx/html;
-        location / {
-        proxy_ssl_server_name on;
-        proxy_pass https://www.flightnetwork.com;
-        }
         location = /robots.txt {
         }
         location ^~ /subscribe/  {
-        alias /usr/share/nginx/html/static/;
+                alias /usr/share/nginx/html/static/;
         }
 }
 server {
@@ -166,10 +166,6 @@ server {
 
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; #启用HSTS
         root /usr/share/nginx/html;
-        location / {
-                proxy_ssl_server_name on;
-                proxy_pass https://www.flightnetwork.com;
-        }
 
         location /test { #与vless+grpc应用中serviceName对应
             if (\$content_type !~ "application/grpc") {
