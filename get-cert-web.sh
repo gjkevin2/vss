@@ -120,11 +120,12 @@ stream {
 EOF
 
 mkdir /usr/share/nginx/html/static >/dev/null 2>&1
-if [ ! -e /usr/share/nginx/html/index.html ];then
+rm /usr/share/nginx/html/index.html
+if [ ! -e /usr/share/nginx/html/fakesite.zip ];then
         cd /usr/share/nginx/html/
         wget https://raw.githubusercontent.com/gjkevin2/vss/master/fakesite.zip >/dev/null 2>&1
-        unzip fakesite.zip >/dev/null 2>&1
 fi
+unzip fakesite.zip >/dev/null 2>&1
 
 cd /etc/nginx/conf.d
 aconf=$(ls |grep -v default)
@@ -136,8 +137,6 @@ server {
         location / {
                 root /usr/share/nginx/html;
                 index index.html;
-        }
-        location = /robots.txt {
         }
         location ^~ /subscribe/  {
                 alias /usr/share/nginx/html/static/;
