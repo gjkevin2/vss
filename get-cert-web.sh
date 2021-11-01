@@ -54,6 +54,12 @@ stream {
         upstream trojanxtls {
                 server 127.0.0.1:1310;
         }
+        upstream breforevlessws {
+                server 127.0.0.1:50014;
+        }
+        upstream vlessws {
+                server 127.0.0.1:1311;
+        }
         upstream grpc {
                 server 127.0.0.1:50018;
         }
@@ -99,6 +105,10 @@ stream {
         server {
                 listen 127.0.0.1:50017 proxy_protocol;
                 proxy_pass trojanxtls;   # redirect to trojanxtls 
+        }
+        server {
+                listen 127.0.0.1:50014 proxy_protocol;
+                proxy_pass vlessws;   # redirect to vlessws 
         }
         server {
                 listen 127.0.0.1:50012 proxy_protocol;
@@ -154,6 +164,21 @@ server {
 }
 server {
         listen 80;
+        server_name vw.$domain;
+        location = /wstest { #与vless+ws应用中path对应
+            proxy_redirect off;
+            proxy_pass http://127.0.0.1:1311; #转发给本机vless+ws监听端口
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade \$http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host \$http_host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        }
+        return 301 http://$domain;
+}
+server {
+        listen 80;
         server_name g.$domain;
         return 301 http://$domain;
 }
@@ -175,13 +200,15 @@ server {
         }
 
         location /test { #与vless+grpc应用中serviceName对应
-            if (\$content_type !~ "application/grpc") {
+            if (\$request_method != "POST") {
                 return 404;
             }
-            client_max_body_size 0;
+            client_body_buffer_size 1m;
             client_body_timeout 1071906480m;
+            client_max_body_size 0;
             grpc_read_timeout 1071906480m;
-            grpc_pass grpc://127.0.0.1:50008; 
+            grpc_send_timeout 1h;
+            grpc_pass grpc://127.0.0.1:50008;
         }
 }
 server {

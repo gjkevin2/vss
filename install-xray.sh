@@ -25,12 +25,6 @@ cat > /usr/local/etc/xray/config.json <<-EOF
                     }
                 ],
                 "decryption": "none",
-                "fallbacks": [
-                    {
-                        "dest": 1310,
-                        "xver": 1
-                    }
-                ]
             },
             "streamSettings": {
                 "network": "tcp",
@@ -99,6 +93,27 @@ cat > /usr/local/etc/xray/config.json <<-EOF
                             "keyFile": "/root/cert/privkey.key" 
                         }
                     ]
+                }
+            }
+        },
+        {
+            "port": 1311,
+            "listen": "127.0.0.1",
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "bf45efa6-9d98-4553-a627-8715c1a491b8",
+                        "level": 0
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "network": "ws",
+                "security": "none",
+                "wsSettings": {
+                    "path": "/wstest"
                 }
             }
         },
