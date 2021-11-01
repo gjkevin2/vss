@@ -168,8 +168,13 @@ server {
 
         ssl_certificate /root/cert/fullchain.cer; 
         ssl_certificate_key /root/cert/privkey.key;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; #启用HSTS
+        location / {
+                root /usr/share/nginx/html;
+                index index.html;
+        }
 
-        location = /wstest { #与vless+ws应用中path对应
+        location /wstest { #与vless+ws应用中path对应
             proxy_redirect off;
             proxy_pass http://127.0.0.1:1311; #转发给本机vless+ws监听端口
             proxy_http_version 1.1;
