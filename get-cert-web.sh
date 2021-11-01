@@ -54,11 +54,8 @@ stream {
         upstream trojanxtls {
                 server 127.0.0.1:1310;
         }
-        upstream breforevlessws {
-                server 127.0.0.1:50014;
-        }
         upstream vlessws {
-                server 127.0.0.1:1311;
+                server 127.0.0.1:50014;
         }
         upstream grpc {
                 server 127.0.0.1:50018;
@@ -105,10 +102,6 @@ stream {
         server {
                 listen 127.0.0.1:50017 proxy_protocol;
                 proxy_pass trojanxtls;   # redirect to trojanxtls 
-        }
-        server {
-                listen 127.0.0.1:50014 proxy_protocol;
-                proxy_pass vlessws;   # redirect to vlessws 
         }
         server {
                 listen 127.0.0.1:50012 proxy_protocol;
@@ -163,8 +156,13 @@ server {
         return 301 http://$domain;
 }
 server {
-        listen 80;
+        listen 127.0.0.1:50014 ssl http2 proxy_protocol;
+        set_real_ip_from 127.0.0.1;
         server_name vw.$domain;
+
+        ssl_certificate /root/cert/fullchain.cer; 
+        ssl_certificate_key /root/cert/privkey.key;
+
         location = /wstest { #与vless+ws应用中path对应
             proxy_redirect off;
             proxy_pass http://127.0.0.1:1311; #转发给本机vless+ws监听端口
