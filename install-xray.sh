@@ -118,7 +118,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
                             "keyFile": "/root/cert/privkey.key" 
                         }
                     ]
-                }
+                },
                 "wsSettings": {
                     "path": "/wstest"
                 }
