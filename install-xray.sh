@@ -110,7 +110,15 @@ cat > /usr/local/etc/xray/config.json <<-EOF
             },
             "streamSettings": {
                 "network": "ws",
-                "security": "none",
+                "security": "tls",
+                "tlsSettings": {
+                    "certificates": [
+                        {
+                            "certificateFile": "/root/cert/fullchain.cer",
+                            "keyFile": "/root/cert/privkey.key" 
+                        }
+                    ]
+                }
                 "wsSettings": {
                     "path": "/wstest"
                 }
