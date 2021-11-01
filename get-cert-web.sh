@@ -168,6 +168,9 @@ server {
 
         ssl_certificate /root/cert/fullchain.cer; 
         ssl_certificate_key /root/cert/privkey.key;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
+        ssl_prefer_server_ciphers on;
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; #启用HSTS
         location / {
                 root /usr/share/nginx/html;
