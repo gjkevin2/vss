@@ -177,7 +177,7 @@ server {
                 index index.html;
         }
 
-        location /wstest { #与vless+ws应用中path对应
+        location = /wstest { #与vless+ws应用中path对应
             proxy_redirect off;
             proxy_pass http://127.0.0.1:1311; #转发给本机vless+ws监听端口
             proxy_http_version 1.1;
