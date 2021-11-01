@@ -35,6 +35,7 @@ stream {
         map \$ssl_preread_server_name \$stream_map {
                 x.$domain beforextls;
                 tx.$domain beforetrojanxtls;
+                vw.$domain vlessws;
                 g.$domain grpc;
                 t.$domain beforetrojan;
                 tg.$domain beforetrojango;
