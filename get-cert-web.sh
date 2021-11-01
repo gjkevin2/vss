@@ -156,6 +156,11 @@ server {
         return 301 http://$domain;
 }
 server {
+        listen 80;
+        server_name vw.$domain;
+        return 301 http://$domain;
+}
+server {
         listen 127.0.0.1:50014 ssl http2 proxy_protocol;
         set_real_ip_from 127.0.0.1;
         server_name vw.$domain;
@@ -173,7 +178,6 @@ server {
             proxy_set_header X-Real-IP \$remote_addr;
             proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         }
-        return 301 http://$domain;
 }
 server {
         listen 80;

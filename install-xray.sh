@@ -103,8 +103,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
             "settings": {
                 "clients": [
                     {
-                        "id": "bf45efa6-9d98-4553-a627-8715c1a491b8",
-                        "level": 0
+                        "id": "bf45efa6-9d98-4553-a627-8715c1a491b8"
                     }
                 ],
                 "decryption": "none"
