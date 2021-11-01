@@ -24,7 +24,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
                         "level": 0
                     }
                 ],
-                "decryption": "none",
+                "decryption": "none"
             },
             "streamSettings": {
                 "network": "tcp",
