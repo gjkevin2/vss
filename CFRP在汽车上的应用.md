@@ -21,86 +21,22 @@
 ## **二、碳纤维材料应用于汽车上的优势**
 
 目前用于汽车上的材料主要是高强度钢、铝合金、镁合金、钛合金、玻璃纤维复合材料、碳纤维复合材料等，这些材料的性能对比如下。碳纤维复合材料在轻量化、安全性、舒适性、可靠性、提升车身开发水平等方面具有巨大优势。
+
 <div align="center">
 <table>
-<caption>表1 各类汽车轻量化材料力学特性对比</caption>
-<thead>
-  <tr>
-    <th colspan="2">材料种类</th>
-    <th>密度(g/cm3)</th>
-    <th>抗拉强度/MPa</th>
-    <th>弹性模量MPa</th>
-    <th>比强度</th>
-    <th>比模量</th>
-    <th>耐腐蚀性</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td colspan="2">高强度钢</td>
-    <td>7.8</td>
-    <td>1000</td>
-    <td>214000</td>
-    <td>1.3</td>
-    <td>0.27</td>
-    <td>一般</td>
-  </tr>
-  <tr>
-    <td colspan="2">铝合金</td>
-    <td>2.8</td>
-    <td>420</td>
-    <td>71000</td>
-    <td>1.5</td>
-    <td>0.25</td>
-    <td>较强</td>
-  </tr>
-  <tr>
-    <td colspan="2">镁合金</td>
-    <td>1.79</td>
-    <td>280</td>
-    <td>45000</td>
-    <td>1.6</td>
-    <td>0.25</td>
-    <td>差</td>
-  </tr>
-  <tr>
-    <td colspan="2">钛合金</td>
-    <td>4.5</td>
-    <td>942</td>
-    <td>112000</td>
-    <td>2.1</td>
-    <td>0.25</td>
-    <td>强</td>
-  </tr>
-  <tr>
-    <td colspan="2">玻璃纤维复合材料</td>
-    <td>2.0</td>
-    <td>1100</td>
-    <td>40000</td>
-    <td>5.5</td>
-    <td>0.2</td>
-    <td>强</td>
-  </tr>
-  <tr>
-    <td rowspan="2">碳纤维复合材料</td>
-    <td>高强度型</td>
-    <td>1.5</td>
-    <td>1400</td>
-    <td>130000</td>
-    <td>9.3</td>
-    <td>0.87</td>
-    <td>非常强</td>
-  </tr>
-  <tr>
-    <td>低强度型</td>
-    <td>1.6</td>
-    <td>1100</td>
-    <td>190000</td>
-    <td>6.2</td>
-    <td>1.2</td>
-    <td>非常强</td>
-  </tr>
-</tbody>
+  <caption>表1 各类汽车轻量化材料力学特性对比</caption>
+  <thead>
+    <tr><th colspan="2">材料种类</th><th>密度(g/cm3)</th><th>抗拉强度/MPa</th><th>弹性模量MPa</th><th>比强度</th><th>比模量</th><th>耐腐蚀性</th></tr>
+  </thead>
+  <tbody>
+    <tr><td colspan="2">高强度钢</td><td>7.8</td><td>1000</td><td>214000</td><td>1.3</td><td>0.27</td><td>一般</td></tr>
+    <tr><td colspan="2">铝合金</td><td>2.8</td><td>420</td><td>71000</td><td>1.5</td><td>0.25</td><td>较强</td></tr>
+    <tr><td colspan="2">镁合金</td><td>1.79</td><td>280</td><td>45000</td><td>1.6</td><td>0.25</td><td>差</td></tr>
+    <tr><td colspan="2">钛合金</td><td>4.5</td><td>942</td><td>112000</td><td>2.1</td><td>0.25</td><td>强</td></tr>
+    <tr><td colspan="2">玻璃纤维复合材料</td><td>2.0</td><td>1100</td><td>40000</td><td>5.5</td><td>0.2</td><td>强</td></tr>
+    <tr><td rowspan="2">碳纤维复合材料</td><td>高强度型</td><td>1.5</td><td>1400</td><td>130000</td><td>9.3</td><td>0.87</td><td>非常强</td></tr>
+    <tr><td>低强度型</td><td>1.6</td><td>1100</td><td>190000</td><td>6.2</td><td>1.2</td><td>非常强</td></tr>
+  </tbody>
 </table>
 </div>
 
@@ -144,13 +80,13 @@ CFRP 具有很多优良特性，如：①有合适并且稳定的摩擦系数（
 
 碳纤维增强复合材料所具备的各向异性、高的比强度和比模量的特点，在传动轴产品上得以充分发挥。与普通钢材相比，重量可以减轻一半以上。在同等重量和直径的条件下，扭矩力可以达到钢材的170%以上。另外，碳纤维传动轴在有效降低传动轴重量的情况下，将拥有更好的耐疲劳性和耐久性。丰田公司开发的TheDriveshaft Shop碳纤传动轴不仅重量减少了一半，且传动效率更快。英国GNK公司研发了碳纤维传动轴广泛应用于Audi A4等车型；日本东丽公司生产的碳纤维汽车传动轴广泛应用于阿斯顿马丁、马自达、越野、奔驰等车型。
 
-<div align="center"><img src="./autopic/carbon.jpg" alt="碳纤维复合材料在汽车中的潜在应用比例" /></div>
-<div align="center">图1. 碳纤维复合材料在汽车中的潜在应用比例</div>
+![碳纤维在汽车中的潜在应用比例](autopic/carbon.jpg)
+
+<div align='center'>碳纤维复合材料在汽车中的潜在应用比例</div>
 
 ## **四、碳纤维复合材料产业链**
 
-<div align='center'><img src='autopic/carbon-link.jpg' alt='碳纤维复合材料产业链'></div>
-<div align="center">图2. 碳纤维复合材料产业链</div>
+![](autopic/carbon-link.jpg)
 
 ## **五、碳纤维复合材料在汽车上的应用进展**
 
@@ -162,74 +98,20 @@ CFRP 具有很多优良特性，如：①有合适并且稳定的摩擦系数（
 
 <div align="center">
 <table>
-<caption>表2 国外汽车生产商CFRP应用情况</caption>
-<thead>
-  <tr>
-    <th>生产商</th>
-    <th>国家</th>
-    <th>车型</th>
-    <th>零部件</th>
-    <th>减重效果</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>宝马</td>
-    <td>德国</td>
-    <td>宝马7系</td>
-    <td>车身结构</td>
-    <td>减重230kg</td>
-  </tr>
-  <tr>
-    <td>通用</td>
-    <td>美国</td>
-    <td>概念车</td>
-    <td>车身底盘</td>
-    <td>减重68%</td>
-  </tr>
-  <tr>
-    <td>丰田</td>
-    <td>日本</td>
-    <td>丰田86</td>
-    <td>传动轴</td>
-    <td>减重50%</td>
-  </tr>
-  <tr>
-    <td>富士重工</td>
-    <td>日本</td>
-    <td>斯巴鲁WRX STltS</td>
-    <td>车顶</td>
-    <td>较原钢板减重80%</td>
-  </tr>
-  <tr>
-    <td>福特</td>
-    <td>美国</td>
-    <td>野马Shelby GT350R</td>
-    <td>轮毂</td>
-    <td>较原铝合金制件减重43%</td>
-  </tr>
-  <tr>
-    <td>福特</td>
-    <td>美国</td>
-    <td>FalconXR6 Sprint</td>
-    <td>进气管</td>
-    <td>较原塑料件减重46%</td>
-  </tr>
-  <tr>
-    <td>兰博基尼</td>
-    <td>意大利</td>
-    <td>第六元素概念车</td>
-    <td>连杆</td>
-    <td>较原钢制件减重40%～50%</td>
-  </tr>
-  <tr>
-    <td>克莱斯勒</td>
-    <td>美国</td>
-    <td>道奇蝰蛇</td>
-    <td>发动机罩</td>
-    <td></td>
-  </tr>
-</tbody>
+  <caption>表2 国外汽车生产商CFRP应用情况</caption>
+  <thead>
+    <tr><th>生产商</th><th>国家</th><th>车型</th><th>零部件</th><th>减重效果</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>宝马</td><td>德国</td><td>宝马7系</td><td>车身结构</td><td>减重230kg</td></tr>
+    <tr><td>通用</td><td>美国</td><td>概念车</td><td>车身底盘</td><td>减重68%</td></tr>
+    <tr><td>丰田</td><td>日本</td><td>丰田86</td><td>传动轴</td><td>减重50%</td></tr>
+    <tr><td>富士重工</td><td>日本</td><td>斯巴鲁WRX STltS</td><td>车顶</td><td>较原钢板减重80%</td></tr>
+    <tr><td>福特</td><td>美国</td><td>野马Shelby GT350R</td><td>轮毂</td><td>较原铝合金制件减重43%</td></tr>
+    <tr><td>福特</td><td>美国</td><td>FalconXR6 Sprint</td><td>进气管</td><td>较原塑料件减重46%</td></tr>
+    <tr><td>兰博基尼</td><td>意大利</td><td>第六元素概念车</td><td>连杆</td><td>较原钢制件减重40%～50%</td></tr>
+    <tr><td>克莱斯勒</td><td>美国</td><td>道奇蝰蛇</td><td>发动机罩</td><td></td></tr>
+  </tbody>
 </table>
 </div>
 
@@ -237,65 +119,20 @@ CFRP 具有很多优良特性，如：①有合适并且稳定的摩擦系数（
 
 <div align="center">
 <table>
-<caption>表3 艾瑞泽7碳纤维应用及效果</caption>
-<thead>
-  <tr>
-    <th>部件</th>
-    <th>金属件/kg</th>
-    <th>CFRP/kg</th>
-    <th>减重比例</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>前保险杠横梁</td>
-    <td>3.66</td>
-    <td>1.88</td>
-    <td>49%</td>
-  </tr>
-  <tr>
-    <td>吸能盒</td>
-    <td>1.75</td>
-    <td>0.65</td>
-    <td>63%</td>
-  </tr>
-  <tr>
-    <td>散热器横梁</td>
-    <td>1.69</td>
-    <td>0.638</td>
-    <td>62%</td>
-  </tr>
-  <tr>
-    <td>制动踏板</td>
-    <td>1.3</td>
-    <td>0.676</td>
-    <td>48%</td>
-  </tr>
-  <tr>
-    <td>传动轴</td>
-    <td>9.6</td>
-    <td>3.57</td>
-    <td>63%</td>
-  </tr>
-  <tr>
-    <td>前底板</td>
-    <td>24</td>
-    <td>13.3</td>
-    <td>65%</td>
-  </tr>
-  <tr>
-    <td>后门盖外板</td>
-    <td>3.49</td>
-    <td>1.71</td>
-    <td>51%</td>
-  </tr>
-  <tr>
-    <td>车身侧围外板</td>
-    <td>9.1</td>
-    <td>4.2</td>
-    <td>54%</td>
-  </tr>
-</tbody>
+  <caption>表3 艾瑞泽7碳纤维应用及效果</caption>
+  <thead>
+    <tr><th>部件</th><th>金属件/kg</th><th>CFRP/kg</th><th>减重比例</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>前保险杠横梁</td><td>3.66</td><td>1.88</td><td>49%</td></tr>
+    <tr><td>吸能盒</td><td>1.75</td><td>0.65</td><td>63%</td></tr>
+    <tr><td>散热器横梁</td><td>1.69</td><td>0.638</td><td>62%</td></tr>
+    <tr><td>制动踏板</td><td>1.3</td><td>0.676</td><td>48%</td></tr>
+    <tr><td>传动轴</td><td>9.6</td><td>3.57</td><td>63%</td></tr>
+    <tr><td>前底板</td><td>24</td><td>13.3</td><td>65%</td></tr>
+    <tr><td>后门盖外板</td><td>3.49</td><td>1.71</td><td>51%</td></tr>
+    <tr><td>车身侧围外板</td><td>9.1</td><td>4.2</td><td>54%</td></tr>
+  </tbody>
 </table>
 </div>
 
