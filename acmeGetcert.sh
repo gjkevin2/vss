@@ -25,4 +25,4 @@ read domain
 
 # restart flask
 source ~/dist/venv/bin/activate
-uwsgi -ini /~/dist/uwsgi/uwsgi.ini
+uwsgi -ini ~/dist/uwsgi/uwsgi.ini
