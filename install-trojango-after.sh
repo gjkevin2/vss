@@ -1,5 +1,5 @@
 #!/bin/bash
-servername=$(ls /etc/nginx/conf.d |grep -v default|head -c -6)
+servername=$(ls /etc/nginx/conf.d |grep -v "default\|RSS"|head -c -6)
 systempwd="/usr/lib/systemd/system/"
 apt -y install wget unzip zip curl tar >/dev/null 2>&1
 if test -s $HOME/cert/fullchain.cer; then
@@ -36,9 +36,9 @@ if test -s $HOME/cert/fullchain.cer; then
 }
 EOF
 
-    #增加启动脚本    
+    #增加启动脚本
+    systemctl stop trojan-go.service
     cat > ${systempwd}trojan-go.service <<-EOF
-
 [Unit]
 Description=Trojan-Go
 After=network.target nss-lookup.target
