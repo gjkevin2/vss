@@ -27,7 +27,8 @@ rm -f xray-plugin-linux-amd64-v${latest_version3}.tar.gz
 mkdir /etc/shadowsocks-rust >/dev/null 2>&1
 
 # config.json
-servername=$(ls /etc/nginx/conf.d |grep -v default|head -c -6)
+testdomain=`sed -n "/preread_server/{n;p;}" /etc/nginx/nginx.conf |awk -F ' ' '{print $1}'`
+servername=${testdomain#*.}
 # grpc has config "serviceName"
 cat > /etc/shadowsocks-rust/config.json <<-EOF
 {

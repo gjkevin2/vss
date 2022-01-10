@@ -1,5 +1,6 @@
 #!/bin/bash
-servername=$(ls /etc/nginx/conf.d |grep -v "default\|RSS"|head -c -6)
+testdomain=`sed -n "/preread_server/{n;p;}" /etc/nginx/nginx.conf |awk -F ' ' '{print $1}'`
+servername=${testdomain#*.}
 systempwd="/usr/lib/systemd/system/"
 apt -y install wget unzip zip curl tar >/dev/null 2>&1
 if test -s $HOME/cert/fullchain.cer; then
