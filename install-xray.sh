@@ -124,8 +124,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
                 "clients": [
                     {
                         "id": "74a2e3cf-2b2c-4afe-b4c9-fec7124bc941",
-                        "level": 1,
-                        "alterId": 0
+                        "level": 1
                     }
                 ]
             }
