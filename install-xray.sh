@@ -143,11 +143,12 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "protocol": "dokodemo-door",
       "settings": {
         "address": "v1.mux.cool",
-        "network": "tcp,udp",
+        "network": "tcp",
         "followRedirect": false
       },
       "streamSettings": {
         "network": "ws",
+        "security": "none",
         "wsSettings": {
           "path": "/uri"
         }
@@ -166,10 +167,16 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "port": 2021,
       "protocol": "shadowsocks",
       "settings": {
-        "method": "none",
-        "password": "barfoo!",
-        "ota": false,
-        "network": "tcp,udp"
+        "method": "chacha20-ietf-poly1305",
+        "password": "barfoo!"
+      },
+      "streamSettings": {
+        "network": "domainsocket",
+        "security": "none",
+        "dsSettings": {
+          "path": "ss",
+          "abstract": true
+        }
       }
     }
   ],
@@ -179,10 +186,14 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "settings": {}
     },
     {
-      "tag": "ssrr",
+      "tag": "ssds",
       "protocol": "freedom",
-      "settings": {
-        "redirect": "127.0.0.1:2021"
+      "streamSettings": {
+        "network": "domainsocket",
+        "dsSettings": {
+          "path": "ss",
+          "abstract": true
+        }
       }
     }
   ],
@@ -198,7 +209,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       {
         "type": "field",
         "inboundTag": "ddws",
-        "outboundTag": "ssrr"
+        "outboundTag": "ssds"
       }
     ]
   }
