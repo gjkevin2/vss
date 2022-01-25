@@ -18,7 +18,8 @@ stream {
                 s.$domain beforess;
                 sx.$domain beforessx;
                 xss.$domain xss;
-                www.$domain web;
+                rss.$domain rss;
+                www.$domain web;                
         }
         upstream beforextls { # remove "Proxy protocol"
                 server 127.0.0.1:50011;
@@ -64,6 +65,9 @@ stream {
         }
         upstream xss {
                 server 127.0.0.1:50313;
+        }
+        upstream rss {
+                server 127.0.0.1:55014;
         }
         upstream web { # just local port 443
                 server 127.0.0.1:443;
