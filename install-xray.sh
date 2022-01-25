@@ -136,11 +136,64 @@ cat > /usr/local/etc/xray/config.json <<-EOF
                 "method":"aes-256-gcm",
                 "password":"barfoo!"
             }
+        },
+        {
+          "listen": "127.0.0.1",
+          "port": 2022, 
+          "protocol": "dokodemo-door",
+          "settings": {
+            "address": "v1.mux.cool",
+            "network": "tcp",
+            "followRedirect": false
+          },
+          "streamSettings": {
+            "network": "ws",
+            "security": "none",
+            "wsSettings": {
+              "path": "/uri" 
+            }
+          },
+          "tag": "ddws",
+          "sniffing": {
+            "enabled": true,
+            "destOverride": [
+              "http",
+              "tls"
+            ]
+          }
+        },
+        {
+          "listen": "127.0.0.1",
+          "port": 2021,
+          "protocol": "shadowsocks",
+          "settings": {
+            "method": "chacha20-ietf-poly1305",
+            "password": "barfoo!",
+          },
+          "streamSettings": {
+            "network": "domainsocket",
+            "security": "none",
+            "dsSettings": {
+              "path": "ss",
+              "abstract": true
+            }
+          }
         }
     ],
     "outbounds": [
         {
             "protocol": "freedom"
+        },
+        {
+          "tag": "ssds",
+          "protocol": "freedom",
+          "streamSettings": {
+            "network": "domainsocket",
+            "dsSettings": {
+              "path": "ss",
+              "abstract": true
+            }
+          }
         }
     ],
     "routing": {
@@ -149,6 +202,11 @@ cat > /usr/local/etc/xray/config.json <<-EOF
             "type": "field",
             "ip": ["geoip:private"],
             "outboundTag": "blocked"
+          },
+          {
+            "type": "field",
+            "inboundTag": ["ddws"],
+            "outboundTag": "ssds"
           }
       ]
     }
