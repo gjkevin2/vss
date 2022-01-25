@@ -143,12 +143,11 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "protocol": "dokodemo-door",
       "settings": {
         "address": "v1.mux.cool",
-        "network": "tcp",
+        "network": "tcp,udp",
         "followRedirect": false
       },
       "streamSettings": {
         "network": "ws",
-        "security": "none",
         "wsSettings": {
           "path": "/uri"
         }
@@ -167,7 +166,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "port": 2021,
       "protocol": "shadowsocks",
       "settings": {
-        "method": "chacha20-ietf-poly1305",
+        "method": "none",
         "password": "barfoo!",
         "ota": false,
         "network": "tcp,udp"
@@ -176,7 +175,8 @@ cat > /usr/local/etc/xray/config.json <<-EOF
   ],
   "outbounds": [
     {
-      "protocol": "freedom"
+      "protocol": "freedom",
+      "settings": {}
     },
     {
       "tag": "ssrr",
@@ -197,9 +197,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       },
       {
         "type": "field",
-        "inboundTag": [
-          "ddws"
-        ],
+        "inboundTag": "ddws",
         "outboundTag": "ssrr"
       }
     ]

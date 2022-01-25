@@ -17,7 +17,7 @@ stream {
                 tg.$domain beforetrojango;
                 s.$domain beforess;
                 sx.$domain beforessx;
-                xss.$domain beforexss;
+                xss.$domain xss;
                 www.$domain web;
         }
         upstream beforextls { # remove "Proxy protocol"
@@ -62,11 +62,8 @@ stream {
         upstream ssx {
                 server 127.0.0.1:50203;
         }
-        upstream beforexss {
-                server 127.0.0.1:50313;
-        }
         upstream xss {
-                server 127.0.0.1:2022;
+                server 127.0.0.1:50313;
         }
         upstream web { # just local port 443
                 server 127.0.0.1:443;
@@ -103,17 +100,11 @@ stream {
                 listen 127.0.0.1:50213 proxy_protocol;
                 proxy_pass ssx;   # redirect to ssx
         }
-        server {
-                listen 127.0.0.1:50313 proxy_protocol;
-                proxy_pass xss;   # redirect to ssx
-        }
 }
 EOF
 
 
 cd /etc/nginx/conf.d
-aconf=$(ls |grep -v default)
-rm -rf $aconf
 cat > $domain.conf <<-EOF
 server {
         listen 80;
@@ -221,6 +212,33 @@ server {
         listen 80;
         server_name sx.$domain;
         return 301 http://$domain;
+}
+server {
+        listen 127.0.0.1:50313 ssl http2 proxy_protocol;
+        set_real_ip_from 127.0.0.1;
+        server_name xss.$domain;
+
+        ssl_certificate /root/cert/fullchain.cer; 
+        ssl_certificate_key /root/cert/privkey.key;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
+        ssl_prefer_server_ciphers on;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; #启用HSTS
+        location / {
+                root /usr/share/nginx/html;
+                index index.html;
+        }
+
+        location = /uri { # 与xray里ss应用中dekodemo-door里path对应
+            proxy_redirect off;
+            proxy_pass http://127.0.0.1:2022; # 转发给本机dekodemo-door监听端口
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade \$http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host \$http_host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        }
 }
 EOF
 # repair pid file
