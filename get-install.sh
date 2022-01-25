@@ -15,7 +15,8 @@ red(){
 systempwd="/usr/lib/systemd/system/"
 
 function getall(){
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/get-cert-web.sh -O get-cert-web.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/TlsFakeSet.sh -O TlsFakeSet.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/nginxset.sh -O nginxset.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-xray.sh -O install-xray.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-trojan-after.sh -O install-trojan-after.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-trojango-after.sh -O install-trojango-after.sh
@@ -25,7 +26,8 @@ function getall(){
 }
 
 function get_cert_bbr(){
-    bash get-cert-web.sh
+    bash TlsFakeSet.sh
+    bash nginxset.sh
     bash bbr.sh
 }
 

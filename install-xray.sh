@@ -168,15 +168,9 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "protocol": "shadowsocks",
       "settings": {
         "method": "chacha20-ietf-poly1305",
-        "password": "barfoo!"
-      },
-      "streamSettings": {
-        "network": "domainsocket",
-        "security": "none",
-        "dsSettings": {
-          "path": "ss",
-          "abstract": true
-        }
+        "password": "barfoo!",
+        "ota": false,
+        "network": "tcp,udp"
       }
     }
   ],
@@ -185,14 +179,10 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "protocol": "freedom"
     },
     {
-      "tag": "ssds",
+      "tag": "ssrr",
       "protocol": "freedom",
-      "streamSettings": {
-        "network": "domainsocket",
-        "dsSettings": {
-          "path": "ss",
-          "abstract": true
-        }
+      "settings": {
+        "redirect": "127.0.0.1:2021"
       }
     }
   ],
@@ -210,7 +200,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "inboundTag": [
           "ddws"
         ],
-        "outboundTag": "ssds"
+        "outboundTag": "ssrr"
       }
     ]
   }
