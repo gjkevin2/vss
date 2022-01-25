@@ -17,6 +17,7 @@ stream {
                 tg.$domain beforetrojango;
                 s.$domain beforess;
                 sx.$domain beforessx;
+                xss.$domain beforexss;
                 www.$domain web;
         }
         upstream beforextls { # remove "Proxy protocol"
@@ -61,6 +62,12 @@ stream {
         upstream ssx {
                 server 127.0.0.1:50203;
         }
+        upstream beforexss {
+                server 127.0.0.1:50313;
+        }
+        upstream xss {
+                server 127.0.0.1:2022;
+        }
         upstream web { # just local port 443
                 server 127.0.0.1:443;
         }
@@ -95,6 +102,10 @@ stream {
         server {
                 listen 127.0.0.1:50213 proxy_protocol;
                 proxy_pass ssx;   # redirect to ssx
+        }
+        server {
+                listen 127.0.0.1:50313 proxy_protocol;
+                proxy_pass xss;   # redirect to ssx
         }
 }
 EOF
@@ -216,5 +227,6 @@ EOF
 sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
 sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
 # (re)start nginx
+systemctl daemon-reload
 systemctl stop nginx
 systemctl start nginx
