@@ -158,7 +158,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "port": 2021,
       "protocol": "shadowsocks",
       "settings": {
-        "method": "chacha20-ietf-poly1305",
+        "method": "none",
         "password": "barfoo!"
       },
       "streamSettings": {
