@@ -142,9 +142,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "port": 2022,
       "protocol": "dokodemo-door",
       "settings": {
-        "address": "v1.mux.cool",
-        "network": "tcp,udp",
-        "followRedirect": false
+        "address": "v1.mux.cool"
       },
       "streamSettings": {
         "network": "ws",
@@ -153,14 +151,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
           "path": "/uri"
         }
       },
-      "tag": "ddws",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ]
-      }
+      "tag":"ddws"
     },
     {
       "listen": "127.0.0.1",
@@ -199,13 +190,6 @@ cat > /usr/local/etc/xray/config.json <<-EOF
   ],
   "routing": {
     "rules": [
-      {
-        "type": "field",
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "blocked"
-      },
       {
         "type": "field",
         "inboundTag": "ddws",

@@ -133,16 +133,33 @@ cat > /usr/local/etc/xray/config.json <<-EOF
     {
       "listen": "127.0.0.1",
       "port": 2022,
-      "protocol": "shadowsocks",
+      "protocol": "dokodemo-door",
       "settings": {
-        "method":"chacha20-ietf-poly1305",
-        "password":"barfoo!"
+        "address": "v1.mux.cool"
       },
       "streamSettings": {
         "network": "ws",
         "security": "none",
         "wsSettings": {
           "path": "/uri"
+        }
+      },
+      "tag":"ddws"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 2021,
+      "protocol": "shadowsocks",
+      "settings": {
+        "method": "chacha20-ietf-poly1305",
+        "password": "barfoo!"
+      },
+      "streamSettings": {
+        "network": "domainsocket",
+        "security": "none",
+        "dsSettings": {
+          "path": "ss",
+          "abstract": true
         }
       }
     }
@@ -151,8 +168,28 @@ cat > /usr/local/etc/xray/config.json <<-EOF
     {
       "protocol": "freedom",
       "settings": {}
+    },
+    {
+      "tag": "ssds",
+      "protocol": "freedom",
+      "streamSettings": {
+        "network": "domainsocket",
+        "dsSettings": {
+          "path": "ss",
+          "abstract": true
+        }
+      }
     }
-  ]
+  ],
+  "routing": {
+    "rules": [
+      {
+        "type": "field",
+        "inboundTag": "ddws",
+        "outboundTag": "ssds"
+      }
+    ]
+  }
 }
 EOF
 systemctl stop xray
