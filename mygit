@@ -1,0 +1,49 @@
+#!/bin/bash
+#$1 is the work dir;$2 is the git store name
+if [ ! -n "$1" ];then
+    cdir="."
+else
+    cdir="$1"
+fi
+
+if [ ! -n "$2" ];then
+    localdir=$(pwd)
+    rbranch=${localdir##*/}
+else
+    rbranch="$2"
+fi
+
+cd $cdir
+if [ ! -d $cdir/.git ];then
+    git init
+    git config --global user.name "gjkevin"
+    git config --global user.email "gjkevin2@163.com"
+    git config --global pull.rebase false
+    git config --global credential.helper store
+    git config --global init.defaultBranch master
+    giturl=https://gitee.com/gjkevin/$rbranch.git
+    git remote add origin $giturl
+fi
+
+#$3 ==1 means  using remote code to cover local code
+#if [ "$3" == "1" ];then
+#    git fetch
+#    git reset --hard origin/master
+#    exit
+#else
+#    git config master.rebase true
+#fi
+
+#assert the empty folder,exclude shadow files
+if [ ! "$(ls $cdir)" ];then
+    git pull origin master
+else
+    #push to gitee
+    git add $cdir
+    git commit -m "update"
+    #git fetch
+    #git merge origin/master
+    #git rebase --continue
+    git pull origin master --allow-unrelated-histories
+    git push origin master
+fi
