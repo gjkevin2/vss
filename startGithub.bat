@@ -22,7 +22,7 @@ if not exist ".git" (
     git config --global init.defaultBranch master
     git remote add origin https://github.com/gjkevin2/!bdir!.git
     rem add token to repos
-    git remote set-url origin https://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@github.com/gjkevin2/!bdir!.git/
+    git remote set-url origin https://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@github.com/gjkevin2/!bdir!.git/
 )
 
 call :git
