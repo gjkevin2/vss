@@ -24,48 +24,8 @@ if test -s $HOME/cert/fullchain.cer; then
         "$trojan_passwd"
     ],
     "ssl": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
         "cert": "/root/.acme.sh/$servername/fullchain.cer",
         "key": "/root/.acme.sh/$servername/$servername.key",
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
         "sni": "tg.$servername"
     },
     "router":{

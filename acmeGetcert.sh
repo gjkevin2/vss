@@ -13,14 +13,6 @@ read domain
 
 #installcert
 <<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 #~/.acme.sh/acme.sh --installcert -d $domain \
         #--key-file   $HOME/cert/privkey.key \
         #--fullchain-file $HOME/cert/fullchain.cer \
@@ -32,22 +24,6 @@ read domain
         #--fullchain-file /usr/share/nginx/html/RSS/fullchain.pem \
         #--reloadcmd  "service nginx force-reload"
 =======
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
 ~/.acme.sh/acme.sh --installcert -d $domain \
         --key-file   $HOME/cert/privkey.key \
         --fullchain-file $HOME/cert/fullchain.cer \
@@ -58,30 +34,6 @@ read domain
         --key-file   /usr/share/nginx/html/RSS/privkey.pem \
         --fullchain-file /usr/share/nginx/html/RSS/fullchain.pem \
         --reloadcmd  "service nginx force-reload"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
 >>>>>>> 7280d897a15cea412781d849609ec04c493c7462
 
 # restart flask

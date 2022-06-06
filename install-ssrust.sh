@@ -40,39 +40,7 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "method":"none",
             "fast_open":true,
             "plugin":"v2ray-plugin",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
             "plugin_opts":"server;tls;path=/uri;host=s.$servername;cert=/root/.acme.sh/$servername/fullchain.cer,key=/root/.acme.sh/$servername/$servername.key"
-=======
-            "plugin_opts":"server;tls;path=/uri;host=s.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-            "plugin_opts":"server;tls;path=/uri;host=s.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-            "plugin_opts":"server;tls;path=/uri;host=s.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-            "plugin_opts":"server;tls;path=/uri;host=s.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-            "plugin_opts":"server;tls;path=/uri;host=s.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-            "plugin_opts":"server;tls;path=/uri;host=s.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-            "plugin_opts":"server;tls;path=/uri;host=s.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-            "plugin_opts":"server;tls;path=/uri;host=s.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
         },
         {
             "address": "127.0.0.1",
@@ -82,30 +50,6 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "fast_open":true,
             "plugin":"xray-plugin",
             "plugin_opts":"server;mode=grpc;tls;host=sx.$servername;cert=/root/cert/fullchain.cer;key=/root/cert/privkey.key"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
 >>>>>>> 7280d897a15cea412781d849609ec04c493c7462
         }
     ]

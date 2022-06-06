@@ -36,48 +36,8 @@ cat > /usr/local/etc/xray/config.json <<-EOF
           ],
           "certificates": [
             {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
               "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
               "keyFile": "/root/.acme.sh/$servername/$servername.key"
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
             }
           ]
         }
@@ -130,48 +90,8 @@ cat > /usr/local/etc/xray/config.json <<-EOF
           ],
           "certificates": [
             {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
               "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
               "keyFile": "/root/.acme.sh/$servername/$servername.key"
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
             }
           ]
         }

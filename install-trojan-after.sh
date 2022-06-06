@@ -1,49 +1,9 @@
 #!/bin/bash
 systempwd="/usr/lib/systemd/system/"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 testdomain=`sed -n "/preread_server/{n;p;}" /etc/nginx/nginx.conf |awk -F ' ' '{print $1}'`
 servername=${testdomain#*.}
 apt -y install net-tools socat wget unzip zip curl tar >/dev/null 2>&1
 if test -s /root/.acme.sh/$servername/fullchain.cer; then
-=======
-apt -y install net-tools socat wget unzip zip curl tar >/dev/null 2>&1
-if test -s $HOME/cert/fullchain.cer; then
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-apt -y install net-tools socat wget unzip zip curl tar >/dev/null 2>&1
-if test -s $HOME/cert/fullchain.cer; then
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-apt -y install net-tools socat wget unzip zip curl tar >/dev/null 2>&1
-if test -s $HOME/cert/fullchain.cer; then
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-apt -y install net-tools socat wget unzip zip curl tar >/dev/null 2>&1
-if test -s $HOME/cert/fullchain.cer; then
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-apt -y install net-tools socat wget unzip zip curl tar >/dev/null 2>&1
-if test -s $HOME/cert/fullchain.cer; then
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-apt -y install net-tools socat wget unzip zip curl tar >/dev/null 2>&1
-if test -s $HOME/cert/fullchain.cer; then
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-apt -y install net-tools socat wget unzip zip curl tar >/dev/null 2>&1
-if test -s $HOME/cert/fullchain.cer; then
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-apt -y install net-tools socat wget unzip zip curl tar >/dev/null 2>&1
-if test -s $HOME/cert/fullchain.cer; then
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
     cd /usr/src
     lurl='https://api.github.com/repos/trojan-gfw/trojan/releases/latest'
     latest_version=`curl $lurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
@@ -64,48 +24,8 @@ if test -s $HOME/cert/fullchain.cer; then
     ],
     "log_level": 1,
     "ssl": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
         "cert": "/root/.acme.sh/$servername/fullchain.cer",
         "key": "/root/.acme.sh/$servername/$servername.key",
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
-=======
-        "cert": "$HOME/cert/fullchain.cer",
-        "key": "$HOME/cert/privkey.key",
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
         "key_password": "",
         "cipher_tls13":"TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
         "prefer_server_cipher": true,
