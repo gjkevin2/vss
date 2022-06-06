@@ -1,0 +1,54 @@
+#!/bin/bash
+#$1 is the work dir;$2 is the git store name
+if [ ! -n "$1" ];then
+    cdir="."
+else
+    cdir="$1"
+fi
+
+if [ ! -n "$2" ];then
+    localdir=$(pwd)
+    rbranch=${localdir##*/}
+    if [ "${rbranch:0:6}" == "github" ];then
+        rbranch=${rbranch:6}
+    fi
+else
+    rbranch="$2"
+fi
+
+cd $cdir
+if [ ! -d $cdir/.git ];then
+    git init
+    git config --global user.name "gjkevin2"
+    git config --global user.email "gjkevin2@163.com"
+    git config --local http.proxy socks5://127.0.0.1:10808
+    git config --local https.proxy socks5://127.0.0.1:10808
+    git config --global credential.helper store
+    git config --global init.defaultBranch master
+    git remote add origin https://github.com/gjkevin2/$rbranch.git
+    # add token to repos
+    git remote set-url origin https://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@github.com/gjkevin2/$rbranch.git/
+fi
+
+#$3 ==1 means  using remote code to cover local code
+#if [ "$3" == "1" ];then
+#    git fetch
+#    git reset --hard origin/master
+#    exit
+#else
+#    git config master.rebase true
+#fi
+
+#assert the empty folder,exclude shadow files
+if [ ! "$(ls $cdir)" ];then
+    git pull origin master
+else
+    #push to gitee
+    git add $cdir
+    git commit -m "update"
+    #git fetch
+    #git merge origin/master
+    #git rebase --continue
+    git pull origin master --allow-unrelated-histories
+    git push origin master
+fi
