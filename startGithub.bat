@@ -18,11 +18,10 @@ if not exist ".git" (
     git config --global user.email "gjkevin2@163.com"
     git config --local http.proxy socks5://127.0.0.1:10808
     git config --local https.proxy socks5://127.0.0.1:10808
-    git config --global credential.helper store
     git config --global init.defaultBranch master
     git remote add origin https://github.com/gjkevin2/!bdir!.git
     rem add token to repos
-    git remote set-url origin https://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@github.com/gjkevin2/!bdir!.git/
+    git remote set-url origin git@github.com:gjkevin2/!bdir!.git
 )
 
 call :git
