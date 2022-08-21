@@ -12,7 +12,6 @@ read domain
 ~/.acme.sh/acme.sh --issue --dns dns_namesilo --dnssleep 900 -d $domain -d *.$domain 
 
 #installcert
-<<<<<<< HEAD
 #~/.acme.sh/acme.sh --installcert -d $domain \
         #--key-file   $HOME/cert/privkey.key \
         #--fullchain-file $HOME/cert/fullchain.cer \
@@ -23,18 +22,6 @@ read domain
         #--key-file   /usr/share/nginx/html/RSS/privkey.pem \
         #--fullchain-file /usr/share/nginx/html/RSS/fullchain.pem \
         #--reloadcmd  "service nginx force-reload"
-=======
-~/.acme.sh/acme.sh --installcert -d $domain \
-        --key-file   $HOME/cert/privkey.key \
-        --fullchain-file $HOME/cert/fullchain.cer \
-        --reloadcmd  "service nginx force-reload"
-
-#for Rss
-~/.acme.sh/acme.sh --installcert -d $domain \
-        --key-file   /usr/share/nginx/html/RSS/privkey.pem \
-        --fullchain-file /usr/share/nginx/html/RSS/fullchain.pem \
-        --reloadcmd  "service nginx force-reload"
->>>>>>> 7280d897a15cea412781d849609ec04c493c7462
 
 # restart flask
 source ~/dist/venv/bin/activate

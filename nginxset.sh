@@ -74,7 +74,7 @@ stream {
         }
         server {
                 listen $serverip:443      reuseport;  # listen server port 443
-                # listen [::]:443 reuseport;
+                listen [::]:443 reuseport;
                 proxy_pass      \$stream_map;
                 ssl_preread     on;
                 proxy_protocol on;                    # start Proxy protocol
@@ -112,6 +112,7 @@ cd /etc/nginx/conf.d
 cat > $domain.conf <<-EOF
 server {
         listen 80;
+        listen [::]:80;
         server_name $domain;        
         location / {
                 root /usr/share/nginx/html;
@@ -123,16 +124,19 @@ server {
 }
 server {
         listen 80;
+        listen [::]:80;
         server_name x.$domain;
         return 301 http://$domain;
 }
 server {
         listen 80;
+        listen [::]:80;
         server_name tx.$domain;
         return 301 http://$domain;
 }
 server {
         listen 80;
+        listen [::]:80;
         server_name vw.$domain;
         return 301 http://$domain;
 }
@@ -165,6 +169,7 @@ server {
 }
 server {
         listen 80;
+        listen [::]:80;
         server_name g.$domain;
         return 301 http://$domain;
 }
@@ -199,21 +204,25 @@ server {
 }
 server {
         listen 80;
+        listen [::]:80;
         server_name t.$domain;
         return 301 http://$domain;
 }
 server {
         listen 80;
+        listen [::]:80;
         server_name tg.$domain;
         return 301 http://$domain;
 }
 server {
         listen 80;
+        listen [::]:80;
         server_name s.$domain;
         return 301 http://$domain;
 }
 server {
         listen 80;
+        listen [::]:80;
         server_name sx.$domain;
         return 301 http://$domain;
 }
