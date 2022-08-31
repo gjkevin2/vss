@@ -1,3 +1,4 @@
+
 #!/bin/bash
 #安装xray 和最新发行的 geoip.dat 和 geosite.dat,
 bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install -u root
