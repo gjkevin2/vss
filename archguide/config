@@ -1,0 +1,126 @@
+[colors]
+;background color the fisrt 2 digital means 40% transparent
+background = #66222222
+background-alt = #444
+foreground = #dfdfdf
+foreground-alt = #555
+primary = #ffb52a
+secondary = #e60053
+alert = #bd2c40
+
+[bar/example]
+width = 100%
+height = 27
+radius = 6.0
+fixed-center = false
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 0 
+line-color = #f00
+
+border-size = 4 
+border-color = #00000000
+
+padding-left = 0
+padding-right = 0
+
+module-margin-left = 0 
+module-margin-right = 0
+
+font-0 = fixed:pixelsize=12;1
+;font-0 = "Sarasa Fixed SC:style=Regular:pixelsize=12;1"
+font-1 = "Font Awesome 6 Free:style=Solid:pixelsize=12;1"
+;if you want to modify some icons ,please open https://fontawesome.com/icons?d=gallery&m=free ; 
+;then select an icon, it will start a new page, click the icons under the big name font, it will copy the glyph. now, you can paste
+
+modules-left = bspwm
+modules-center = mpd
+modules-right = wlan date alsa lock
+
+;tray-position = right
+;tray-padding = 2
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[module/date]
+type = internal/date
+interval = 60
+date = %a %d %b
+;time = %l:%M %p
+time = %R
+label =  %date%  %time%
+format-padding = 1
+
+[module/alsa]
+type = internal/alsa
+format-volume = <ramp-volume> <label-volume>
+format-muted =  0%
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+
+[module/wlan]
+type = internal/network
+interface = wlp0s26u1u2
+interval = 3.0
+format-connected = <label-connected>
+label-connected = %upspeed:5%  %downspeed:5% 
+format-disconnected = <label-disconnected>
+label-disconnected = not connected
+label-disconnected-foreground = #66ffffff
+format-padding = 0
+
+[module/lock]
+type = custom/script
+exec = echo "  "
+click-left = i3lock -i ~/.config/polybar/i3lock.png
+format-padding = 1
+
+[module/bspwm]
+type = internal/bspwm
+
+label-focused = %index%
+label-focused-background = ${colors.background-alt}
+label-focused-underline= ${colors.primary}
+label-focused-padding = 2
+
+label-occupied = %index%
+label-occupied-padding = 2
+
+label-urgent = %index%!
+label-urgent-background = ${colors.alert}
+label-urgent-padding = 2
+
+label-empty = %index%
+label-empty-foreground = ${colors.foreground-alt}
+label-empty-padding = 2
+
+[module/mpd]
+type = internal/mpd
+host = 127.0.0.1
+port = 6600
+interval = 2
+format-online = <icon-prev> <icon-seekb> <toggle> <icon-seekf> <icon-next> <icon-repeat> <icon-random> <label-time> <label-song>
+label-song =  %artist% - %title%
+label-offline = mpd is offline
+icon-play = 
+icon-pause = 
+icon-stop = 
+icon-prev = 
+icon-next = 
+icon-seekb = 
+icon-seekf = 
+icon-random = 
+icon-repeat = 
+
+toggle-on-foreground = #ff
+toggle-off-foreground = #55
+
+;bar-progress-width = 8
+;bar-progress-indicator = |
+;bar-progress-fill = ─
+;bar-progress-empty = ─
