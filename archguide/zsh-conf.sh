@@ -1,7 +1,7 @@
 #!/bin/bash
 cd /opt
 if [ ! -e "prompt_fish.sh" ];then
-    sudo wget https://gitee.com/gjkevin/dfiles/raw/master/prompt_fish.sh
+    sudo wget https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/prompt_fish.sh
 fi
 sudo pacman -S --noconfirm zsh
 if [ ! -e ~/pwd ];then

@@ -25,9 +25,13 @@ reflector --country China --age 24 --protocol https --sort rate --save /mnt/etc/
 echo "$ura">/mnt/newu
 echo "$pswd">>/mnt/newu
 
-curl 'https://gitee.com/gjkevin/dfiles/raw/master/archguide/chrootins.sh' >/mnt/chrootins.sh
-chmod +x /mnt/chrootins.sh
+# download all scripts
+curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/chrootins.sh' >/mnt/chrootins.sh
+curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/rootins.sh' >/mnt/rootins.sh
+curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/aurdl.sh' >/mnt/aurdl.sh
+curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/uins.sh' >/mnt/uins.sh
 
+chmod +x /mnt/chrootins.sh
 arch-chroot /mnt /chrootins.sh
 
 echo -e "\e[33mplease reject the boot medium when shutdown complete,then boot again,press Enter to shutdown\e[0m"

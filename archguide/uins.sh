@@ -1,19 +1,19 @@
 #!/bin/bash
 cd /opt
-echo $(cat ~/pwd)|sudo -S wget https://gitee.com/gjkevin/dfiles/raw/master/archguide/prompt_fish.sh
+echo $(cat ~/pwd)|sudo -S wget https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/prompt_fish.sh
 sudo tee -a /etc/bash.bashrc >/dev/null <<-EOF
 source /opt/prompt_fish.sh
 EOF
 echo -e "source /opt/prompt_fish.sh">>~/.bashrc
 source ~/.bashrc
 #zsh
-bash <(curl 'https://gitee.com/gjkevin/dfiles/raw/master/archguide/zsh-conf.sh')
+bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/zsh-conf.sh')
 
 # install wifi driver
 # yay -S --noconfirm rtl8821cu-dkms-git
 
 #dwm
-bash <(curl 'https://gitee.com/gjkevin/dfiles/raw/master/archguide/bspwmins.sh')
+bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/bspwmins.sh')
 
 yay -S --noconfirm fcitx5-im
 cat >>~/.pam_environment<<-EOF
@@ -65,8 +65,8 @@ pip install wheel
 sudo pacman -S --noconfirm tk
 
 #config mpv
-curl --create-dirs -o ~/.config/mpv/input.conf https://gitee.com/gjkevin/dfiles/raw/master/archguide/input.conf
-curl --create-dirs -o ~/.config/mpv/mpv.conf https://gitee.com/gjkevin/dfiles/raw/master/archguide/mpv.conf
+curl --create-dirs -o ~/.config/mpv/input.conf https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/input.conf
+curl --create-dirs -o ~/.config/mpv/mpv.conf https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/mpv.conf
 
 #set systemctl for user
 cat>~/.runonce.sh<<-EOF
@@ -82,7 +82,7 @@ EOF
 echo "bash ~/.runonce.sh">>~/.profile
 
 #vim-common
-bash <(curl 'https://gitee.com/gjkevin/dfiles/raw/master/archguide/selective-ins/vimcommon.sh')
+bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/selective-ins/vimcommon.sh')
 
 #vim for c++
 #bash <(curl 'https://gitee.com/gjkevin/dfiles/raw/master/archguide/selective-ins/vimforcpp.sh')
@@ -96,7 +96,7 @@ bash <(curl 'https://gitee.com/gjkevin/dfiles/raw/master/archguide/selective-ins
 # yay -S --noconfirm xdman
 
 # install sublime-text
-bash <(curl 'https://gitee.com/gjkevin/dfiles/raw/master/archguide/subl-ins.sh')
+bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/subl-ins.sh')
 
 #install vscode
 # yay -S --noconfirm visual-studio-code-bin

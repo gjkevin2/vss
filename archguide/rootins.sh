@@ -40,7 +40,7 @@ pacman -S --noconfirm archlinuxcn-keyring
 pacman -S --noconfirm yay bash-completion
 
 #aur speed up
-bash <(curl https://gitee.com/gjkevin/dfiles/raw/master/archguide/aurdl.sh)
+bash /aurdl.sh
 
 pacman -S --noconfirm xf86-video-vesa xorg
 
@@ -52,7 +52,7 @@ pacman -S --noconfirm pacman-contrib wget usbutils mlocate python-pip expect chr
 updatedb
 # no gui proxy
 pacman -S --noconfirm xray
-curl -o /etc/xray/client.json https://gitee.com/gjkevin/vss/raw/master/clientlite.json
+curl -o /etc/xray/client.json https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/clientlite.json
 sed -i "s/xtls-rprx-direct/xtls-rprx-splice/" /etc/xray/client.json
 systemctl enable xray
 # install printer
@@ -65,7 +65,6 @@ echo "   ServerAliveCountMax 5"|tee -a  /etc/ssh/ssh_config
 echo "   ServerAliveInterval 30"|tee -a  /etc/ssh/ssh_config
 systemctl restart sshd
 
-curl 'https://gitee.com/gjkevin/dfiles/raw/master/archguide/uins.sh' >/uins.sh
 su $ura -s /bin/bash /uins.sh
 
 reboot

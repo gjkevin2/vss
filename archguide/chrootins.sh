@@ -79,7 +79,6 @@ cat >/etc/systemd/system/getty@tty1.service.d/override.conf<<-EOF
 ExecStart=
 ExecStart=-/usr/bin/agetty --autologin root --noclear %I \$TERM
 EOF
-curl 'https://gitee.com/gjkevin/dfiles/raw/master/archguide/rootins.sh' >/rootins.sh
 #echo "bash /rootins.sh">>/etc/profile
 echo "bash /rootins.sh">>/root/.profile
 exit

@@ -26,7 +26,7 @@ sed -i 's/@space/d/' ~/.config/sxhkd/sxhkdrc
 # virtual use urxvt, actual use alacritty.
 # you can use ( ls -1 /dev/disk/by-id/|grep "QMEU" ) to find virtual machine too
 systemd-detect-virt >/dev/null 2>&1 && {
-    bash <(curl https://gitee.com/gjkevin/dfiles/raw/master/archguide/urxvtins.sh)
+    bash <(curl https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/urxvtins.sh)
     # virtualbox Guest Additions
     sudo pacman -S --noconfirm virtualbox-guest-utils
     sudo systemctl enable vboxservice
@@ -127,7 +127,7 @@ polybar example &
 echo "Polybar launched..."
 EOF
 chmod +x launch.sh
-curl https://gitee.com/gjkevin/dfiles/raw/master/archguide/config>./config
+curl https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/config>./config
 #mod interface
 int=$(ip addr|grep "state UP"|awk -F ":" '{print $2}'|head -n1)
 sed -r -i "s/(^interface\s+=)(.*)/\1$int/" ./config
@@ -154,7 +154,7 @@ sed -i "/bspc node -"{"f,s"}" "{"west,south,north,east"}"/a\\\n# Flip layout ver
 # sed -r -i "0,/example/{s/(^background\s+=\s+)(.*)/\1#66000000/}" ~/.config/polybar/config
 # install mpd and show on polybar,if you run this on chroot
 # you'd run a self-del script to enable systemd when restart, e.x. run this script in parent script
-bash <(curl https://gitee.com/gjkevin/dfiles/raw/master/archguide/mpdins.sh)
+bash <(curl https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/mpdins.sh)
 
 mkdir ~/.config/picom
 cat>~/.config/picom/picom.conf<<-EOF
