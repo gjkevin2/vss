@@ -12,7 +12,7 @@ mkfs.ext4 $lp
 mount $lp /mnt
 
 # curl 'https://archlinux.org/mirrorlist/?country=CN' | sed -e 's/#Server/Server/' -e '/^#/d'>/etc/pacman.d/mirrorlist
-echo -e "Server = http://mirrors.aliyun.com/archlinux/\$repo/os/\$arch">/etc/pacman.d/mirrorlist
+echo -e "Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch">/etc/pacman.d/mirrorlist
 #echo -e "Server = http://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch">/etc/pacman.d/mirrorlist
 pacstrap /mnt base base-devel linux linux-firmware
 genfstab -U /mnt >> /mnt/etc/fstab
