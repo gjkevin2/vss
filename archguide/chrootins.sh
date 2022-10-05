@@ -32,7 +32,7 @@ pacman -S --noconfirm iwd  # just wireless
 systemctl enable iwd
 mkdir /etc/iwd 2>/dev/null
 # chain to /etc/resolv.conf
-rd -rf /etc/resolv.conf
+rm -rf /etc/resolv.conf
 ln -sf /run/systemd/network/resolv.conf /etc/resolv.conf
 cat >/etc/iwd/main.conf<<-EOF
 [General]
