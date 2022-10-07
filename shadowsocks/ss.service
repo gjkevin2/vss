@@ -1,0 +1,12 @@
+[Unit]
+Description=ss Service
+After=network.target nss-lookup.target
+
+[Service]
+User=root
+NoNewPrivileges=true
+ExecStart=/usr/local/share/shadowsocks/sslocal -c /usr/local/share/shadowsocks/config.json --acl /usr/local/share/shadowsocks/gfwlist.acl
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

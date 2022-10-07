@@ -1,0 +1,14 @@
+{
+    "servers": [
+        {
+            "address": "2607:fcd0:100:b100:0000:0000:94eb:753e",
+            "port": 50303,
+            "password": "barfoo!",
+            "method": "aes-256-gcm"
+        }
+    ],
+    // ONLY FOR `sslocal`
+    // Delete these lines if you are running `ssserver` or `ssmanager`
+    "local_port": 10808,
+    "local_address": "127.0.0.1"
+}
