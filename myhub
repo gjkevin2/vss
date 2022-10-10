@@ -21,11 +21,11 @@ if [ ! -d $cdir/.git ];then
     git init
     git config --global user.name "gjkevin2"
     git config --global user.email "gjkevin2@163.com"
-    git config --local http.proxy socks5://127.0.0.1:10808
-    git config --local https.proxy socks5://127.0.0.1:10808
-    git config --global init.defaultBranch master 
+    # git config --local http.proxy http://127.0.0.1:10809
+    # git config --local https.proxy http://127.0.0.1:10809
+    git config --global init.defaultBranch master
     git remote add origin https://github.com/gjkevin2/$rbranch.git
-    git remote set-url origin https://gjkevin2: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@github.com/gjkevin2/$rbranch.git/
+    git remote set-url origin git@github.com:gjkevin2/$rbranch.git
 fi
 
 #$3 ==1 means  using remote code to cover local code
