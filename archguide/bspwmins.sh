@@ -23,19 +23,16 @@ sed -i "/window_gap/a\bspc config focus_follows_pointer true\nbspc config ignore
 # vim ~/.config/sxhkd/sxhkdrc
 sed -i 's/@space/d/' ~/.config/sxhkd/sxhkdrc
 
-# virtual use urxvt, actual use alacritty.
-# you can use ( ls -1 /dev/disk/by-id/|grep "QMEU" ) to find virtual machine too
-systemd-detect-virt >/dev/null 2>&1 && {
-    bash <(curl https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/urxvtins.sh)
-    # virtualbox Guest Additions
-    sudo pacman -S --noconfirm virtualbox-guest-utils
-    sudo systemctl enable vboxservice
-}||{
-    sudo pacman -S --noconfirm alacritty
-    sed -i "/super + Return/{N;s/urxvt/alacritty/}" ~/.config/sxhkd/sxhkdrc
+# virtualbox Guest Additions
+sudo pacman -S --noconfirm virtualbox-guest-utils
+sudo systemctl enable vboxservice
 
-    #alacritty config
-    cat >~/.config/alacritty.yml<<\EOF
+# terminal
+sudo pacman -S --noconfirm alacritty
+sed -i "/super + Return/{N;s/urxvt/alacritty/}" ~/.config/sxhkd/sxhkdrc
+
+#alacritty config
+cat >~/.config/alacritty.yml<<\EOF
 env:
     TERM: xterm-256color
 
@@ -106,7 +103,6 @@ key_bindings:
 - { key: Home,      mods: Shift,         action: ScrollToTop,    mode: ~Alt  }
 - { key: End,       mods: Shift,         action: ScrollToBottom, mode: ~Alt  }
 EOF
-}
 
 yay -S --noconfirm polybar
 sudo pacman -S --noconfirm ttf-font-awesome i3lock
