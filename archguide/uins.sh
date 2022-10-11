@@ -130,12 +130,13 @@ sed -r -i 's/(^font-0 = )(.*)/\1"Source Han Serif CN:style=Medium:pixelsize=12;1
 #set alacritty
 if [ -e ~/.config/alacritty.yml ];then
     # download url: https://github.com/googlefonts/Inconsolata/releases/tag/v3.000
-    fc-list|grep "Inconsolata"||(
-    sudo wget -P /usr/share/fonts/TTF https://gitee.com/gjkevin/dfiles/attach_files/811409/download/Inconsolata-Regular.ttf
+    fc-list|grep "Inconsolata NF"||(
+    # sudo wget -P /usr/share/fonts/TTF https://gitee.com/gjkevin/dfiles/attach_files/811409/download/Inconsolata-Regular.ttf
+    sudo wget -P /usr/share/fonts/TTF https://gitee.com/gjkevin/dfiles/releases/download/v0.3/Inconsolata%20Regular%20Nerd%20Font%20Complete%20Windows%20Compatible.ttf
     sudo fc-cache -fv
     )
     #fc-list |grep "YaHei_Consolas_Hybrid" >/dev/null&&sed -i "s/\(family: \).*/\1YaHei Consolas Hybrid/" ~/.config/alacritty.yml
-    sed -i "s/\(family: \).*/\1Inconsolata/" ~/.config/alacritty.yml
+    sed -i "s/\(family: \).*/\1Inconsolata NF/" ~/.config/alacritty.yml
 else
     sudo fc-cache -fv
 fi
