@@ -15,6 +15,8 @@ bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/
 #dwm
 bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/bspwmins.sh')
 
+#fcitx5 : chromium need gtk4
+sudo pacman -S --noconfirm gtk4
 yay -S --noconfirm fcitx5-im
 sudo tee -a /etc/profile >/dev/null <<\EOF
 
