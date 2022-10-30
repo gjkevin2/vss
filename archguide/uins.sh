@@ -16,11 +16,11 @@ bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/
 bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/bspwmins.sh')
 
 yay -S --noconfirm fcitx5-im
-cat >>~/.pam_environment<<-EOF
-INPUT_METHOD  DEFAULT=fcitx5
-GTK_IM_MODULE DEFAULT=fcitx5
-QT_IM_MODULE  DEFAULT=fcitx5
-XMODIFIERS    DEFAULT=\@im=fcitx5
+sudo tee -a /etc/profile >/dev/null <<\EOF
+
+XMODIFIERS=@im=fcitx
+GTK_IM_MODULE=fcitx
+QT_IM_MODULE=fcitx
 EOF
 yay -S --noconfirm fcitx5-rime
 yay -S --noconfirm rime-cloverpinyin
