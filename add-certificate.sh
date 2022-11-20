@@ -29,6 +29,7 @@ nl0W2JabJzzkT66XWtG/7RfU6uzjZ2+GKlY6fTp22uMkNgsW5fHDAhtFXESCLWgm
 1ukMOO0nQNmNb6sT+kmGIwnQqTqPpJHfRVpoTIKV7bSEGRdsnV8=
 -----END CERTIFICATE-----
 EOF
+cp ~/.acme.sh/flyrain.xyz/fullchain.cer ~/cert/
 
 cat >~/.acme.sh/flyrain.xyz/flyrain.xyz.key <<\EOF
 -----BEGIN PRIVATE KEY-----
@@ -60,3 +61,4 @@ YkAs2b28lXez7hHxmXgF5mIhe1je50YrhT5klCL8wzjC9/pFzJZxV+MYA5giKRJ5
 U/aYLnRho4y/YqErjL3LcZY=
 -----END PRIVATE KEY-----
 EOF
+cp ~/.acme.sh/flyrain.xyz/flyrain.xyz.key ~/cert/privkey.key
