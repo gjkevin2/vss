@@ -123,10 +123,10 @@ polybar example &
 echo "Polybar launched..."
 EOF
 chmod +x launch.sh
-curl https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/config>./config
+curl https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/config>./config.ini
 #mod interface
 int=$(ip addr|grep "state UP"|awk -F ":" '{print $2}'|head -n1)
-sed -r -i "s/(^interface\s+=)(.*)/\1$int/" ./config
+sed -r -i "s/(^interface\s+=)(.*)/\1$int/" ./config.ini
 #mod i3lock
 wget -O i3lock.jpg https://browser9.qhimg.com/bdr/__100/t019fd908f724f51900.jpg
 bash -c 'for i in *.jpg; do convert "$i" "${i%.jpg}.png"; done'
