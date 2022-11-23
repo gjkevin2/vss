@@ -15,15 +15,13 @@ bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/
 #dwm
 bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/bspwmins.sh')
 
-# fcitx5:
-yay -S --noconfirm fcitx5-im
-cat >>~/.xprofile<<\EOF
-export XMODIFIERS=@im=fcitx
-export GTK_IM_MODULE=fcitx
-export QT_IM_MODULE=fcitx
-EOF
 # install and config fcitx5
-yay -S --noconfirm fcitx5-rime
+yay -S --noconfirm fcitx5-rime fcitx5-gtk fcitx5-qt
+cat >>~/.xprofile<<\EOF
+export QT_IM_MODULE=fcitx
+export GTK_IM_MODULE=fcitx
+export XMODIFIERS="@im=fcitx"
+EOF
 yay -S --noconfirm rime-cloverpinyin
 mkdir -p ~/.local/share/fcitx5/rime/
 cat >~/.local/share/fcitx5/rime/default.custom.yaml<<-EOF
