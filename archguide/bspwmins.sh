@@ -184,7 +184,7 @@ sudo usermod -aG storage $(whoami)
 
 # no need to start xdman, it will be start by the browser plugins when you want to download
 #sed -i "/sxhkd/a\$HOME\/.config\/polybar\/launch.sh & fcitx5 & qv2ray &\npicom &" ~/.config/bspwm/bspwmrc
-sed -i "/sxhkd/a\$HOME\/.config\/polybar\/launch.sh & fcitx5 &\npicom --experimental-backends -f &" ~/.config/bspwm/bspwmrc
+sed -i "/sxhkd/a\$HOME\/.config\/polybar\/launch.sh & fcitx5 &\npicom -f &" ~/.config/bspwm/bspwmrc
 echo -e "bspc rule -a xdman-Main state=floating\nbspc rule -a Pcmanfm desktop='^3'\nbspc rule -a Sublime_text desktop='^4'">>~/.config/bspwm/bspwmrc
 echo -e "bspc rule -a Viewnior state=floating\nbspc rule -a Code desktop='^5'">>~/.config/bspwm/bspwmrc
 # sudo pacman -S archlinux-wallpaper
