@@ -29,7 +29,7 @@ sudo fc-cache -fv
 #wget -P ~/.config/sublime-text/Local/ https://gitee.com/gjkevin/dfiles/attach_files/824858/download/License.sublime_license
 
 #config
-pip install flake8 yapf
+pip install flake8
 wget $(getlink sublime-text-conf)
 sudo rm -rf ~/.config/sublime-text
 tar xJf sublime-text-conf.tar.xz -C ~/.config
