@@ -42,6 +42,10 @@ pacman -S --noconfirm yay bash-completion
 #aur speed up
 bash /aurdl.sh
 
+pacman -Sy
+pacman -S --noconfirm gvim
+ln -s /usr/bin/vim /usr/bin/vi
+
 pacman -S --noconfirm xf86-video-vesa xorg
 
 #headrs

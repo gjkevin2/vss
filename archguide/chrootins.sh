@@ -9,10 +9,6 @@ ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 # live system's sys time to hardware,default UTC
 hwclock -w
 
-pacman -Sy
-pacman -S --noconfirm gvim
-ln -s /usr/bin/vim /usr/bin/vi
-
 sed -r -i "s/#(en_US.UTF-8 UTF-8)/\1/" /etc/locale.gen
 sed -r -i "s/#(zh_CN.UTF-8 UTF-8)/\1/" /etc/locale.gen
 locale-gen
@@ -67,6 +63,7 @@ systemctl enable systemd-resolved  # enable local DNS
 
 #set root passwd to root
 echo "root:root" |chpasswd
+
 #bootloder
 pacman -S --noconfirm grub os-prober
 cat /proc/cpuinfo|grep "Intel" >/dev/null 2>&1 && pacman -S --noconfirm intel-ucode ||pacman -S --noconfirm amd-ucode
