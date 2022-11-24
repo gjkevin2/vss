@@ -96,6 +96,8 @@ bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/
 
 # install sublime-text
 bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/subl-ins.sh')
+# correct sublimeREPL env
+bash <(curl https://gitee.com/gjkevin/dfiles/raw/master/sublime/python3-REPL.sh)
 
 #install vscode
 # yay -S --noconfirm visual-studio-code-bin
