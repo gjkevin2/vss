@@ -24,12 +24,10 @@ EOF
 # set network
 # pacman -S --noconfirm networkmanager
 # systemctl enable NetworkManager
-pacman -S --noconfirm iwd  # just wireless
-systemctl enable iwd
+pacman -S --noconfirm dhcpcd iwd  # wire + wireless
+systemctl enable dhcpcd iwd
+
 mkdir /etc/iwd 2>/dev/null
-# chain to /etc/resolv.conf
-rm -rf /etc/resolv.conf
-ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 cat >/etc/iwd/main.conf<<-EOF
 [General]
 EnableNetworkConfiguration=true
@@ -37,28 +35,34 @@ EnableNetworkConfiguration=true
 [Network]
 EnableIPv6=true
 EOF
-# wired use systemd-networkd, create a bridge which also good to using mobile usb web 
-cat >/etc/systemd/network/MyBridge.netdev<<-EOF
-[NetDev]
-Name=br0
-Kind=bridge
-EOF
-cat >/etc/systemd/network/bind.network<<-EOF
-[Match]
-Name=en*
 
-[Network]
-Bridge=br0
-EOF
-cat >/etc/systemd/network/mybridge.network<<-EOF
-[Match]
-Name=br0
+# use systemd-networkd
+# # chain to /etc/resolv.conf
+# rm -rf /etc/resolv.conf
+# ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
-[Network]
-DHCP=yes
-EOF
-systemctl enable systemd-networkd
-systemctl enable systemd-resolved  # enable local DNS 
+# create a bridge which also good to using mobile usb web 
+# cat >/etc/systemd/network/MyBridge.netdev<<-EOF
+# [NetDev]
+# Name=br0
+# Kind=bridge
+# EOF
+# cat >/etc/systemd/network/bind.network<<-EOF
+# [Match]
+# Name=en*
+
+# [Network]
+# Bridge=br0
+# EOF
+# cat >/etc/systemd/network/mybridge.network<<-EOF
+# [Match]
+# Name=br0
+
+# [Network]
+# DHCP=yes
+# EOF
+# systemctl enable systemd-networkd
+# systemctl enable systemd-resolved  # enable local DNS 
 
 
 #set root passwd to root
