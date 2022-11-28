@@ -22,10 +22,7 @@ sed -r -i "s/(window_gap\s+)12/\1 2/" ~/.config/bspwm/bspwmrc
 sed -i "/window_gap/a\bspc config focus_follows_pointer true\nbspc config ignore_ewmh_focus true\n\nbspc config focused_border_color \"#ff79c6\"\nbspc config normal_border_color \"#44475a\"\nbspc config active_border_color \"#bd93f9\"\nbspc config presel_feedback_color \"#6272a4\"" ~/.config/bspwm/bspwmrc
 # vim ~/.config/sxhkd/sxhkdrc
 sed -i 's/@space/d/' ~/.config/sxhkd/sxhkdrc
-
-# virtualbox Guest Additions
-sudo pacman -S --noconfirm virtualbox-guest-utils
-sudo systemctl enable vboxservice
+echo -e "\e[32mbspwm base configurate successfully\e[0m"
 
 # terminal
 sudo pacman -S --noconfirm alacritty
@@ -145,12 +142,14 @@ sed -i '/bspwm hotkeys/{n;s/#/#\n\n#chromium/}' ~/.config/sxhkd/sxhkdrc
 sed -i "/#chromium/a\\super + c\n\tchromium" ~/.config/sxhkd/sxhkdrc
 # {} need "" to wrap when they are used to be match
 sed -i "/bspc node -"{"f,s"}" "{"west,south,north,east"}"/a\\\n# Flip layout vertically\/horizontally\nsuper + \{_,shift + \}a\n\tbspc node @\/ --flip \{vertical,horizontal\}" ~/.config/sxhkd/sxhkdrc
+echo -e "\e[32mploybar configurate successfully\e[0m"
 
 # semi-transparent
 # sed -r -i "0,/example/{s/(^background\s+=\s+)(.*)/\1#66000000/}" ~/.config/polybar/config
 # install mpd and show on polybar,if you run this on chroot
 # you'd run a self-del script to enable systemd when restart, e.x. run this script in parent script
 bash <(curl https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/mpdins.sh)
+echo -e "\e[32mmpd and ncmpcpp successfully installed\e[0m"
 
 mkdir ~/.config/picom
 cat>~/.config/picom/picom.conf<<-EOF
@@ -162,12 +161,16 @@ detect-transient = true;
 detect-client-leader = true;
 use-damage = true;
 EOF
-# real pc needs vsync
-systemd-detect-virt >/dev/null 2>&1 ||{
+# real pc needs vsync, virtualbox need guest additions
+systemd-detect-virt >/dev/null 2>&1 && {
+    sudo pacman -S --noconfirm virtualbox-guest-utils
+    sudo systemctl enable vboxservice
+} || {
 cat>>~/.config/picom/picom.conf<<-EOF
 vsync = true;
 EOF
 }
+echo -e "\e[32mpicom configurate successfully\e[0m"
 
 #polkit for mount filesystem
 sudo tee /etc/polkit-1/rules.d/00-mount-internal.rules >/dev/null <<-EOF
@@ -181,6 +184,7 @@ polkit.addRule(function(action, subject) {
 EOF
 #then add to storage group
 sudo usermod -aG storage $(whoami)
+echo -e "\e[32muser add to group successfully\e[0m"
 
 # no need to start xdman, it will be start by the browser plugins when you want to download
 #sed -i "/sxhkd/a\$HOME\/.config\/polybar\/launch.sh & fcitx5 & qv2ray &\npicom &" ~/.config/bspwm/bspwmrc
@@ -194,6 +198,7 @@ sudo mkdir /usr/share/backgrounds 2>/dev/null
 sudo tar xvJf wallpapers.tar.xz -C /usr/share/backgrounds
 rm -rf wallpapers.tar.xz
 sed -i "/picom/a\feh --randomize --bg-fill /usr/share/backgrounds/wallpapers &" ~/.config/bspwm/bspwmrc
+echo -e "\e[32mwallpaper configurate successfully\e[0m"
 
 #change grub and waiting time,wating time need to rebuild by the grub-mkconfig in the following scripts
 sudo sed -r -i "s/(GRUB_TIMEOUT=)5/\11/" /etc/default/grub

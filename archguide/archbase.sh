@@ -33,6 +33,7 @@ Server = https://mirrors.xjtu.edu.cn/archlinux/$repo/os/$arch
 EOF
 #echo -e "Server = http://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch">/etc/pacman.d/mirrorlist
 pacstrap /mnt base base-devel linux linux-firmware
+echo -e "\e[32mbase package successfully installed\e[0m"
 genfstab -U /mnt >> /mnt/etc/fstab
 #cat /mnt/etc/fstab
 
@@ -52,6 +53,7 @@ curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/
 chmod +x /mnt/chrootins.sh
 arch-chroot /mnt /chrootins.sh
 
+# red color
 echo -e "\e[33mplease reject the boot medium when shutdown complete,then boot again,press Enter to shutdown\e[0m"
 read p
 shutdown -h now

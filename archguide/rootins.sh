@@ -41,6 +41,7 @@ pacman -S --noconfirm yay bash-completion
 
 #aur speed up
 bash /aurdl.sh
+echo -e "\e[32maur speedup set successfully\e[0m"
 
 pacman -Sy
 pacman -S --noconfirm gvim
@@ -54,15 +55,18 @@ pacman -S --noconfirm linux-headers
 # evince can be replaced by okular;p7zip add pw support for file-roller; usbutils is usb tools
 pacman -S --noconfirm pacman-contrib wget usbutils mlocate python-pip expect chromium git qalculate-gtk flameshot evince gimp file-roller p7zip mpv
 updatedb
+echo -e "\e[32mnecessary packages successfully installed\e[0m"
 # no gui proxy
 pacman -S --noconfirm xray
 curl -o /etc/xray/client.json https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/clientlite.json
 sed -i "s/xtls-rprx-direct/xtls-rprx-splice/" /etc/xray/client.json
 systemctl enable xray
+echo -e "\e[32mxray successfully installed\e[0m"
 # install printer
 # install complete,use localhost:631 to config
 pacman -S --noconfirm cups cups-pdf
 systemctl enable cups
+echo -e "\e[32mcups for printers successfully installed\e[0m"
 # modify ssh long connnect 
 sed -i -r "s/#\s*(Host\s+)/\1/g" /etc/ssh/ssh_config
 echo "   ServerAliveCountMax 5"|tee -a  /etc/ssh/ssh_config

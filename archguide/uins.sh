@@ -8,12 +8,14 @@ echo -e "source /opt/prompt_fish.sh">>~/.bashrc
 source ~/.bashrc
 #zsh
 bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/zsh-conf.sh')
+echo -e "\e[32mzsh configurate successfully\e[0m"
 
 # install wifi driver
 # yay -S --noconfirm rtl8821cu-dkms-git
 
 #dwm
 bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/bspwmins.sh')
+echo -e "\e[32mbspwm successfully installed\e[0m"
 
 # install and config fcitx5
 yay -S --noconfirm fcitx5-rime fcitx5-gtk fcitx5-qt
@@ -53,6 +55,7 @@ patch:
       reset: 0
       states: [ 中, 英 ]
 EOF
+echo -e "\e[32mfcitx5 successfully installed\e[0m"
 
 echo PATH=$PATH:~/.local/bin>>~/.profile
 export PATH=$PATH:~/.local/bin
@@ -66,6 +69,7 @@ sudo pacman -S --noconfirm tk
 #config mpv
 curl --create-dirs -o ~/.config/mpv/input.conf https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/input.conf
 curl --create-dirs -o ~/.config/mpv/mpv.conf https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/mpv.conf
+echo -e "\e[32mmpv configurate successfully\e[0m"
 
 #set systemctl for user
 cat>~/.runonce.sh<<-EOF
@@ -82,6 +86,7 @@ echo "bash ~/.runonce.sh">>~/.profile
 
 #vim-common
 bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/selective-ins/vimcommon.sh')
+echo -e "\e[32mvim successfully installed and configurated\e[0m"
 
 #vim for c++
 #bash <(curl 'https://gitee.com/gjkevin/dfiles/raw/master/archguide/selective-ins/vimforcpp.sh')
@@ -96,8 +101,7 @@ bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/
 
 # install sublime-text
 bash <(curl 'https://ghproxy.com/https://raw.githubusercontent.com/gjkevin2/vss/master/archguide/subl-ins.sh')
-# correct sublimeREPL env
-bash <(curl https://gitee.com/gjkevin/dfiles/raw/master/sublime/python3-REPL.sh)
+echo -e "\e[32msublime_text successfully installed\e[0m"
 
 #install vscode
 # yay -S --noconfirm visual-studio-code-bin

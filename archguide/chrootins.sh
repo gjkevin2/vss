@@ -26,6 +26,7 @@ EOF
 # systemctl enable NetworkManager
 pacman -S --noconfirm dhcpcd iwd  # wire + wireless
 systemctl enable dhcpcd iwd
+echo -e "\e[32mnetwork packages successfully installed\e[0m"
 
 mkdir /etc/iwd 2>/dev/null
 cat >/etc/iwd/main.conf<<-EOF
