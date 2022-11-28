@@ -101,5 +101,5 @@ song_list_format = {\$4%a - }{%t}|{\$8%f\$9}\$R{\$3(%l)\$9}
 
 song_status_format = \$b{{\$8"%t"}} \$3by {\$4%a{ \$3in \$7%b{ (%y)}} \$3}|{\$8%f}
 EOF
-systemctl start mpd --user
-systemctl enable mpd --user
+systemctl start mpd --user 2>/dev/null
+systemctl enable mpd --user 2>/dev/null
