@@ -1,4 +1,5 @@
 #!/bin/bash
+sed -i '/^net.core.default_qdisc/,$d' /etc/sysctl.conf
 echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
 echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 
@@ -22,4 +23,4 @@ net.ipv4.ip_forward = 1">>/etc/sysctl.conf
 sysctl -p
 echo "*               soft    nofile           1000000
 *               hard    nofile          1000000">/etc/security/limits.conf
-echo "ulimit -SHn 1000000">>/etc/profile
+grep "ulimit -SHn" >/dev/null || echo "ulimit -SHn 1000000">>/etc/profile
