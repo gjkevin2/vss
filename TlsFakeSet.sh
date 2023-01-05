@@ -13,7 +13,7 @@ read domain
 mkdir $HOME/cert
 
 # ~/.acme.sh/acme.sh --issue -d $domain -d *.$domain --dns dns_dp
-~/.acme.sh/acme.sh --issue -d $domain -d *.$domain --dns dns_cf --dnssleep
+~/.acme.sh/acme.sh --issue -d $domain -d *.$domain --dns dns_cf
 
 #installcert
 ~/.acme.sh/acme.sh --installcert -d $domain \
