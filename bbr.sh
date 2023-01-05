@@ -23,4 +23,4 @@ net.ipv4.ip_forward = 1">>/etc/sysctl.conf
 sysctl -p
 echo "*               soft    nofile           1000000
 *               hard    nofile          1000000">/etc/security/limits.conf
-grep "ulimit -SHn" >/dev/null || echo "ulimit -SHn 1000000">>/etc/profile
+grep "ulimit -SHn" /etc/profile >/dev/null || echo "ulimit -SHn 1000000">>/etc/profile
