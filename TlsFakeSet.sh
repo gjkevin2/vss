@@ -2,8 +2,7 @@
 apt update && apt -y upgrade && apt -y install socat
 apt -y install curl gawk
 curl https://get.acme.sh | sh -s email=gjkevin@163.com
-alias acme.sh=~/.acme.sh/acme.sh
-acme.sh --upgrade --auto-upgrade
+~/.acme.sh/acme.sh --upgrade --auto-upgrade
 #export DP_Id='192193'
 #export DP_Key='dc85648992cf2d738ee22815979e8a15'
 export CF_Key="b8a4d01054c1e780d4f8346a302c5ae0e988d" 
@@ -15,10 +14,10 @@ read domain
 mkdir $HOME/cert
 
 # ~/.acme.sh/acme.sh --issue -d $domain -d *.$domain --dns dns_dp
-acme.sh --issue -d $domain -d *.$domain --dns dns_cf
+~/.acme.sh/acme.sh --issue -d $domain -d *.$domain --dns dns_cf
 
 #installcert
-acme.sh --installcert -d $domain \
+~/.acme.sh/acme.sh --installcert -d $domain \
         --key-file   $HOME/cert/privkey.key \
         --fullchain-file $HOME/cert/fullchain.cer
 
