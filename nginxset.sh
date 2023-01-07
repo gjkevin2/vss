@@ -10,7 +10,8 @@ stream {
         # SNI recognize
         map \$ssl_preread_server_name \$stream_map {
                 www.$domain web;                
-        }        
+        }
+        # upstream set     
         server {
                 listen $serverip:443      reuseport;  # listen server port 443
                 listen [::]:443 reuseport;
@@ -18,6 +19,7 @@ stream {
                 ssl_preread     on;
                 proxy_protocol on;                    # start Proxy protocol
         }
+        # remove proxy protocol
 }
 EOF
 

@@ -208,6 +208,9 @@ systemctl daemon-reload
 systemctl start xray
 systemctl enable xray
 
+# 443端口转发到实际端口
+sed -i "/\$stream_map/a\\x.$servername beforextls;" /etc/nginx/nginx.conf
+
 #修改配置文件
 wget -O /usr/share/nginx/html/static/config.yaml https://raw.githubusercontent.com/gjkevin2/vss/master/config.yaml
 sed -i 's/serverip/'$serverip'/g' /usr/share/nginx/html/static/config.yaml
