@@ -1,4 +1,3 @@
-
 #!/bin/bash
 #安装xray 和最新发行的 geoip.dat 和 geosite.dat,
 bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install -u root
@@ -203,8 +202,8 @@ cat > /usr/local/etc/xray/config.json <<-EOF
 EOF
 systemctl stop xray
 #去除user，使用root读取证书
-sed -i "s/User=nobody//" /etc/systemd/system/xray.service
-systemctl daemon-reload
+#sed -i "s/User=nobody//" /etc/systemd/system/xray.service
+#systemctl daemon-reload
 systemctl start xray
 systemctl enable xray
 
@@ -223,6 +222,161 @@ sed -i "/upstream set/a\\\tupstream beforextls {\n\t\tserver 127.0.0.1:50011;\n\
 
 sed -i "/remove proxy protocol/a\\\tserver {\n\t\tlisten 127.0.0.1:50017 proxy_protocol;\n\t\tproxy_pass trojanxtls;\n\t}" /etc/nginx/nginx.conf
 sed -i "/remove proxy protocol/a\\\tserver {\n\t\tlisten 127.0.0.1:50011 proxy_protocol;\n\t\tproxy_pass xtls;\n\t}" /etc/nginx/nginx.conf
+
+# nginx set
+cd /etc/nginx/conf.d
+cat > $servername.conf <<-EOF
+server {
+        listen 80;
+        listen [::]:80;
+        server_name $servername;        
+        location / {
+                root /usr/share/nginx/html;
+                index index.html;
+        }
+        location ^~ /subscribe/  {
+                alias /usr/share/nginx/html/static/;
+        }
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name x.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name tx.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name vw.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 127.0.0.1:50014 ssl http2 proxy_protocol;
+        set_real_ip_from 127.0.0.1;
+        server_name vw.$servername;
+
+        ssl_certificate /root/cert/fullchain.cer; 
+        ssl_certificate_key /root/cert/privkey.key;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
+        ssl_prefer_server_ciphers on;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubservernames; preload" always; #启用HSTS
+        location / {
+                root /usr/share/nginx/html;
+                index index.html;
+        }
+
+        location = /wstest { #与vless+ws应用中path对应
+            proxy_redirect off;
+            proxy_pass http://127.0.0.1:1311; #转发给本机vless+ws监听端口
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade \$http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host \$http_host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        }
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name g.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 127.0.0.1:50018 ssl http2 proxy_protocol;
+        set_real_ip_from 127.0.0.1;
+        server_name g.$servername;
+
+        ssl_certificate /root/cert/fullchain.cer; 
+        ssl_certificate_key /root/cert/privkey.key;
+        # ssl_protocols TLSv1.2 TLSv1.3;
+        # ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
+        # ssl_prefer_server_ciphers on;
+
+        add_header Strict-Transport-Security "max-age=31536000; includeSubservernames; preload" always; #启用HSTS
+        location / {
+                root /usr/share/nginx/html;
+                index index.html;
+        }
+
+        location /test { #与vless+grpc应用中serviceName对应
+            if (\$request_method != "POST") {
+                return 404;
+            }
+            client_body_buffer_size 1m;
+            client_body_timeout 1071906480m;
+            client_max_body_size 0;
+            grpc_read_timeout 1071906480m;
+            grpc_send_timeout 1h;
+            grpc_pass grpc://127.0.0.1:50008;
+        }
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name t.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name tg.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name s.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name sx.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 127.0.0.1:50313 ssl http2 proxy_protocol;
+        set_real_ip_from 127.0.0.1;
+        server_name xss.$servername;
+
+        ssl_certificate /root/cert/fullchain.cer; 
+        ssl_certificate_key /root/cert/privkey.key;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
+        ssl_prefer_server_ciphers on;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubservernames; preload" always; #启用HSTS
+        location / {
+                root /usr/share/nginx/html;
+                index index.html;
+        }
+
+        location = /uri { # 与xray里ss应用中dekodemo-door里path对应
+            proxy_redirect off;
+            proxy_pass http://127.0.0.1:2022; # 转发给本机dekodemo-door监听端口
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade \$http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host \$http_host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        }
+}
+EOF
+# repair pid file
+sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
+sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
+# (re)start nginx
+systemctl daemon-reload
+systemctl stop nginx
+systemctl start nginx
 
 #修改配置文件
 wget -O /usr/share/nginx/html/static/config.yaml https://raw.githubusercontent.com/gjkevin2/vss/master/config.yaml

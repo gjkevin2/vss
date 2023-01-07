@@ -1,10 +1,11 @@
 #!/bin/bash
+testdomain=`sed -n "/preread_server/{n;p;}" /etc/nginx/nginx.conf |awk -F ' ' '{print $1}'`
+servername=${testdomain#*.}
+
 cat > /usr/local/etc/xray/config.json <<-EOF
 {
   "log": {
-    "loglevel": "warning",
-    "access": "/var/log/xray/access.log",
-    "error": "/var/log/xray/error.log"
+    "loglevel": "warning"
   },
   "inbounds": [
     {
@@ -15,6 +16,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
           {
             "id": "dc8dd6af-62fa-480d-81bb-53eec20f58d5",
             "flow": "xtls-rprx-direct",
+            "alterId": 0,
             "level": 0
           }
         ],
@@ -29,84 +31,10 @@ cat > /usr/local/etc/xray/config.json <<-EOF
           ],
           "certificates": [
             {
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
+              "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
+              "keyFile": "/root/.acme.sh/$servername/$servername.key"
             }
           ]
-        }
-      }
-    },
-    {
-      "port": 50008,
-      "listen": "127.0.0.1",
-      "protocol": "vless",
-      "settings": {
-        "clients": [
-          {
-            "id": "0c131050-d263-45cf-8d84-db3785197031"
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "security": "none",
-        "grpcSettings": {
-          "serviceName": "test"
-        }
-      }
-    },
-    {
-      "port": 1310,
-      "listen": "127.0.0.1",
-      "protocol": "trojan",
-      "settings": {
-        "clients": [
-          {
-            "password": "461ece30",
-            "flow": "xtls-rprx-direct",
-            "level": 0
-          }
-        ],
-        "fallbacks": [
-          {
-            "dest": 80
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "xtls",
-        "xtlsSettings": {
-          "alpn": [
-            "http/1.1"
-          ],
-          "certificates": [
-            {
-              "certificateFile": "/root/cert/fullchain.cer",
-              "keyFile": "/root/cert/privkey.key"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "port": 1311,
-      "listen": "127.0.0.1",
-      "protocol": "vless",
-      "settings": {
-        "clients": [
-          {
-            "id": "bf45efa6-9d98-4553-a627-8715c1a491b8"
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "ws",
-        "security": "none",
-        "wsSettings": {
-          "path": "/wstest"
         }
       }
     },
@@ -129,71 +57,18 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "method": "aes-256-gcm",
         "password": "barfoo!"
       }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 2022,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "v1.mux.cool"
-      },
-      "streamSettings": {
-        "network": "ws",
-        "security": "none",
-        "wsSettings": {
-          "path": "/uri"
-        }
-      },
-      "tag":"ddws"
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 2021,
-      "protocol": "shadowsocks",
-      "settings": {
-        "method": "none",
-        "password": "barfoo!"
-      },
-      "streamSettings": {
-        "network": "domainsocket",
-        "security": "none",
-        "dsSettings": {
-          "path": "ss",
-          "abstract": true
-        }
-      }
     }
   ],
   "outbounds": [
     {
       "protocol": "freedom",
       "settings": {}
-    },
-    {
-      "tag": "ssds",
-      "protocol": "freedom",
-      "streamSettings": {
-        "network": "domainsocket",
-        "dsSettings": {
-          "path": "ss",
-          "abstract": true
-        }
-      }
     }
-  ],
-  "routing": {
-    "rules": [
-      {
-        "type": "field",
-        "inboundTag": "ddws",
-        "outboundTag": "ssds"
-      }
-    ]
-  }
+  ]
 }
 EOF
 systemctl stop xray
 #去除user，使用root读取证书
-sed -i "s/User=nobody//" /etc/systemd/system/xray.service
-systemctl daemon-reload
+#sed -i "s/User=nobody//" /etc/systemd/system/xray.service
+#systemctl daemon-reload
 systemctl start xray
