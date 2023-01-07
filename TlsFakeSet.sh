@@ -1,6 +1,6 @@
 #!/bin/bash
 apt update && apt -y upgrade && apt -y install socat
-apt -y install curl gawk
+apt -y install curl gawk unzip
 curl https://get.acme.sh | sh -s email=gjkevin@163.com
 ~/.acme.sh/acme.sh --upgrade --auto-upgrade
 export DP_Id='192193'
