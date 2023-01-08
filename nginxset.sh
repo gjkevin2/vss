@@ -11,15 +11,56 @@ stream {
         map \$ssl_preread_server_name \$stream_map {
                 www.$domain web;                
         }
-        # upstream set     
+        # upstream set
+        upstream web {
+                server 127.0.0.1:8443;
+        }
         server {
-                listen $serverip:443      reuseport;  # listen server port 443
+                listen $serverip:443    reuseport;  # listen server port 443
                 listen [::]:443 reuseport;
                 proxy_pass      \$stream_map;
                 ssl_preread     on;
                 proxy_protocol on;                    # start Proxy protocol
         }
         # remove proxy protocol
+}
+EOF
+
+cat >/etc/nginx/conf.d/default.conf<<-EOF
+set_real_ip_from 127.0.0.1;
+real_ip_header proxy_protocol;
+
+server {
+        listen 80;
+        listen [::]:80;
+        server_name localhost;
+        location / {
+                root   /usr/share/nginx/html;
+                index  index.html index.htm;
+            }
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+                root   /usr/share/nginx/html;
+        }
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name www.$domain;
+        return 301 http://$domain\$request_uri;
+}
+server {
+        listen 127.0.0.1:8443 ssl http2 proxy_protocol;
+        server_name g.$domain;
+
+        ssl_certificate /root/.acme.sh/$domain/fullchain.cer; 
+        ssl_certificate_key /root/.acme.sh/$domain/$domain.key;
+
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; #启用HSTS
+        location / {
+                root /usr/share/nginx/html;
+                index index.html;
+        }
 }
 EOF
 

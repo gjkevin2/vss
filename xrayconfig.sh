@@ -25,10 +25,11 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "streamSettings": {
         "network": "tcp",
         "security": "xtls",
+        "tcpSettings": {
+          "acceptProxyProtocol": true
+        },
         "xtlsSettings": {
-          "alpn": [
-            "http/1.1"
-          ],
+          "alpn": ["h2", "http/1.1"],
           "certificates": [
             {
               "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
