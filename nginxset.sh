@@ -36,7 +36,7 @@ server {
         location / {
                 root   /usr/share/nginx/html;
                 index  index.html index.htm;
-            }
+        }
         error_page   500 502 503 504  /50x.html;
         location = /50x.html {
                 root   /usr/share/nginx/html;
@@ -57,8 +57,8 @@ server {
 
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always; #启用HSTS
         location / {
-                root /usr/share/nginx/html;
-                index index.html;
+                root   /usr/share/nginx/html;
+                index  index.html index.htm;
         }
 }
 EOF
