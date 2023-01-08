@@ -208,20 +208,29 @@ systemctl start xray
 systemctl enable xray
 
 # 443端口转发到实际端口
-sed -i "/\$ssl_preread_server_name/a\\\t\tg.$servername grpc;" /etc/nginx/nginx.conf
-sed -i "/\$ssl_preread_server_name/a\\\t\tvw.$servername vlessws;" /etc/nginx/nginx.conf
-sed -i "/\$ssl_preread_server_name/a\\\t\ttx.$servername beforetrojanxtls;" /etc/nginx/nginx.conf
-sed -i "/\$ssl_preread_server_name/a\\\t\tx.$servername beforextls;" /etc/nginx/nginx.conf
+grep "g.$servername" /etc/nginx/nginx.conf || {
+  sed -i "/\$ssl_preread_server_name/a\\\t\tg.$servername grpc;" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream grpc {\n\t\tserver 127.0.0.1:50018;\n\t}" /etc/nginx/nginx.conf
+}
 
-sed -i "/upstream set/a\\\tupstream grpc {\n\t\tserver 127.0.0.1:50018;\n\t}" /etc/nginx/nginx.conf
-sed -i "/upstream set/a\\\tupstream vlessws {\n\t\tserver 127.0.0.1:50014;\n\t}" /etc/nginx/nginx.conf
-sed -i "/upstream set/a\\\tupstream trojanxtls {\n\t\tserver 127.0.0.1:1310;\n\t}" /etc/nginx/nginx.conf
-sed -i "/upstream set/a\\\tupstream beforetrojanxtls {\n\t\tserver 127.0.0.1:50017;\n\t}" /etc/nginx/nginx.conf
-sed -i "/upstream set/a\\\tupstream xtls {\n\t\tserver 127.0.0.1:50001;\n\t}" /etc/nginx/nginx.conf
-sed -i "/upstream set/a\\\tupstream beforextls {\n\t\tserver 127.0.0.1:50011;\n\t}" /etc/nginx/nginx.conf
+grep "vw.$servername" /etc/nginx/nginx.conf || {
+  sed -i "/\$ssl_preread_server_name/a\\\t\tvw.$servername vlessws;" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream vlessws {\n\t\tserver 127.0.0.1:50014;\n\t}" /etc/nginx/nginx.conf
+}
 
-sed -i "/remove proxy protocol/a\\\tserver {\n\t\tlisten 127.0.0.1:50017 proxy_protocol;\n\t\tproxy_pass trojanxtls;\n\t}" /etc/nginx/nginx.conf
-sed -i "/remove proxy protocol/a\\\tserver {\n\t\tlisten 127.0.0.1:50011 proxy_protocol;\n\t\tproxy_pass xtls;\n\t}" /etc/nginx/nginx.conf
+grep "tx.$servername" /etc/nginx/nginx.conf || {
+  sed -i "/\$ssl_preread_server_name/a\\\t\ttx.$servername beforetrojanxtls;" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream trojanxtls {\n\t\tserver 127.0.0.1:1310;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream beforetrojanxtls {\n\t\tserver 127.0.0.1:50017;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/remove proxy protocol/a\\\tserver {\n\t\tlisten 127.0.0.1:50017 proxy_protocol;\n\t\tproxy_pass trojanxtls;\n\t}" /etc/nginx/nginx.conf
+}
+
+grep "x.$servername" /etc/nginx/nginx.conf || {
+  sed -i "/\$ssl_preread_server_name/a\\\t\tx.$servername beforextls;" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream xtls {\n\t\tserver 127.0.0.1:50001;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream beforextls {\n\t\tserver 127.0.0.1:50011;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/remove proxy protocol/a\\\tserver {\n\t\tlisten 127.0.0.1:50011 proxy_protocol;\n\t\tproxy_pass xtls;\n\t}" /etc/nginx/nginx.conf
+}
 
 # nginx set
 cd /etc/nginx/conf.d
