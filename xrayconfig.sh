@@ -72,3 +72,85 @@ systemctl stop xray
 #sed -i "s/User=nobody//" /etc/systemd/system/xray.service
 #systemctl daemon-reload
 systemctl start xray
+
+# 443端口转发到实际端口
+grep "x.$servername" /etc/nginx/nginx.conf || {
+  sed -i "/\$ssl_preread_server_name/a\\\t\tx.$servername beforextls;" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream xtls {\n\t\tserver 127.0.0.1:50001;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream beforextls {\n\t\tserver 127.0.0.1:50011;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/remove proxy protocol/a\\\tserver {\n\t\tlisten 127.0.0.1:50011 proxy_protocol;\n\t\tproxy_pass xtls;\n\t}" /etc/nginx/nginx.conf
+}
+
+# nginx set
+cd /etc/nginx/conf.d
+cat > $servername.conf <<-EOF
+server {
+        listen 80;
+        listen [::]:80;
+        server_name $servername;        
+        location / {
+                root /usr/share/nginx/html;
+                index index.html;
+        }
+        location ^~ /subscribe/  {
+                alias /usr/share/nginx/html/static/;
+        }
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name x.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name tx.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name vw.$servername;
+        return 301 http://$servername;
+}
+
+server {
+        listen 80;
+        listen [::]:80;
+        server_name g.$servername;
+        return 301 http://$servername;
+}
+
+server {
+        listen 80;
+        listen [::]:80;
+        server_name t.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name tg.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name s.$servername;
+        return 301 http://$servername;
+}
+server {
+        listen 80;
+        listen [::]:80;
+        server_name sx.$servername;
+        return 301 http://$servername;
+}
+EOF
+# repair pid file
+sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
+sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
+# (re)start nginx
+systemctl daemon-reload
+systemctl stop nginx
+systemctl start nginx
