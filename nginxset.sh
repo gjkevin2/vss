@@ -49,7 +49,8 @@ server {
         return 301 https://www.$domain\$request_uri;
 }
 server {
-        listen 8443 ssl http2 proxy_protocol;        
+        listen 8443 ssl http2 proxy_protocol;
+        listen [::]:8443 ssl http2 proxy_protocol;
         server_name www.$domain;
 
         ssl_certificate /root/.acme.sh/$domain/fullchain.cer; 
