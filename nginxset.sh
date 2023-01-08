@@ -26,6 +26,9 @@ stream {
 EOF
 
 cat >/etc/nginx/conf.d/default.conf<<-EOF
+set_real_ip_from 127.0.0.1;
+real_ip_header proxy_protocol;
+
 server {
         listen 80;
         listen [::]:80;
@@ -43,13 +46,11 @@ server {
         listen 80;
         listen [::]:80;
         server_name www.$domain;
-        return 301 http://$domain\$request_uri;
+        return 301 http://www.$domain\$request_uri;
 }
 server {
-        listen 127.0.0.1:8443 ssl http2 proxy_protocol;
-        set_real_ip_from 127.0.0.1;
-        real_ip_header proxy_protocol;
-        server_name g.$domain;
+        listen 8443 ssl http2 proxy_protocol;        
+        server_name www.$domain;
 
         ssl_certificate /root/.acme.sh/$domain/fullchain.cer; 
         ssl_certificate_key /root/.acme.sh/$domain/$domain.key;
