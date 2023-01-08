@@ -46,7 +46,7 @@ server {
         listen 80;
         listen [::]:80;
         server_name www.$domain;
-        return 301 http://www.$domain\$request_uri;
+        return 301 https://www.$domain\$request_uri;
 }
 server {
         listen 8443 ssl http2 proxy_protocol;        
