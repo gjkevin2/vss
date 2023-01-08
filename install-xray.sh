@@ -270,8 +270,8 @@ server {
         set_real_ip_from 127.0.0.1;
         server_name vw.$servername;
 
-        ssl_certificate /root/cert/fullchain.cer; 
-        ssl_certificate_key /root/cert/privkey.key;
+        ssl_certificate /root/.acme.sh/$servername/fullchain.cer; 
+        ssl_certificate_key /root/.acme.sh/$servername/$servername.key;
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
         ssl_prefer_server_ciphers on;
@@ -303,8 +303,8 @@ server {
         set_real_ip_from 127.0.0.1;
         server_name g.$servername;
 
-        ssl_certificate /root/cert/fullchain.cer; 
-        ssl_certificate_key /root/cert/privkey.key;
+        ssl_certificate /root/.acme.sh/$servername/fullchain.cer; 
+        ssl_certificate_key /root/.acme.sh/$servername/$servername.key;
         # ssl_protocols TLSv1.2 TLSv1.3;
         # ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
         # ssl_prefer_server_ciphers on;
@@ -356,8 +356,8 @@ server {
         set_real_ip_from 127.0.0.1;
         server_name xss.$servername;
 
-        ssl_certificate /root/cert/fullchain.cer; 
-        ssl_certificate_key /root/cert/privkey.key;
+        ssl_certificate /root/.acme.sh/$servername/fullchain.cer; 
+        ssl_certificate_key /root/.acme.sh/$servername/$servername.key;
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
         ssl_prefer_server_ciphers on;
