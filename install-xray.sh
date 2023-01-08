@@ -388,6 +388,7 @@ systemctl stop nginx
 systemctl start nginx
 
 #修改配置文件
+cd ~
 wget -O /usr/share/nginx/html/static/config.yaml https://raw.githubusercontent.com/gjkevin2/vss/master/config.yaml
 sed -i 's/serverip/'$serverip'/g' /usr/share/nginx/html/static/config.yaml
 sed -i 's/maindomain/'$servername'/g' /usr/share/nginx/html/static/config.yaml
