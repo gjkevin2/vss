@@ -16,7 +16,7 @@ stream {
                 server 127.0.0.1:8443;
         }
         server {
-                listen $serverip:443    reuseport;  # listen server port 443
+                listen 443    reuseport;  # listen server port 443
                 listen [::]:443 reuseport;
                 proxy_pass      \$stream_map;
                 ssl_preread     on;
