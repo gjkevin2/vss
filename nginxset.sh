@@ -22,14 +22,10 @@ stream {
                 ssl_preread     on;
                 proxy_protocol on;                    # start Proxy protocol
         }
-        # remove proxy protocol
 }
 EOF
 
 cat >/etc/nginx/conf.d/default.conf<<-EOF
-set_real_ip_from 127.0.0.1;
-real_ip_header proxy_protocol;
-
 server {
         listen 80;
         listen [::]:80;
@@ -51,6 +47,8 @@ server {
 }
 server {
         listen 127.0.0.1:8443 ssl http2 proxy_protocol;
+        set_real_ip_from 127.0.0.1;
+        real_ip_header proxy_protocol;
         server_name g.$domain;
 
         ssl_certificate /root/.acme.sh/$domain/fullchain.cer; 

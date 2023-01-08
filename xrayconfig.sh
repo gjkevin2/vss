@@ -76,10 +76,8 @@ systemctl start xray
 
 # 443端口转发到实际端口
 grep "x.$servername" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\tx.$servername beforextls;" /etc/nginx/nginx.conf
+  sed -i "/\$ssl_preread_server_name/a\\\t\tx.$servername xtls;" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream xtls {\n\t\tserver 127.0.0.1:50001;\n\t}" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream beforextls {\n\t\tserver 127.0.0.1:50011;\n\t}" /etc/nginx/nginx.conf
-  sed -i "/remove proxy protocol/a\\\tserver {\n\t\tlisten 127.0.0.1:50011 proxy_protocol;\n\t\tproxy_pass xtls;\n\t}" /etc/nginx/nginx.conf
 }
 
 # nginx set
