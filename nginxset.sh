@@ -9,6 +9,7 @@ cat >>/etc/nginx/nginx.conf<<-EOF
 stream {
     # SNI recognize
     map \$ssl_preread_server_name \$stream_map {
+        www.$domain web;
         default web;                
     }
     # upstream set
