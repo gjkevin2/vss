@@ -7,61 +7,74 @@ serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print 
 sed -i '/^stream {/,$d' /etc/nginx/nginx.conf
 cat >>/etc/nginx/nginx.conf<<-EOF
 stream {
-        # SNI recognize
-        map \$ssl_preread_server_name \$stream_map {
-                default web;                
-        }
-        # upstream set
-        upstream web {
-                server 127.0.0.1:8443;
-        }
-        server {
-                listen $serverip:443    reuseport;  # listen server port 443
-                listen [::]:443 reuseport;
-                proxy_pass      \$stream_map;
-                ssl_preread     on;
-                proxy_protocol on;                    # start Proxy protocol
-        }
+    # SNI recognize
+    map \$ssl_preread_server_name \$stream_map {
+        default web;                
+    }
+    # upstream set
+    upstream web {
+        server unix:/dev/shm/web.sock;
+    }
+    server {
+        listen 443;
+        listen [::]:443;
+        ssl_preread on;
+        proxy_protocol on; 
+        proxy_pass  \$stream_map;
+    }
 }
 EOF
 
 cat >/etc/nginx/conf.d/default.conf<<-EOF
-set_real_ip_from 127.0.0.1;
-real_ip_header proxy_protocol;
-ssl_certificate /root/.acme.sh/$domain/fullchain.cer; 
-ssl_certificate_key /root/.acme.sh/$domain/$domain.key;
-ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
-ssl_ciphers         HIGH:!aNULL:!MD5;
-
 server {
         listen 80;
         listen [::]:80;
-        server_name localhost;
+        return 301 https://$domain\$request_uri;
+}
+
+server {
+        listen unix:/dev/shm/h1.sock proxy_protocol;
+        listen unix:/dev/shm/h2c.sock proxy_protocol; 
+        set_real_ip_from unix:;
+        return 301 https://$domain\$request_uri;
+}
+
+server {
+        listen unix:/dev/shm/web.sock ssl http2 proxy_protocol;
+        server_name $domain www.$domain;
+        if (\$host != $domain) { return 301 https://$domain\$request_uri; }   
+        set_real_ip_from unix:;
+        ssl_certificate /root/.acme.sh/$domain/fullchain.cer; 
+        ssl_certificate_key /root/.acme.sh/$domain/$domain.key;
+        ssl_session_cache    shared:SSL:1m;
+        ssl_session_timeout  5m;
+        ssl_session_tickets  off;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers  TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
         location / {
                 root   /usr/share/nginx/html;
                 index  index.html index.htm;
         }
-        error_page   500 502 503 504  /50x.html;
-        location = /50x.html {
-                root   /usr/share/nginx/html;
+
+        location /test { # grpc serviceName与xray配置里一致
+                if (\$request_method != "POST") {
+                        return 404;
+                }
+                client_body_buffer_size 1m;
+                client_body_timeout 1h;
+                client_max_body_size 0;
+                grpc_read_timeout 1h;
+                grpc_send_timeout 1h;
+                grpc_pass grpc://unix:/dev/shm/vgrpc.sock;
         }
 }
+
 server {
         listen 80;
-        listen [::]:80;
-        server_name www.$domain;
-        return 301 https://www.$domain\$request_uri;
-}
-server {
-        listen 8443 ssl http2 proxy_protocol;
-        listen [::]:8443 ssl http2 proxy_protocol;
-        server_name www.$domain;
-
-        add_header Strict-Transport-Security "max-age=31536000; includeSubservernames; preload" always; #启用HSTS
-        location / {
-                root   /usr/share/nginx/html;
-                index  index.html index.htm;
-        }
+        server_name $serverip; # 修改为自己的vps IP 此块代码功能为禁止使用IP访问网站
+        return 403;
 }
 EOF
 
