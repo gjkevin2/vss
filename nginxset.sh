@@ -9,7 +9,7 @@ cat >>/etc/nginx/nginx.conf<<-EOF
 stream {
         # SNI recognize
         map \$ssl_preread_server_name \$stream_map {
-                www.$domain web;                
+                default web;                
         }
         # upstream set
         upstream web {
@@ -28,6 +28,10 @@ EOF
 cat >/etc/nginx/conf.d/default.conf<<-EOF
 set_real_ip_from 127.0.0.1;
 real_ip_header proxy_protocol;
+ssl_certificate /root/.acme.sh/$domain/fullchain.cer; 
+ssl_certificate_key /root/.acme.sh/$domain/$domain.key;
+ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+ssl_ciphers         HIGH:!aNULL:!MD5;
 
 server {
         listen 80;
@@ -53,11 +57,6 @@ server {
         listen [::]:8443 ssl http2 proxy_protocol;
         server_name www.$domain;
 
-        ssl_certificate /root/.acme.sh/$domain/fullchain.cer; 
-        ssl_certificate_key /root/.acme.sh/$domain/$domain.key;
-        ssl_protocols TLSv1.2 TLSv1.3;
-        ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
-        ssl_prefer_server_ciphers on;
         add_header Strict-Transport-Security "max-age=31536000; includeSubservernames; preload" always; #启用HSTS
         location / {
                 root   /usr/share/nginx/html;
