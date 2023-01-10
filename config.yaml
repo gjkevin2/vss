@@ -124,7 +124,7 @@ proxies:
     server: serverip
     port: 10630
     cipher: 2022-blake3-aes-128-gcm
-    password: "barfoo!"
+    password: "{{ psk }}"
     # udp: true
 
   # vmess
