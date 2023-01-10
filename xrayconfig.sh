@@ -17,7 +17,9 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "clients": [
           {
             "id": "dc8dd6af-62fa-480d-81bb-53eec20f58d5",
-            "flow": "xtls-rprx-direct"
+            "flow": "xtls-rprx-direct",
+            "alterId": 0,
+            "level": 0
           }
         ],
         "decryption": "none",
