@@ -15,38 +15,129 @@ cat > /usr/local/etc/xray/config.json <<-EOF
   },
   "inbounds": [
     {
-      "port": 50001,
+      "listen": "/dev/shm/vless.sock",
       "protocol": "vless",
       "settings": {
         "clients": [
           {
             "id": "dc8dd6af-62fa-480d-81bb-53eec20f58d5",
-            "flow": "xtls-rprx-direct",
-            "alterId": 0,
-            "level": 0
+            "flow": "xtls-rprx-direct"
           }
         ],
-        "decryption": "none"
+        "decryption": "none",
+        "fallbacks": [
+          {
+            "alpn": "h2",
+            "dest": "/dev/shm/h2c.sock",
+            "xver": 2
+          },
+          {
+            "dest": "/dev/shm/h1.sock",
+            "xver": 2
+          },
+          {
+            "path": "/wstest",
+            "dest": "@vless-ws",
+            "xver": 2
+          }
+        ]
       },
       "streamSettings": {
         "network": "tcp",
         "security": "xtls",
         "xtlsSettings": {
           "alpn": [
+            "h2",
             "http/1.1"
           ],
+          "minVersion": "1.2",
+          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
           "certificates": [
             {
               "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
-              "keyFile": "/root/.acme.sh/$servername/$servername.key"
+              "keyFile": "/root/.acme.sh/$servername/$servername.key",
+              "ocspStapling": 3600
             }
           ]
+        },
+        "tcpSettings": {
+          "acceptProxyProtocol": true
         }
       }
     },
     {
-      "port": 50008,
-      "listen": "127.0.0.1",
+      "listen": "@vless-ws",
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "bf45efa6-9d98-4553-a627-8715c1a491b8"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "none",
+        "wsSettings": {
+         "acceptProxyProtocol": true,
+         "path": "/wstest"
+        }
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+         "http",
+         "tls"
+        ]
+      }
+    },
+    {
+      "listen": "/dev/shm/trojan.sock",
+      "protocol": "trojan",
+      "settings": {
+        "clients": [
+          {
+            "password":"461ece30",
+            "flow": "xtls-rprx-direct"
+          }
+        ],
+        "fallbacks": [
+          {
+            "alpn": "h2",
+            "dest": "/dev/shm/h2c.sock",
+            "xver": 2
+          },
+          {
+            "dest": "/dev/shm/h1.sock",
+            "xver": 2
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "xtls",
+        "xtlsSettings": {
+          "alpn": [
+            "h2"
+          ],
+          "minVersion": "1.2",
+          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
+          "certificates": [
+            {
+              "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
+              "keyFile": "/root/.acme.sh/$servername/$servername.key",
+              "ocspStapling": 3600
+            }
+          ]
+        },
+        "tcpSettings": {
+          "acceptProxyProtocol": true
+        }
+      }
+    },
+    {
+      "listen": "/dev/shm/vgrpc.sock",
       "protocol": "vless",
       "settings": {
         "clients": [
@@ -62,60 +153,13 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "grpcSettings": {
           "serviceName": "test"
         }
-      }
-    },
-    {
-      "port": 1310,
-      "listen": "127.0.0.1",
-      "protocol": "trojan",
-      "settings": {
-        "clients": [
-          {
-            "password": "461ece30",
-            "flow": "xtls-rprx-direct",
-            "level": 0
-          }
-        ],
-        "fallbacks": [
-          {
-            "dest": 80
-          }
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+         "http",
+         "tls"
         ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "xtls",
-        "xtlsSettings": {
-          "alpn": [
-            "http/1.1"
-          ],
-          "certificates": [
-            {
-              "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
-              "keyFile": "/root/.acme.sh/$servername/$servername.key"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "port": 1311,
-      "listen": "127.0.0.1",
-      "protocol": "vless",
-      "settings": {
-        "clients": [
-          {
-            "id": "bf45efa6-9d98-4553-a627-8715c1a491b8"
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "ws",
-        "security": "none",
-        "wsSettings": {
-          "path": "/wstest"
-        }
       }
     },
     {
@@ -137,248 +181,33 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "method": "aes-256-gcm",
         "password": "barfoo!"
       }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 2022,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "v1.mux.cool"
-      },
-      "streamSettings": {
-        "network": "ws",
-        "security": "none",
-        "wsSettings": {
-          "path": "/uri"
-        }
-      },
-      "tag":"ddws"
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 2021,
-      "protocol": "shadowsocks",
-      "settings": {
-        "method": "none",
-        "password": "barfoo!"
-      },
-      "streamSettings": {
-        "network": "domainsocket",
-        "security": "none",
-        "dsSettings": {
-          "path": "ss",
-          "abstract": true
-        }
-      }
     }
   ],
   "outbounds": [
     {
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "tag": "ssds",
-      "protocol": "freedom",
-      "streamSettings": {
-        "network": "domainsocket",
-        "dsSettings": {
-          "path": "ss",
-          "abstract": true
-        }
-      }
+      "protocol": "freedom"
     }
-  ],
-  "routing": {
-    "rules": [
-      {
-        "type": "field",
-        "inboundTag": "ddws",
-        "outboundTag": "ssds"
-      }
-    ]
-  }
+  ]
 }
 EOF
 systemctl stop xray
 #去除user，使用root读取证书
 #sed -i "s/User=nobody//" /etc/systemd/system/xray.service
 #systemctl daemon-reload
+rm -rf /dev/shm/*
 systemctl start xray
 systemctl enable xray
 
 # 443端口转发到实际端口
-grep "g.$servername" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\tg.$servername grpc;" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream grpc {\n\t\tserver 127.0.0.1:50018;\n\t}" /etc/nginx/nginx.conf
+grep "t.$servername" /etc/nginx/nginx.conf || {
+  sed -i "/\$ssl_preread_server_name/a\\\t\tt.$servername trojan;" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream trojan {\n\t\tserver unix:/dev/shm/trojan.sock;\n\t}" /etc/nginx/nginx.conf
+}
+grep "v.$servername" /etc/nginx/nginx.conf || {
+  sed -i "/\$ssl_preread_server_name/a\\\t\tv.$servername vless;" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream vless {\n\t\tserver unix:/dev/shm/vless.sock;\n\t}" /etc/nginx/nginx.conf
 }
 
-grep "vw.$servername" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\tvw.$servername vlessws;" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream vlessws {\n\t\tserver 127.0.0.1:50014;\n\t}" /etc/nginx/nginx.conf
-}
-
-grep "tx.$servername" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\ttx.$servername beforetrojanxtls;" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream trojanxtls {\n\t\tserver 127.0.0.1:1310;\n\t}" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream beforetrojanxtls {\n\t\tserver 127.0.0.1:50017;\n\t}" /etc/nginx/nginx.conf
-  sed -i "/remove proxy protocol/a\\\tserver {\n\t\tlisten 127.0.0.1:50017 proxy_protocol;\n\t\tproxy_pass trojanxtls;\n\t}" /etc/nginx/nginx.conf
-}
-
-grep "x.$servername" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\tx.$servername beforextls;" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream xtls {\n\t\tserver 127.0.0.1:50001;\n\t}" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream beforextls {\n\t\tserver 127.0.0.1:50011;\n\t}" /etc/nginx/nginx.conf
-  sed -i "/remove proxy protocol/a\\\tserver {\n\t\tlisten 127.0.0.1:50011 proxy_protocol;\n\t\tproxy_pass xtls;\n\t}" /etc/nginx/nginx.conf
-}
-
-# nginx set
-cd /etc/nginx/conf.d
-cat > $servername.conf <<-EOF
-server {
-        listen 80;
-        listen [::]:80;
-        server_name $servername;        
-        location / {
-                root /usr/share/nginx/html;
-                index index.html;
-        }
-        location ^~ /subscribe/  {
-                alias /usr/share/nginx/html/static/;
-        }
-}
-server {
-        listen 80;
-        listen [::]:80;
-        server_name x.$servername;
-        return 301 http://$servername;
-}
-server {
-        listen 80;
-        listen [::]:80;
-        server_name tx.$servername;
-        return 301 http://$servername;
-}
-server {
-        listen 80;
-        listen [::]:80;
-        server_name vw.$servername;
-        return 301 http://$servername;
-}
-server {
-        listen 127.0.0.1:50014 ssl http2 proxy_protocol;
-        set_real_ip_from 127.0.0.1;
-        server_name vw.$servername;
-
-        ssl_certificate /root/.acme.sh/$servername/fullchain.cer; 
-        ssl_certificate_key /root/.acme.sh/$servername/$servername.key;
-        ssl_protocols TLSv1.2 TLSv1.3;
-        ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
-        ssl_prefer_server_ciphers on;
-        add_header Strict-Transport-Security "max-age=31536000; includeSubservernames; preload" always; #启用HSTS
-        location / {
-                root /usr/share/nginx/html;
-                index index.html;
-        }
-
-        location = /wstest { #与vless+ws应用中path对应
-            proxy_redirect off;
-            proxy_pass http://127.0.0.1:1311; #转发给本机vless+ws监听端口
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade \$http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host \$http_host;
-            proxy_set_header X-Real-IP \$remote_addr;
-            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        }
-}
-server {
-        listen 80;
-        listen [::]:80;
-        server_name g.$servername;
-        return 301 http://$servername;
-}
-server {
-        listen 127.0.0.1:50018 ssl http2 proxy_protocol;
-        set_real_ip_from 127.0.0.1;
-        server_name g.$servername;
-
-        ssl_certificate /root/.acme.sh/$servername/fullchain.cer; 
-        ssl_certificate_key /root/.acme.sh/$servername/$servername.key;
-        # ssl_protocols TLSv1.2 TLSv1.3;
-        # ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
-        # ssl_prefer_server_ciphers on;
-
-        add_header Strict-Transport-Security "max-age=31536000; includeSubservernames; preload" always; #启用HSTS
-        location / {
-                root /usr/share/nginx/html;
-                index index.html;
-        }
-
-        location /test { #与vless+grpc应用中serviceName对应
-            if (\$request_method != "POST") {
-                return 404;
-            }
-            client_body_buffer_size 1m;
-            client_body_timeout 1071906480m;
-            client_max_body_size 0;
-            grpc_read_timeout 1071906480m;
-            grpc_send_timeout 1h;
-            grpc_pass grpc://127.0.0.1:50008;
-        }
-}
-server {
-        listen 80;
-        listen [::]:80;
-        server_name t.$servername;
-        return 301 http://$servername;
-}
-server {
-        listen 80;
-        listen [::]:80;
-        server_name tg.$servername;
-        return 301 http://$servername;
-}
-server {
-        listen 80;
-        listen [::]:80;
-        server_name s.$servername;
-        return 301 http://$servername;
-}
-server {
-        listen 80;
-        listen [::]:80;
-        server_name sx.$servername;
-        return 301 http://$servername;
-}
-server {
-        listen 127.0.0.1:50313 ssl http2 proxy_protocol;
-        set_real_ip_from 127.0.0.1;
-        server_name xss.$servername;
-
-        ssl_certificate /root/.acme.sh/$servername/fullchain.cer; 
-        ssl_certificate_key /root/.acme.sh/$servername/$servername.key;
-        ssl_protocols TLSv1.2 TLSv1.3;
-        ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305;
-        ssl_prefer_server_ciphers on;
-        add_header Strict-Transport-Security "max-age=31536000; includeSubservernames; preload" always; #启用HSTS
-        location / {
-                root /usr/share/nginx/html;
-                index index.html;
-        }
-
-        location = /uri { # 与xray里ss应用中dekodemo-door里path对应
-            proxy_redirect off;
-            proxy_pass http://127.0.0.1:2022; # 转发给本机dekodemo-door监听端口
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade \$http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Host \$http_host;
-            proxy_set_header X-Real-IP \$remote_addr;
-            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        }
-}
-EOF
 # repair pid file
 sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
 sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
