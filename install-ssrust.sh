@@ -63,12 +63,16 @@ EOF
 
 # 443端口转发到实际端口
 grep "sx.$servername" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\tsx.$servername trojan;" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream trojan {\n\t\tserver 127.0.0.1:50203;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/\$ssl_preread_server_name/a\\\t\tsx.$servername beforesx;" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream sx {\n\t\tserver 127.0.0.1:50203;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream beforesx {\n\t\tserver 127.0.0.1:50233;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/remove proxy_protocol/a\\\tserver {\n\t\tlisten 127.0.0.1:50233 proxy_protocol;\n\t\tproxy_pass sx;\n\t}" /etc/nginx/nginx.conf
 }
 grep "s.$servername" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\tv.$servername vless;" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream vless {\n\t\tserver unix:/dev/shm/vless.sock;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/\$ssl_preread_server_name/a\\\t\ts.$servername beforess;" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream ss {\n\t\tserver 127.0.0.1:50003;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream beforess {\n\t\tserver 127.0.0.1:50033;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/remove proxy_protocol/a\\\tserver {\n\t\tlisten 127.0.0.1:50033 proxy_protocol;\n\t\tproxy_pass ss;\n\t}" /etc/nginx/nginx.conf
 }
 
 nginx -s reload
