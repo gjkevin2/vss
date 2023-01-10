@@ -181,67 +181,12 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "method": "aes-256-gcm",
         "password": "barfoo!"
       }
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 2022,
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "v1.mux.cool"
-      },
-      "streamSettings": {
-        "network": "ws",
-        "security": "none",
-        "wsSettings": {
-          "path": "/uri"
-        }
-      },
-      "tag":"ddws"
-    },
-    {
-      "listen": "127.0.0.1",
-      "port": 2021,
-      "protocol": "shadowsocks",
-      "settings": {
-        "method": "none",
-        "password": "barfoo!"
-      },
-      "streamSettings": {
-        "network": "domainsocket",
-        "security": "none",
-        "dsSettings": {
-          "path": "ss",
-          "abstract": true
-        }
-      }
     }
   ],
   "outbounds": [
     {
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "tag": "ssds",
-      "protocol": "freedom",
-      "streamSettings": {
-        "network": "domainsocket",
-        "dsSettings": {
-          "path": "ss",
-          "abstract": true
-        }
-      }
+      "protocol": "freedom"
     }
-  ],
-  "routing": {
-    "rules": [
-      {
-        "type": "field",
-        "inboundTag": "ddws",
-        "outboundTag": "ssds"
-      }
-    ]
-  }
 }
 EOF
 systemctl stop xray
