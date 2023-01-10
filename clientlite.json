@@ -76,7 +76,7 @@
       "settings": {
         "vnext": [
           {
-            "address": "103.99.179.97",
+            "address": "158742.xyz",
             "port": 443,
             "users": [
               {
@@ -92,7 +92,7 @@
         "network": "tcp",
         "security": "xtls",
         "xtlsSettings": {
-          "serverName": "x.flyrain.xyz",
+          "serverName": "v.158742.xyz",
           "allowInsecure": false
         }
       }
