@@ -187,6 +187,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
     {
       "protocol": "freedom"
     }
+  ]
 }
 EOF
 systemctl stop xray
