@@ -5,7 +5,7 @@ read domain
 # set sni bypass
 serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
 # nginx need user root to use unix socket
-sed -i 's/user nginx/user root/g' /etc/nginx/nginx.conf
+sed -i 's/user  nginx/user  root/g' /etc/nginx/nginx.conf
 sed -i '/^stream {/,$d' /etc/nginx/nginx.conf
 cat >>/etc/nginx/nginx.conf<<-EOF
 stream {
