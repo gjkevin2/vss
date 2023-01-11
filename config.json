@@ -39,6 +39,14 @@
           "geoip:private"
         ],
         "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "domain": [
+            "geosite:netflix",
+            "geosite:disney"
+        ],
+        "outboundTag": "ipv6-direct"
       }
     ]
   },
@@ -100,6 +108,13 @@
     {
       "tag": "direct",
       "protocol": "freedom"
+    },
+    {
+      "protocol": "freedom",
+      "settings": {
+          "domainStrategy": "UseIPv6"
+      },
+      "tag": "ipv6-direct"
     },
     {
       "protocol": "blackhole",
