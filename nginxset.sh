@@ -5,9 +5,41 @@ read domain
 # set sni bypass
 serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
 # nginx need user root to use unix socket
-sed -i 's/user  nginx/user  root/g' /etc/nginx/nginx.conf
-sed -i '/^stream {/,$d' /etc/nginx/nginx.conf
-cat >>/etc/nginx/nginx.conf<<-EOF
+# sed -i 's/user  nginx/user  root/g' /etc/nginx/nginx.conf
+# sed -i '/^stream {/,$d' /etc/nginx/nginx.conf
+# cat >>/etc/nginx/nginx.conf<<-EOF
+# stream {
+#         # SNI recognize
+#         map \$ssl_preread_server_name \$stream_map {
+#                 www.$domain web;
+#                 default web;                
+#         }
+#         # upstream set
+#         upstream web {
+#                 server unix:/dev/shm/web.sock;
+#         }
+#         server {
+#                 listen 443;
+#                 listen [::]:443;
+#                 ssl_preread on;
+#                 proxy_protocol on; 
+#                 proxy_pass  \$stream_map;
+#         }
+#         # remove proxy_protocol
+# }
+# EOF
+cat >/etc/nginx/nginx.conf<<-EOF
+user  root;
+worker_processes auto;
+
+error_log  /var/log/nginx/error.log;
+
+pid       /run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
 stream {
         # SNI recognize
         map \$ssl_preread_server_name \$stream_map {
@@ -26,6 +58,22 @@ stream {
                 proxy_pass  \$stream_map;
         }
         # remove proxy_protocol
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for" '
+                      '$proxy_protocol_addr:$proxy_protocol_port';
+
+    access_log  /var/log/nginx/access.log  main;
+    
+    sendfile on;
+    keepalive_timeout 65;
+    include /etc/nginx/conf.d/*.conf;
 }
 EOF
 
