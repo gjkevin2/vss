@@ -210,9 +210,6 @@ grep "v.$servername" /etc/nginx/nginx.conf || {
   sed -i "/upstream set/a\\\tupstream vless {\n\t\tserver unix:/dev/shm/vless.sock;\n\t}" /etc/nginx/nginx.conf
 }
 
-# repair pid file
-sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
-sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
 # (re)start nginx
 systemctl daemon-reload
 systemctl start nginx

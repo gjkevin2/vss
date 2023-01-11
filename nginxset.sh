@@ -5,7 +5,7 @@ read domain
 # set sni bypass
 serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
 # nginx need user root to use unix socket
-sed -i 's/user  nginx/user  root/g' /etc/nginx/nginx.conf
+sed -i 's/user.*/user  root/g' /etc/nginx/nginx.conf
 sed -i 's#/var/run/nginx.pid#/run/nginx.pid#g' /etc/nginx/nginx.conf
 # repair pid file
 sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
