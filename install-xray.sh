@@ -192,6 +192,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
 }
 EOF
 systemctl stop xray
+systemctl stop nginx
 #去除user，使用root读取证书
 #sed -i "s/User=nobody//" /etc/systemd/system/xray.service
 #systemctl daemon-reload
@@ -214,7 +215,6 @@ sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
 sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
 # (re)start nginx
 systemctl daemon-reload
-systemctl stop nginx
 systemctl start nginx
 
 #修改配置文件
