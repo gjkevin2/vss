@@ -6,12 +6,6 @@ read domain
 serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
 # nginx need user root to use unix socket
 sed -i 's/user  nginx/user  root/g' /etc/nginx/nginx.conf
-sed -i 's#/var/run/nginx.pid#/run/nginx.pid#g' /etc/nginx/nginx.conf
-# repair pid file
-sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
-sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
-systemctl daemon-reload
-# touch /run/nginx.pid
 sed -i '/^stream {/,$d' /etc/nginx/nginx.conf
 cat >>/etc/nginx/nginx.conf<<-EOF
 stream {
@@ -88,7 +82,10 @@ server {
 }
 EOF
 
-
+# repair pid file
+sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
+sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
 # (re)start nginx
+systemctl daemon-reload
 systemctl stop nginx
 systemctl start nginx

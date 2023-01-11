@@ -25,11 +25,25 @@ mkdir $HOME/cert
 #install nginx and fake web
 apt -y install curl gnupg2 ca-certificates lsb-release
 echo "deb http://nginx.org/packages/debian `lsb_release -cs` nginx" | tee /etc/apt/sources.list.d/nginx.list
-curl -fsSL https://nginx.org/keys/nginx_signing.key | apt-key add -
-apt-key fingerprint ABF5BD827BD9BF62
+# curl -fsSL https://nginx.org/keys/nginx_signing.key | apt-key add -
+# apt-key fingerprint ABF5BD827BD9BF62
+echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" | tee /etc/apt/preferences.d/99nginx
 apt update
 #systemctl unmask nginx.service
 apt -y install nginx
+
+# install Docker
+# wget -qO- get.docker.com | bash
+# # 查看 Docker 版本
+# #docker version
+
+# # set Docker start on boot
+# systemctl start docker
+# systemctl enable docker
+
+# # pull mirror and set auto renew software
+# docker pull nginx
+# docker pull containrrr/watchtower
 
 # fakesite
 mkdir /usr/share/nginx/html/static >/dev/null 2>&1
@@ -43,3 +57,4 @@ unzip fakesite.zip >/dev/null 2>&1
 systemctl enable nginx
 systemctl stop nginx
 systemctl start nginx
+# docker run -p 80:80 -p 443:443 --name nginx --restart=always -v /etc/nginx/nginx.conf:/etc/nginx/nginx.conf -v /etc/nginx/conf.d:/etc/nginx/conf.d -v /usr/share/nginx/html:/usr/share/nginx/html -v /var/log/nginx:/var/log/nginx -v /root/.acme.sh/$domain:/root/.acme.sh/$domain -d nginx
