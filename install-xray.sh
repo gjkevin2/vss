@@ -15,7 +15,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
   },
   "inbounds": [
     {
-      "listen": "/dev/shm/vless.sock",
+      "listen": "/dev/shm/vless.sock,666",
       "protocol": "vless",
       "settings": {
         "clients": [
@@ -93,7 +93,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       }
     },
     {
-      "listen": "/dev/shm/trojan.sock",
+      "listen": "/dev/shm/trojan.sock,666",
       "protocol": "trojan",
       "settings": {
         "clients": [
@@ -137,7 +137,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       }
     },
     {
-      "listen": "/dev/shm/vgrpc.sock",
+      "listen": "/dev/shm/vgrpc.sock,666",
       "protocol": "vless",
       "settings": {
         "clients": [
