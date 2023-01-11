@@ -1,7 +1,7 @@
 {
     "servers": [
         {
-            "address": "2607:fcd0:100:b100:0000:0000:94eb:753e",
+            "address": "2607:5501:3000:f39::2",
             "port": 50303,
             "password": "barfoo!",
             "method": "aes-256-gcm"
