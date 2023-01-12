@@ -1,4 +1,7 @@
 #!/bin/bash
+echo '请输入顶级域名'
+read domain
+
 # install HAProxy
 curl https://haproxy.debian.net/bernat.debian.org.gpg | gpg --dearmor > /usr/share/keyrings/haproxy.debian.net.gpg
 echo deb "[signed-by=/usr/share/keyrings/haproxy.debian.net.gpg]" http://haproxy.debian.net buster-backports-2.7 main > /etc/apt/sources.list.d/haproxy.list
@@ -31,22 +34,22 @@ frontend sni_proxy
         tcp-request inspect-delay 5s
         tcp-request content accept if { req.ssl_hello_type 1 }
 
-        acl acl_vless req_ssl_sni -i zv.xx.yy #zv.xx.yy修改为自己规划对应vless+tcp+tls的域名
-        acl acl_trojan req_ssl_sni -i zt.xx.yy #zt.xx.yy修改为自己规划对应trojan+tcp+tls的域名
-        acl acl_https req_ssl_sni -i zh.xx.yy #zh.xx.yy修改为自己规划对应HTTPS server的域名
+        acl acl_vless req_ssl_sni -i v.$domain #-i后面修改为自己规划对应vless+tcp+tls的域名
+        acl acl_trojan req_ssl_sni -i t.$domain #-i后面修改为自己规划对应trojan+tcp+tls的域名
+        acl acl_https req_ssl_sni -i www.$domain #-i后面修改为自己规划对应HTTPS server的域名
 
         use_backend vless if acl_vless
         use_backend trojan if acl_trojan
         use_backend https if acl_https
 
 backend vless
-        server vps_name /dev/shm/vless.sock send-proxy-v2 #转给vless+tcp+tls监听进程，且启用第二版的PROXY protocol发送。
+        server vps_vless /dev/shm/vless.sock send-proxy-v2 #转给vless+tcp+tls监听进程，且启用第二版的PROXY protocol发送。
 
 backend trojan
-        server vps_name /dev/shm/trojan.sock send-proxy-v2 #转给trojan+tcp+tls监听进程，且启用第二版的PROXY protocol发送。
+        server vps_trojan /dev/shm/trojan.sock send-proxy-v2 #转给trojan+tcp+tls监听进程，且启用第二版的PROXY protocol发送。
 
 backend https
-        server vps_name /dev/shm/https.sock send-proxy-v2 #转给HTTPS server监听进程，且启用第二版的PROXY protocol发送。
+        server vps_web /dev/shm/https.sock send-proxy-v2 #转给HTTPS server监听进程，且启用第二版的PROXY protocol发送。
 EOF
 systemctl restart haproxy
 systemctl
@@ -57,6 +60,13 @@ curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmo
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
 apt update
 apt -y install caddy
+# use plugin caddy
+systemctl stop caddy
+lurl='https://api.github.com/repos/lxhao61/integrated-examples/releases/latest'
+latest_version=`curl $lurl| grep tag_name |awk -F '[:,"]' '{print $5}'`
+wget https://github.com/lxhao61/integrated-examples/releases/download/${latest_version}/caddy-linux-amd64.tar.gz
+tar xf caddy-linux-amd64.tar.gz -C /usr/bin && rm /usr/bin/sha256
+rm -f caddy-linux-amd64.tar.gz
 
 cat >/etc/caddy/caddy.json<<-EOF
 {
@@ -109,7 +119,7 @@ cat >/etc/caddy/caddy.json<<-EOF
             },
             {
               "handler": "file_server",
-              "root": "/var/www/html" //修改为自己存放的WEB文件路径
+              "root": "/usr/share/nginx/html" //修改为自己存放的WEB文件路径
             }]
           }],
           "protocols": ["h1","h2c"] //开启HTTP/1.1 server与H2C server支持
@@ -182,7 +192,7 @@ cat >/etc/caddy/caddy.json<<-EOF
             },
             {
               "handler": "file_server",
-              "root": "/var/www/html" //修改为自己存放的WEB文件路径
+              "root": "/usr/share/nginx/html" //修改为自己存放的WEB文件路径
             }]
           }],
           "tls_connection_policies": [{
@@ -195,13 +205,12 @@ cat >/etc/caddy/caddy.json<<-EOF
     },
     "tls": {
       "certificates": {
-        "automate": ["zv.xx.yy","zt.xx.yy","zh.xx.yy"] //自动化管理TLS证书（包括获取、更新及加载证书）。修改为自己的域名。
+        "automate": ["v.$domain","t.$domain","www.$domain"] //自动化管理TLS证书（包括获取、更新及加载证书）。修改为自己的域名。
       },
       "automation": {
         "policies": [{
           "issuers": [{
-            "module": "acme", //acme表示从Let's Encrypt申请TLS证书，zerossl表示从ZeroSSL申请TLS证书。必须acme与zerossl二选一（固定TLS证书的目录便于引用）。
-            "email": "your@email.com" //修改为自己的电子邮箱（选配）
+            "module": "acme" //acme表示从Let's Encrypt申请TLS证书，zerossl表示从ZeroSSL申请TLS证书。必须acme与zerossl二选一（固定TLS证书的目录便于引用）。
           }]
         }]
       }
