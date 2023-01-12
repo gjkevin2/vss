@@ -32,6 +32,12 @@ apt update
 #systemctl unmask nginx.service
 apt -y install nginx
 
+# remove nginx
+# apt -y remove nginx
+# apt -y purge nginx
+# # reinstrall nginx
+# apt -y -o DPkg::options::=--force-confmiss --reinstall install nginx
+
 # install Docker
 # wget -qO- get.docker.com | bash
 # # 查看 Docker 版本
