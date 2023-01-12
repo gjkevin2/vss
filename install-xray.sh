@@ -15,7 +15,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
   },
   "inbounds": [
     {
-      "listen": "/dev/shm/vless.sock",
+      "listen": "/dev/shm/vless.sock,666",
       "protocol": "vless",
       "settings": {
         "clients": [
@@ -93,7 +93,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       }
     },
     {
-      "listen": "/dev/shm/trojan.sock",
+      "listen": "/dev/shm/trojan.sock,666",
       "protocol": "trojan",
       "settings": {
         "clients": [
@@ -137,7 +137,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       }
     },
     {
-      "listen": "/dev/shm/vgrpc.sock",
+      "listen": "/dev/shm/vgrpc.sock,666",
       "protocol": "vless",
       "settings": {
         "clients": [
@@ -192,6 +192,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
 }
 EOF
 systemctl stop xray
+systemctl stop nginx
 #去除user，使用root读取证书
 #sed -i "s/User=nobody//" /etc/systemd/system/xray.service
 #systemctl daemon-reload
@@ -209,12 +210,8 @@ grep "v.$servername" /etc/nginx/nginx.conf || {
   sed -i "/upstream set/a\\\tupstream vless {\n\t\tserver unix:/dev/shm/vless.sock;\n\t}" /etc/nginx/nginx.conf
 }
 
-# repair pid file
-sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
-sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
 # (re)start nginx
 systemctl daemon-reload
-systemctl stop nginx
 systemctl start nginx
 
 #修改配置文件
