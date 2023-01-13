@@ -36,7 +36,7 @@ apt -y install nginx
 # apt -y remove nginx
 # apt -y purge nginx
 # # reinstrall nginx
-# apt -y -o DPkg::options::=--force-confmiss --reinstall install nginx
+# apt -y install nginx
 
 # install Docker
 # wget -qO- get.docker.com | bash
