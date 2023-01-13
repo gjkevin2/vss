@@ -105,6 +105,20 @@
         }
       }
     },
+    // {
+    //   "tag":"proxy",
+    //   "protocol":"shadowsocks",
+    //   "settings": {
+    //     "servers": [
+    //       {
+    //         "address": "158742.xyz",
+    //         "port": 10630,
+    //         "method": "2022-blake3-aes-128-gcm",
+    //         "password": "PJBCXp8lJrg7XxRV7yfApA=="
+    //       }
+    //     ]
+    //   }
+    // },
     {
       "tag": "direct",
       "protocol": "freedom"
