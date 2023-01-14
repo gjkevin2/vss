@@ -21,7 +21,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "clients": [
           {
             "id": "dc8dd6af-62fa-480d-81bb-53eec20f58d5",
-            "flow": "xtls-rprx-direct"
+            "flow": "xtls-rprx-vison"
           }
         ],
         "decryption": "none",
@@ -44,24 +44,24 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "xtls",
-        "xtlsSettings": {
-          "alpn": [
-            "h2",
-            "http/1.1"
-          ],
-          "minVersion": "1.2",
-          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
+        "security": "tls",
+        "tlsSettings": {
+          "minVersion": "1.3",
+          "alpn": ["h2", "http/1.1"],
           "certificates": [
             {
               "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
-              "keyFile": "/root/.acme.sh/$servername/$servername.key",
-              "ocspStapling": 3600
+              "keyFile": "/root/.acme.sh/$servername/$servername.key"
             }
           ]
         },
         "tcpSettings": {
           "acceptProxyProtocol": true
+        },
+        "sockopt": {
+            "tcpFastOpen": true,
+            "tcpKeepAliveIdle": 30,
+            "tcpKeepAliveInterval": 30
         }
       }
     },
@@ -99,7 +99,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "clients": [
           {
             "password":"461ece30",
-            "flow": "xtls-rprx-direct"
+            "flow": "xtls-rprx-vision"
           }
         ],
         "fallbacks": [
@@ -116,23 +116,24 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "xtls",
-        "xtlsSettings": {
-          "alpn": [
-            "h2"
-          ],
-          "minVersion": "1.2",
-          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
+        "security": "tls",
+        "tlsSettings": {
+          "minVersion": "1.3",
+          "alpn": ["h2", "http/1.1"],
           "certificates": [
             {
               "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
-              "keyFile": "/root/.acme.sh/$servername/$servername.key",
-              "ocspStapling": 3600
+              "keyFile": "/root/.acme.sh/$servername/$servername.key"
             }
           ]
         },
         "tcpSettings": {
           "acceptProxyProtocol": true
+        },
+        "sockopt": {
+            "tcpFastOpen": true,
+            "tcpKeepAliveIdle": 30,
+            "tcpKeepAliveInterval": 30
         }
       }
     },
