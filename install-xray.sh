@@ -45,7 +45,9 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "network": "tcp",
         "security": "tls",
         "tlsSettings": {
-          "minVersion": "1.3",
+          "minVersion": "1.2",
+          "maxVersion": "1.2",
+          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
           "alpn": ["h2", "http/1.1"],
           "certificates": [
             {
@@ -116,7 +118,9 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "network": "tcp",
         "security": "tls",
         "tlsSettings": {
-          "minVersion": "1.3",
+          "minVersion": "1.2",
+          "maxVersion": "1.2",
+          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
           "alpn": ["h2", "http/1.1"],
           "certificates": [
             {
