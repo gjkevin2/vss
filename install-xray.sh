@@ -97,8 +97,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "settings": {
         "clients": [
           {
-            "password":"461ece30",
-            "flow": "xtls-rprx-vision"
+            "password":"461ece30"
           }
         ],
         "fallbacks": [
