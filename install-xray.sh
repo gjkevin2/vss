@@ -186,8 +186,32 @@ cat > /usr/local/etc/xray/config.json <<-EOF
   "outbounds": [
     {
       "protocol": "freedom"
+    },
+    {
+            "protocol": "blackhole",
+            "tag": "blackhole"
     }
-  ]
+  ],
+ "routing": {
+    "domainStrategy": "IPIfNonMatch",
+    "rules": [
+    {
+      "domain": [
+          "geosite:cn"
+      ],
+      "outboundTag": "blackhole",
+      "type": "field"
+    },
+    {
+      "ip": [
+          "geoip:cn"
+      ],
+      "outboundTag": "blackhole",
+      "type": "field"
+    }
+
+    ]
+  }
 }
 EOF
 systemctl stop xray
