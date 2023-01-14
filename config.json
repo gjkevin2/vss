@@ -78,47 +78,47 @@
   ],
 
   "outbounds": [
-    {
-      "tag": "proxy",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "serverip",
-            "port": 443,
-            "users": [
-              {
-                "id": "dc8dd6af-62fa-480d-81bb-53eec20f58d5",
-                "flow": "xtls-rprx-direct",
-                "encryption": "none"
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "xtls",
-        "xtlsSettings": {
-          "serverName": "servername",
-          "allowInsecure": false
-        }
-      }
-    },
     // {
-    //   "tag":"proxy",
-    //   "protocol":"shadowsocks",
+    //   "tag": "proxy",
+    //   "protocol": "vless",
     //   "settings": {
-    //     "servers": [
+    //     "vnext": [
     //       {
-    //         "address": "158742.xyz",
-    //         "port": 10630,
-    //         "method": "2022-blake3-aes-128-gcm",
-    //         "password": "PJBCXp8lJrg7XxRV7yfApA=="
+    //         "address": "serverip",
+    //         "port": 443,
+    //         "users": [
+    //           {
+    //             "id": "dc8dd6af-62fa-480d-81bb-53eec20f58d5",
+    //             "flow": "xtls-rprx-direct",
+    //             "encryption": "none"
+    //           }
+    //         ]
     //       }
     //     ]
+    //   },
+    //   "streamSettings": {
+    //     "network": "tcp",
+    //     "security": "xtls",
+    //     "xtlsSettings": {
+    //       "serverName": "servername",
+    //       "allowInsecure": false
+    //     }
     //   }
     // },
+    {
+      "tag":"proxy",
+      "protocol":"shadowsocks",
+      "settings": {
+        "servers": [
+          {
+            "address": "158742.xyz",
+            "port": 10630,
+            "method": "2022-blake3-aes-128-gcm",
+            "password": "PJBCXp8lJrg7XxRV7yfApA=="
+          }
+        ]
+      }
+    },
     {
       "tag": "direct",
       "protocol": "freedom"
