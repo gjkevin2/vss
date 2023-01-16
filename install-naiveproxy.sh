@@ -61,7 +61,7 @@ cat >/etc/caddy/config.json<<-EOF
                       "match": [
                         {
                           "host": [
-                            "n.$domain"
+                            "n.$servername"
                           ]
                         }
                       ],
@@ -85,7 +85,7 @@ cat >/etc/caddy/config.json<<-EOF
             {
               "match": {
                 "sni": [
-                  "n.$domain"
+                  "n.$servername"
                 ]
               }
             }
