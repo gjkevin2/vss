@@ -11,15 +11,13 @@ cat > /usr/local/etc/xray/config.json <<-EOF
   },
   "inbounds": [
     {
-      "listen": "/dev/shm/vless.sock",
+      "listen": "/dev/shm/vless.sock,666",
       "protocol": "vless",
       "settings": {
         "clients": [
           {
             "id": "dc8dd6af-62fa-480d-81bb-53eec20f58d5",
-            "flow": "xtls-rprx-direct",
-            "alterId": 0,
-            "level": 0
+            "flow": "xtls-rprx-vision"
           }
         ],
         "decryption": "none",
@@ -42,24 +40,26 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "xtls",
-        "xtlsSettings": {
-          "alpn": [
-            "h2",
-            "http/1.1"
-          ],
+        "security": "tls",
+        "tlsSettings": {
           "minVersion": "1.2",
-          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
+          "maxVersion": "1.2",
+          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
+          "alpn": ["h2", "http/1.1"],
           "certificates": [
             {
               "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
-              "keyFile": "/root/.acme.sh/$servername/$servername.key",
-              "ocspStapling": 3600
+              "keyFile": "/root/.acme.sh/$servername/$servername.key"
             }
           ]
         },
         "tcpSettings": {
           "acceptProxyProtocol": true
+        },
+        "sockopt": {
+            "tcpFastOpen": true,
+            "tcpKeepAliveIdle": 30,
+            "tcpKeepAliveInterval": 30
         }
       }
     },
@@ -91,13 +91,12 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       }
     },
     {
-      "listen": "/dev/shm/trojan.sock",
+      "listen": "/dev/shm/trojan.sock,666",
       "protocol": "trojan",
       "settings": {
         "clients": [
           {
-            "password":"461ece30",
-            "flow": "xtls-rprx-direct"
+            "password":"461ece30"
           }
         ],
         "fallbacks": [
@@ -114,28 +113,31 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "xtls",
-        "xtlsSettings": {
-          "alpn": [
-            "h2"
-          ],
+        "security": "tls",
+        "tlsSettings": {
           "minVersion": "1.2",
-          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
+          "maxVersion": "1.2",
+          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
+          "alpn": ["h2", "http/1.1"],
           "certificates": [
             {
               "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
-              "keyFile": "/root/.acme.sh/$servername/$servername.key",
-              "ocspStapling": 3600
+              "keyFile": "/root/.acme.sh/$servername/$servername.key"
             }
           ]
         },
         "tcpSettings": {
           "acceptProxyProtocol": true
+        },
+        "sockopt": {
+            "tcpFastOpen": true,
+            "tcpKeepAliveIdle": 30,
+            "tcpKeepAliveInterval": 30
         }
       }
     },
     {
-      "listen": "/dev/shm/vgrpc.sock",
+      "listen": "/dev/shm/vgrpc.sock,666",
       "protocol": "vless",
       "settings": {
         "clients": [
@@ -159,13 +161,95 @@ cat > /usr/local/etc/xray/config.json <<-EOF
          "tls"
         ]
       }
+    },
+    {
+      "port": 23282,
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "74a2e3cf-2b2c-4afe-b4c9-fec7124bc941",
+            "level": 1
+          }
+        ]
+      }
+    },
+    {
+      "port": 10630,
+      "protocol": "shadowsocks",
+      "settings": {
+        "method": "2022-blake3-aes-128-gcm",
+        "password": "PJBCXp8lJrg7XxRV7yfApA==",
+        "network": "tcp,udp"
+      }
+    },
+    {
+      "port": 30200,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "b60af21d-da5c-4c68-a303-9461416d6bbe",
+            "flow": "xtls-rprx-vision"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": {
+          "minVersion": "1.2",
+          "maxVersion": "1.2",
+          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
+          "alpn": ["h2", "http/1.1"],
+          "certificates": [
+            {
+              "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
+              "keyFile": "/root/.acme.sh/$servername/$servername.key"
+            }
+          ]
+        },
+        "tcpSettings": {
+          "acceptProxyProtocol": true
+        },
+        "sockopt": {
+            "tcpFastOpen": true,
+            "tcpKeepAliveIdle": 30,
+            "tcpKeepAliveInterval": 30
+        }
+      }
     }
   ],
   "outbounds": [
     {
       "protocol": "freedom"
+    },
+    {
+            "protocol": "blackhole",
+            "tag": "blackhole"
     }
-  ]
+  ],
+ "routing": {
+    "domainStrategy": "IPIfNonMatch",
+    "rules": [
+    {
+      "domain": [
+          "geosite:cn"
+      ],
+      "outboundTag": "blackhole",
+      "type": "field"
+    },
+    {
+      "ip": [
+          "geoip:cn"
+      ],
+      "outboundTag": "blackhole",
+      "type": "field"
+    }
+
+    ]
+  }
 }
 EOF
 #去除user，使用root读取证书
