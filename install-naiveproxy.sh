@@ -12,7 +12,8 @@ wget https://github.com/lxhao61/integrated-examples/releases/download/${latest_v
 tar xf caddy-linux-amd64.tar.gz -C /usr/bin && rm /usr/bin/sha256
 rm -f caddy-linux-amd64.tar.gz
 
-cat >/etc/caddy/caddy.json<<-EOF
+mkdir /etc/caddy
+cat >/etc/caddy/config.json<<-EOF
 {
   "admin": {
     "disabled": true
@@ -116,7 +117,7 @@ Description=Caddy Server
 After=network.target
 [Service]
 Restart=on-abnormal
-ExecStart=/usr/bin/caddy -c /etc/caddy/config.json
+ExecStart=/usr/bin/caddy run --config /etc/caddy/config.json
 [Install]
 WantedBy=multi-user.target
 EOF
