@@ -63,6 +63,10 @@ server {
                 index  index.html index.htm;
         }
 
+        location ^~ /static/ {
+                root /usr/share/nginx/html/static/;
+        }
+
         location /test { # grpc serviceName与xray配置里一致
                 if (\$request_method != "POST") {
                         return 404;
