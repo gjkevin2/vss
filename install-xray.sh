@@ -33,11 +33,6 @@ cat > /usr/local/etc/xray/config.json <<-EOF
           {
             "dest": "/dev/shm/h1.sock",
             "xver": 2
-          },
-          {
-            "path": "/wstest",
-            "dest": "@vless-ws",
-            "xver": 2
           }
         ]
       },
@@ -45,10 +40,6 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "network": "tcp",
         "security": "tls",
         "tlsSettings": {
-          "minVersion": "1.2",
-          "maxVersion": "1.2",
-          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
-          "alpn": ["h2", "http/1.1"],
           "certificates": [
             {
               "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
@@ -63,80 +54,14 @@ cat > /usr/local/etc/xray/config.json <<-EOF
             "tcpFastOpen": true,
             "tcpKeepAliveIdle": 30,
             "tcpKeepAliveInterval": 30
-        }
-      }
-    },
-    {
-      "listen": "@vless-ws",
-      "protocol": "vless",
-      "settings": {
-        "clients": [
-          {
-            "id": "bf45efa6-9d98-4553-a627-8715c1a491b8"
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "ws",
-        "security": "none",
-        "wsSettings": {
-         "acceptProxyProtocol": true,
-         "path": "/wstest"
         }
       },
       "sniffing": {
-        "enabled": true,
-        "destOverride": [
-         "http",
-         "tls"
-        ]
-      }
-    },
-    {
-      "listen": "/dev/shm/trojan.sock,666",
-      "protocol": "trojan",
-      "settings": {
-        "clients": [
-          {
-            "password":"461ece30"
-          }
-        ],
-        "fallbacks": [
-          {
-            "alpn": "h2",
-            "dest": "/dev/shm/h2c.sock",
-            "xver": 2
-          },
-          {
-            "dest": "/dev/shm/h1.sock",
-            "xver": 2
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "minVersion": "1.2",
-          "maxVersion": "1.2",
-          "cipherSuites": "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
-          "alpn": ["h2", "http/1.1"],
-          "certificates": [
-            {
-              "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
-              "keyFile": "/root/.acme.sh/$servername/$servername.key"
-            }
+          "enabled": true,
+          "destOverride": [
+              "http",
+              "tls"
           ]
-        },
-        "tcpSettings": {
-          "acceptProxyProtocol": true
-        },
-        "sockopt": {
-            "tcpFastOpen": true,
-            "tcpKeepAliveIdle": 30,
-            "tcpKeepAliveInterval": 30
-        }
       }
     },
     {
@@ -162,18 +87,6 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "destOverride": [
          "http",
          "tls"
-        ]
-      }
-    },
-    {
-      "port": 23282,
-      "protocol": "vmess",
-      "settings": {
-        "clients": [
-          {
-            "id": "74a2e3cf-2b2c-4afe-b4c9-fec7124bc941",
-            "level": 1
-          }
         ]
       }
     },
