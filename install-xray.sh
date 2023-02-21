@@ -141,10 +141,6 @@ systemctl start xray
 systemctl enable xray
 
 # 443端口转发到实际端口
-grep "t.$servername" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\tt.$servername trojan;" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream trojan {\n\t\tserver unix:/dev/shm/trojan.sock;\n\t}" /etc/nginx/nginx.conf
-}
 grep "v.$servername" /etc/nginx/nginx.conf || {
   sed -i "/\$ssl_preread_server_name/a\\\t\tv.$servername vless;" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream vless {\n\t\tserver unix:/dev/shm/vless.sock;\n\t}" /etc/nginx/nginx.conf
