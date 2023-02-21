@@ -1,0 +1,65 @@
+{
+    "inbounds": [
+        {
+            "tag": "VLESS-TCP-Reality",
+            "protocol": "vless",
+            "port":4003,
+            "settings": {
+                "clients": [
+                    {
+                        "id": "1bacd758-db56-4713-a936-240fccce7f2f",
+                        "flow": "xtls-rprx-vision"
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "reality",
+                "realitySettings": {
+                    "show": false,
+                    "dest": "/dev/shm/h2c.sock",
+                    "xver": 2,
+                    "serverNames": ["re.158742.xyz"],
+                    "privateKey": "R6xEek-WTsP90wyi8X1uhkjVscuqY5bf9jOEqCOPV6k",
+                    "shortIds": ["3f4d573ec4ce481c"],
+                }
+            }
+        }
+    ]
+}
+
+
+客户端
+{
+    "tag": "proxy",
+    "protocol": "vless",
+    "settings": {
+      "vnext": [
+        {
+          "address": "re.158742.xyz",
+          "port": 4003,
+          "users": [
+            {
+              "id": "1bacd758-db56-4713-a936-240fccce7f2f",
+              "encryption": "none",
+              "flow": "xtls-rprx-vision"
+            }
+          ]
+        }
+      ]
+    },
+    "streamSettings": {
+      "network": "tcp",
+      "security": "reality",
+      "sockopt": {
+        "mark": 2 
+      },
+      "realitySettings": {
+        "publicKey": "aLJ0ChrV9Y3UKK9dHN1pcwsymfFjheY-3e-8OLsuFyw",
+        "shortId": "3f4d573ec4ce481c",
+        "serverName": "re.158742.xyz",
+        "fingerprint": "randomized"
+      }
+    }
+}

@@ -62,6 +62,32 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       }
     },
     {
+      "tag": "VLESS-TCP-Reality",
+      "listen":"0.0.0.0",
+      "protocol": "vless",
+      "port":4003,
+      "settings": {
+        "clients": [
+          {
+            "id": "1bacd758-db56-4713-a936-240fccce7f2f",
+            "flow": "xtls-rprx-vision"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "dest": "/dev/shm/h2c.sock",
+          "serverNames": ["re.158742.xyz"],
+          "privateKey": "R6xEek-WTsP90wyi8X1uhkjVscuqY5bf9jOEqCOPV6k",
+          "shortIds": ["3f4d573ec4ce481c"]
+        }
+      }
+    },
+    {
       "listen": "/dev/shm/vgrpc.sock,666",
       "protocol": "vless",
       "settings": {
@@ -130,4 +156,11 @@ cat > /usr/local/etc/xray/config.json <<-EOF
 EOF
 rm -rf /dev/shm/*
 systemctl start xray
+
+# 443端口转发到实际端口
+grep "v.$servername" /etc/nginx/nginx.conf || {
+  sed -i "/\$ssl_preread_server_name/a\\\t\tv.$servername vless;" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream vless {\n\t\tserver unix:/dev/shm/vless.sock;\n\t}" /etc/nginx/nginx.conf
+}
+
 systemctl start nginx
