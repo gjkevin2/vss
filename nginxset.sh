@@ -48,8 +48,8 @@ server {
         listen unix:/dev/shm/web.sock ssl http2 proxy_protocol;
         server_name $domain www.$domain;
         set_real_ip_from unix:;
-        ssl_certificate /root/.acme.sh/$domain/fullchain.cer; 
-        ssl_certificate_key /root/.acme.sh/$domain/$domain.key;
+        ssl_certificate /root/cert/fullchain.cer; 
+        ssl_certificate_key /root/cert/$domain.key;
         ssl_session_cache    shared:SSL:1m;
         ssl_session_timeout  5m;
         ssl_session_tickets  off;

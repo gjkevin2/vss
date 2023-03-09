@@ -64,15 +64,15 @@ export DP_Key='dc85648992cf2d738ee22815979e8a15'
 
 echo '请输入顶级域名'
 read domain
-# mkdir $HOME/cert
+mkdir $HOME/cert
 
 ~/.acme.sh/acme.sh --issue -d $domain -d *.$domain --dns dns_dp
 # ~/.acme.sh/acme.sh --issue -d $domain -d *.$domain --dns dns_cf
 
-#installcert
-# ~/.acme.sh/acme.sh --installcert -d $domain \
-#         --key-file   $HOME/cert/privkey.key \
-#         --fullchain-file $HOME/cert/fullchain.cer
+~/.acme.sh/acme.sh --install-cert -d $domain \
+--key-file       $HOME/cert/$domain.key  \
+--fullchain-file $HOME/cert/fullchain.cer \
+--reloadcmd     "service nginx force-reload"
 
 
 #install nginx and fake web
