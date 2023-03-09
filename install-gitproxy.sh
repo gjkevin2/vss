@@ -2,15 +2,76 @@
 port=5070
 echo "请输入网站域名"
 read domain
-chdir=~/gitproxy
-venv=$HOME/formattable/venv
 
+chdir=~/gitproxy
 mkdir $chdir 2>/dev/nul
 cd $chdir
 wget -Omain.py https://raw.githubusercontent.com/hunshcn/gh-proxy/master/app/main.py
 
-source ${venv}/bin/activate && cd ..
-pip install requests
+venv=$chdir/venv
+
+check_sys(){
+    local checkType=$1
+    local value=$2
+
+    local release=''
+    local systemPackage=''
+
+    if [[ -f /etc/redhat-release ]]; then
+        release='centos'
+        systemPackage='yum'
+    elif grep -Eqi 'debian|raspbian' /etc/issue; then
+        release='debian'
+        systemPackage='apt'
+    elif grep -Eqi 'ubuntu' /etc/issue; then
+        release='ubuntu'
+        systemPackage='apt'
+    elif grep -Eqi 'centos|red hat|redhat' /etc/issue; then
+        release='centos'
+        systemPackage='yum'
+    elif grep -Eqi 'debian|raspbian' /proc/version; then
+        release='debian'
+        systemPackage='apt'
+    elif grep -Eqi 'ubuntu' /proc/version; then
+        release='ubuntu'
+        systemPackage='apt'
+    elif grep -Eqi 'centos|red hat|redhat' /proc/version; then
+        release='centos'
+        systemPackage='yum'
+    fi
+
+    if [[ "${checkType}" == 'sysRelease' ]]; then
+        if [ "${value}" == "${release}" ]; then
+            return 0
+        else
+            return 1
+        fi
+    elif [[ "${checkType}" == 'packageManager' ]]; then
+        if [ "${value}" == "${systemPackage}" ]; then
+            return 0
+        else
+            return 1
+        fi
+    fi
+}
+
+# gcc、dev(el)是uwsgi需要
+if check_sys packageManager yum; then
+    yum install -y gcc python3`python3 --version | awk -F '[ .]' '{print $3}'`-devel
+elif check_sys packageManager apt; then
+    # python3-venv是venv需要,libpcre3-dev是uwsgi需要(若需要编译)
+    apt install -y gcc python3-dev python3-venv libpcre3-dev
+fi
+rm -rf venv
+pip3 install --upgrade pip
+python3 -m venv venv
+source venv/bin/activate
+# upgrade packages and install wheel
+# must upgrade pip ,otherwise alert "bdist_wheel" error
+pip3 install wheel flask requests
+# pip3 install -r requirements.txt
+# uwsgi 要加上–no-cache-dir,否则pip不会重新编译pcre进去
+pip3 install uwsgi --no-cache-dir
 
 mkdir uwsgi
 touch uwsgi/uwsgi.pid uwsgi/uwsgi.status
