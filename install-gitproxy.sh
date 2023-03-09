@@ -5,8 +5,8 @@ read domain
 chdir=~/gitproxy
 venv=$HOME/formattable/venv
 
-mkdir -p $chdir/app 2>/dev/nul
-cd $chdir/app
+mkdir $chdir 2>/dev/nul
+cd $chdir
 wget -Omain.py https://raw.githubusercontent.com/hunshcn/gh-proxy/master/app/main.py
 
 source ${venv}/bin/activate && cd ..
@@ -23,7 +23,7 @@ chdir=${chdir}
 #虚拟环境的路径
 virtualenv=${venv} 
 #项目启动文件
-wsgi-file=app/main.py
+wsgi-file=main.py
 callable=app
 #进程数量
 processes=4
@@ -67,7 +67,7 @@ systemctl start gh
 #nginx set
 # 存在default时，使用sed添加一个路径,处理一些路径及对应静态资源
 if [ -f /etc/nginx/conf.d/default.conf ]; then
-    sed -i "/location \/ {/{N;N;N;N;s/$/\n\tlocation \/gh\/ {\n\t\tinclude uwsgi_params;\n\t\tuwsgi_pass 127.0.0.1:${port};\n\t}\n/}" /etc/nginx/conf.d/default.conf
+    sed -i "/location \/ {/{N;N;N;N;s/$/\n\tlocation ~\* gh$ {\n\t\tinclude uwsgi_params;\n\t\tuwsgi_pass 127.0.0.1:${port};\n\t}\n/}" /etc/nginx/conf.d/default.conf
 else
     #uwsgi的路由放到根目录，不用等号
     cat >>/etc/nginx/conf.d/default.conf<<-EOF

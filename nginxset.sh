@@ -47,7 +47,6 @@ server {
 server {
         listen unix:/dev/shm/web.sock ssl http2 proxy_protocol;
         server_name $domain www.$domain;
-        if (\$host != $domain) { return 301 https://$domain\$request_uri; }   
         set_real_ip_from unix:;
         ssl_certificate /root/.acme.sh/$domain/fullchain.cer; 
         ssl_certificate_key /root/.acme.sh/$domain/$domain.key;
