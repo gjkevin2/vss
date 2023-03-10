@@ -1,38 +1,7 @@
 #!/bin/bash
-echo '请输入顶级域名'
-read domain
-
-# set sni bypass
-serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
-# nginx need user root to use unix socket
-# sed -i 's/user.*/user  root/g' /etc/nginx/nginx.conf
-# sed -i 's#/var/run/nginx.pid#/run/nginx.pid#g' /etc/nginx/nginx.conf
-sed -i '/^stream {/,$d' /etc/nginx/nginx.conf
-cat >>/etc/nginx/nginx.conf<<-EOF
-stream {
-        # SNI recognize
-        map \$ssl_preread_server_name \$stream_map {
-                www.$domain web;
-                default web;                
-        }
-        # upstream set
-        upstream web {
-                server unix:/dev/shm/web.sock;
-        }
-        server {
-                listen 443;
-                listen [::]:443;
-                ssl_preread on;
-                proxy_protocol on; 
-                proxy_pass  \$stream_map;
-        }
-        # remove proxy_protocol
-}
-EOF
-
-# ssl相关配置及realip设置
+domain=158742.xyz
+# ssl相关配置
 sed -i "/keepalive_timeout/a\\\tssl_session_cache shared:SSL:10m;\n\tssl_session_timeout 10m;\n\tset_real_ip_from 0.0.0.0/0;\n\treal_ip_header X-Forwarded-For;\n\treal_ip_recursive on;" /etc/nginx/nginx.conf
-
 cat >/etc/nginx/conf.d/default.conf<<-EOF
 server {
         listen 80;
@@ -58,6 +27,11 @@ server {
 
         location ^~ /static/ {
                 root /usr/share/nginx/html/static/;
+        }
+
+        location ~* (table|ftest|output/|css|ico|gh/.*)$ {
+                include uwsgi_params;
+                uwsgi_pass 127.0.0.1:5060;
         }
 
         location /test { # grpc serviceName与xray配置里一致

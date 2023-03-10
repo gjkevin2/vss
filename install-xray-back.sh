@@ -26,7 +26,12 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "decryption": "none",
         "fallbacks": [
           {
-            "dest": "/dev/shm/web.sock",
+            "alpn": "h2",
+            "dest": "/dev/shm/h2c.sock",
+            "xver": 2
+          },
+          {
+            "dest": "/dev/shm/h1.sock",
             "xver": 2
           }
         ]
