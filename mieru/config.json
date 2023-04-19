@@ -1,0 +1,31 @@
+{
+    "profiles": [
+        {
+            "profileName": "default",
+            "user": {
+                "name": "drive",
+                "password": "461ece30"
+            },
+            "servers": [
+                {
+                    "ipAddress": "104.168.218.223",
+                    "domainName": "",
+                    "portBindings": [
+                        {
+                            "port": 2023,
+                            "protocol": "TCP"
+                        }
+                    ]
+                }
+            ],
+            "mtu": 1400
+        }
+    ],
+    "activeProfile": "default",
+    "rpcPort": 8964,
+    "socks5Port": 10808,
+    "loggingLevel": "INFO",
+    "socks5ListenLAN": false,
+    "httpProxyPort": 8080,
+    "httpProxyListenLAN": false
+}
