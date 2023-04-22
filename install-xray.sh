@@ -1,12 +1,16 @@
 #!/bin/bash
+# 删除
+# bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ remove --purge
 #安装xray 和最新发行的 geoip.dat 和 geosite.dat,
-bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install -u root
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install --version 1.8.1
+# bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install -u root
 
 # 获取ip和域名
-serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
+# serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
 testdomain=`sed -n "/preread_server/{n;p;}" /etc/nginx/nginx.conf |awk -F ' ' '{print $1}'`
 servername=${testdomain#*.}
 
+# 注:下面的私key对应的公key是：t9vXFAGogW4e9jP7uYemUY9-0TSf8dqNeFD5uPrTPj4
 cat > /usr/local/etc/xray/config.json <<-EOF
 {
   "log": {
@@ -33,22 +37,17 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "certificates": [
-            {
-              "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
-              "keyFile": "/root/.acme.sh/$servername/$servername.key"
-            }
-          ]
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "dest": "www.lovelive-anime.jp:443",
+          "xver": 0,
+          "serverNames": ["www.lovelive-anime.jp"],
+          "privateKey": "OBoNu9hZWvPuxdmRoBUQSQyyZht0EycMw4ie3S0zFVA",
+          "shortIds": ["6ba85179e30d4fc2"]
         },
         "tcpSettings": {
           "acceptProxyProtocol": true
-        },
-        "sockopt": {
-            "tcpFastOpen": true,
-            "tcpKeepAliveIdle": 30,
-            "tcpKeepAliveInterval": 30
         }
       },
       "sniffing": {
@@ -58,33 +57,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
               "tls"
           ]
       }
-    },
-    {
-      "listen": "/dev/shm/vgrpc.sock,666",
-      "protocol": "vless",
-      "settings": {
-        "clients": [
-          {
-            "id": "0c131050-d263-45cf-8d84-db3785197031"
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "security": "none",
-        "grpcSettings": {
-          "serviceName": "test"
-        }
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-         "http",
-         "tls"
-        ]
-      }
-    },
+    },    
     {
       "port": 10630,
       "protocol": "shadowsocks",
@@ -136,22 +109,11 @@ systemctl start xray
 systemctl enable xray
 
 # 443端口转发到实际端口
-grep "v.$servername" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\tv.$servername vless;" /etc/nginx/nginx.conf
+grep "upstream vless" /etc/nginx/nginx.conf || {
+  sed -i "/\$ssl_preread_server_name/a\\\t\twww.lovelive-anime.jp vless;" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream vless {\n\t\tserver unix:/dev/shm/vless.sock;\n\t}" /etc/nginx/nginx.conf
 }
 
 # (re)start nginx
 systemctl daemon-reload
 systemctl start nginx
-
-#修改配置文件
-cd ~
-wget -O /usr/share/nginx/html/static/config.yaml https://raw.githubusercontent.com/gjkevin2/vss/master/config.yaml
-sed -i 's/serverip/'$serverip'/g' /usr/share/nginx/html/static/config.yaml
-sed -i 's/maindomain/'$servername'/g' /usr/share/nginx/html/static/config.yaml
-wget -O /usr/share/nginx/html/static/config.json https://raw.githubusercontent.com/gjkevin2/vss/master/config.json
-sed -i 's/serverip/'$serverip'/g' /usr/share/nginx/html/static/config.json
-sed -i 's/servername/'$servername'/g' /usr/share/nginx/html/static/config.json
-#生成ss，vmess订阅
-bash create-ref.sh $serverip
