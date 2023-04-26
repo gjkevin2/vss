@@ -44,9 +44,11 @@ server {
 }
 
 server {
-    listen unix:/dev/shm/web.sock ssl http2 proxy_protocol;
-    server_name ~^(?<www>www\.)?(.+)$; 
-    if (\$www) {return 301 https://\$2\$request_uri;}
+    listen unix:/dev/shm/web.sock ssl http2 proxy_protocol;    
+    server_name $domain www.$domain;
+    # server_name ~^(?<www>www\.)?(.+)$;
+    # if (\$www) {return 301 https://\$2\$request_uri;}
+    port_in_redirect off;
 
     ssl_certificate /root/cert/fullchain.cer; 
     ssl_certificate_key /root/cert/$domain.key;
@@ -57,6 +59,10 @@ server {
     location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
+    }
+
+    location /static {
+        alias  /usr/share/nginx/html/static;
     }
 }
 EOF

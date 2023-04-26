@@ -1,6 +1,6 @@
 #!/bin/bash
 cd ~
-rm -rf shadowsocks-v* xray-plugin* v2ray-plugin*
+rm -rf shadowsocks-v*
 lurl='https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest'
 latest_version=`curl $lurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
 wget https://github.com/shadowsocks/shadowsocks-rust/releases/download/v${latest_version}/shadowsocks-v${latest_version}.x86_64-unknown-linux-gnu.tar.xz
@@ -11,9 +11,6 @@ rm -f shadowsocks-v${latest_version}.x86_64-unknown-linux-gnu.tar.xz
 mkdir /etc/shadowsocks-rust >/dev/null 2>&1
 
 # config.json
-testdomain=`sed -n "/preread_server/{n;p;}" /etc/nginx/nginx.conf |awk -F ' ' '{print $1}'`
-servername=${testdomain#*.}
-# grpc has config "serviceName"
 cat > /etc/shadowsocks-rust/config.json <<-EOF
 {
     "servers": [
