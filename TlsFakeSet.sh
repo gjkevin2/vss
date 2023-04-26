@@ -71,8 +71,8 @@ mkdir $HOME/cert
 
 ~/.acme.sh/acme.sh --install-cert -d $domain \
 --key-file       $HOME/cert/$domain.key  \
---fullchain-file $HOME/cert/fullchain.cer \
---reloadcmd     "service nginx force-reload"
+--fullchain-file $HOME/cert/fullchain.cer
+# --reloadcmd     "service nginx force-reload"
 
 
 #install nginx and fake web
