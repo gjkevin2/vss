@@ -82,7 +82,7 @@ if check_sys packageManager yum; then
 elif check_sys packageManager apt; then
     apt -y install curl gnupg2 ca-certificates lsb-release
     echo "deb http://nginx.org/packages/debian `lsb_release -cs` nginx" | tee /etc/apt/sources.list.d/nginx.list
-    # curl -fsSL https://nginx.org/keys/nginx_signing.key | apt-key add -
+    curl -fsSL https://nginx.org/keys/nginx_signing.key | apt-key add -
     # apt-key fingerprint ABF5BD827BD9BF62
     echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" | tee /etc/apt/preferences.d/99nginx
     apt update
@@ -90,8 +90,7 @@ elif check_sys packageManager apt; then
     apt -y install nginx
 
     # remove nginx
-    # apt -y remove nginx
-    # apt -y purge nginx
+    # apt -y autoremove --purge nginx
     # # reinstrall nginx
     # apt -y install nginx
 fi
