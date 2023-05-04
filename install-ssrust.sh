@@ -19,6 +19,12 @@ cat > /etc/shadowsocks-rust/config.json <<-EOF
             "port":50303,
             "password": "barfoo!",
             "method":"aes-256-gcm"
+        },
+        {
+            "address": "::",
+            "port": 8390,
+            "password": "mGvbWWay8ueP9IHnV5F1uWGN2BRToiVCAWJmWOTLU24=",
+            "method": "chacha20-ietf-poly1305"
         }
     ]
 }
