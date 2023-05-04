@@ -53,7 +53,7 @@ server {
     server_name $domain www.$domain;
     # server_name ~^(?<www>www\.)?(.+)$;
     # if (\$www) {return 301 https://\$2\$request_uri;}
-    port_in_redirect off;    
+    # port_in_redirect off;    
     
     location / {
         root   /usr/share/nginx/html;
