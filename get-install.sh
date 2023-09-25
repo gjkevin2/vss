@@ -20,6 +20,7 @@ function getall(){
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-xray.sh -O install-xray.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/bbr.sh -O bbr.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-ssrust.sh -O install-ssrust.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-singbox.sh -O install-singbox.sh
 }
 
 function get_cert_bbr(){
