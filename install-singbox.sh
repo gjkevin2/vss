@@ -52,11 +52,11 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
             ],
             "tls": {
                 "enabled": true,
-                "server_name": "www.lovelive-anime.jp",
+                "server_name": "ameblo.jp",
                 "reality": {
                     "enabled": true,
                     "handshake": {
-                        "server": "www.lovelive-anime.jp",
+                        "server": "ameblo.jp",
                         "server_port": 443
                     },
                     "private_key": "kOi18qSHQVA-mc6Db3ayv9gu8vgN82KsLb36d5-OCXg",
@@ -84,7 +84,7 @@ rm -rf /dev/shm/*
 
 # 443端口转发到实际端口
 grep "upstream singbox-reality" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\treality.$servername singbox-reality;" /etc/nginx/nginx.conf
+  sed -i "/\$ssl_preread_server_name/a\\\t\tameblo.jp singbox-reality;" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream singbox-reality {\n\t\tserver 127.0.0.1:52004;\n\t}" /etc/nginx/nginx.conf
 }
 
