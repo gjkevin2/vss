@@ -1,0 +1,14 @@
+server: "104.168.218.223:50102"
+
+auth: 461ece30
+
+tls:
+  sni: hysteria2.158742.xyz
+  insecure: false
+
+bandwidth:
+  up: 30 mbps
+  down: 150 mbps
+
+socks5:
+  listen: 127.0.0.1:50000

@@ -1,7 +1,14 @@
 #!/bin/bash
 #安装
+cd ~
+# lurl='https://api.github.com/repos/SagerNet/sing-box/releases/latest'
+# latest_version=`curl $lurl| grep tag_name |awk -F '[:,"v]' '{print $6}'`
 # 测试版
- bash -c "$(curl -L https://sing-box.vercel.app)" @ install --beta
+latest_version=1.5.0-rc.5
+wget https://github.com/SagerNet/sing-box/releases/download/v${latest_version}/sing-box-${latest_version}-linux-amd64.tar.gz
+tar xf sing-box-${latest_version}-linux-amd64.tar.gz 
+cp -f sing-box-*/sing-box /usr/local/bin && chmod +x /usr/local/bin/sing-box
+rm -rf sing-box-${latest_version}-linux-amd64.tar.gz sing-box-*
 
 # 获取ip和域名
 serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
@@ -11,28 +18,10 @@ a=${testdomain%.*}
 servername=${a##*.}.${testdomain##*.}
 
 # 配置文件
-# reality的public key： GuapS0D1QmrqLgMgwPijrWmMaYH1231UXuWvPYWjoxs
-cat > /usr/local/etc/sing-box/config.json <<-EOF
+mkdir /usr/local/etc/sing-box 2>/dev/null
+cat > /usr/local/etc/sing-box/sing-box_config.json <<-EOF
 {
     "inbounds": [
-        {
-            "type": "hysteria2",
-            "listen": "$serverip",
-            "listen_port": 50102,
-            "users": [
-                {
-                    "password": "461ece30"
-                }
-            ],
-            "tls": {
-                "enabled": true,
-                "alpn": [
-                    "h3"
-                ],
-                "certificate_path": "/root/cert/fullchain.cer",
-                "key_path": "/root/cert/$servername.key"
-            }
-        },
         {
             "type": "shadowsocks",
             "listen": "$serverip",
@@ -57,29 +46,41 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
             }
         },
         {
-            "type": "vless",
-            "listen": "127.0.0.1",
-            "listen_port": 52004,
+            "type": "hysteria2",
+            "listen": "$serverip",
+            "listen_port": 50102,
             "users": [
                 {
-                    "uuid": "461edf16-8619-4f46-8e1e-e3994c8c00a2",
-                    "flow": "xtls-rprx-vision"
+                    "password": "461ece30"
                 }
             ],
             "tls": {
                 "enabled": true,
-                "server_name": "www.lovelive-anime.jp",
-                "reality": {
-                    "enabled": true,
-                    "handshake": {
-                        "server": "www.lovelive-anime.jp",
-                        "server_port": 443
-                    },
-                    "private_key": "kOi18qSHQVA-mc6Db3ayv9gu8vgN82KsLb36d5-OCXg",
-                    "short_id": [
-                        "b2c86d5449d237fa"
-                    ]
+                "alpn": [
+                    "h3"
+                ],
+                "certificate_path": "/root/cert/fullchain.cer",
+                "key_path": "/root/cert/$servername.key"
+            }
+        },
+        {
+            "type": "tuic",
+            "listen": "$serverip",
+            "listen_port": 50103,
+            "users": [
+                {
+                    "uuid": "b280fcbb-097b-4282-8e1d-cd144eb59716",
+                    "password": "461ece30"
                 }
+            ],
+            "congestion_control": "bbr",
+            "tls": {
+                "enabled": true,
+                "alpn": [
+                    "h3"
+                ],
+                "certificate_path": "/root/cert/fullchain.cer",
+                "key_path": "/root/cert/$servername.key"
             }
         }
     ],
@@ -90,6 +91,21 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
     ]
 }
 EOF
+cat >/lib/systemd/system/sing-box.service<<\EOF
+[Unit]
+Description=Tuic server based on QUIC protocol
+After=network.target
+
+[Service]
+User=root
+Restart=on-abnormal
+ExecStart=/usr/local/bin/sing-box run -c /usr/local/etc/sing-box/sing-box_config.json
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable --now sing-box
 systemctl stop sing-box
 systemctl stop xray
 systemctl stop nginx
@@ -102,10 +118,6 @@ rm -rf /dev/shm/*
 grep "upstream singbox-naive" /etc/nginx/nginx.conf || {
   sed -i "/\$ssl_preread_server_name/a\\\t\tnaive.$servername singbox-naive;" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream singbox-naive {\n\t\tserver 127.0.0.1:52003;\n\t}" /etc/nginx/nginx.conf
-}
-grep "upstream singbox-reality" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\treality.$servername singbox-reality;" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream singbox-reality {\n\t\tserver 127.0.0.1:52004;\n\t}" /etc/nginx/nginx.conf
 }
 
 # (re)start nginx
