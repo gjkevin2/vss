@@ -41,22 +41,6 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
             "password": "PJBCXp8lJrg7XxRV7yfApA=="
         },
         {
-            "type": "naive",
-            "listen": "127.0.0.1",
-            "listen_port": 52003,
-            "users": [
-                {
-                    "username": "naiveuser",
-                    "password": "461ece30"
-                }
-            ],
-            "tls": {
-                "enabled": true,
-                "certificate_path": "/root/cert/fullchain.cer",
-                "key_path": "/root/cert/$servername.key"
-            }
-        },
-        {
             "type": "vless",
             "listen": "127.0.0.1",
             "listen_port": 52004,
@@ -99,10 +83,6 @@ systemctl stop nginx
 rm -rf /dev/shm/*
 
 # 443端口转发到实际端口
-grep "upstream singbox-naive" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\tnaive.$servername singbox-naive;" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream singbox-naive {\n\t\tserver 127.0.0.1:52003;\n\t}" /etc/nginx/nginx.conf
-}
 grep "upstream singbox-reality" /etc/nginx/nginx.conf || {
   sed -i "/\$ssl_preread_server_name/a\\\t\treality.$servername singbox-reality;" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream singbox-reality {\n\t\tserver 127.0.0.1:52004;\n\t}" /etc/nginx/nginx.conf

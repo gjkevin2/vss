@@ -23,29 +23,6 @@ cat > /usr/local/etc/sing-box/sing-box_config.json <<-EOF
 {
     "inbounds": [
         {
-            "type": "shadowsocks",
-            "listen": "$serverip",
-            "listen_port": 50101,
-            "method": "2022-blake3-aes-128-gcm",
-            "password": "PJBCXp8lJrg7XxRV7yfApA=="
-        },
-        {
-            "type": "naive",
-            "listen": "127.0.0.1",
-            "listen_port": 52003,
-            "users": [
-                {
-                    "username": "naiveuser",
-                    "password": "461ece30"
-                }
-            ],
-            "tls": {
-                "enabled": true,
-                "certificate_path": "/root/cert/fullchain.cer",
-                "key_path": "/root/cert/$servername.key"
-            }
-        },
-        {
             "type": "hysteria2",
             "listen": "$serverip",
             "listen_port": 50102,
@@ -64,23 +41,36 @@ cat > /usr/local/etc/sing-box/sing-box_config.json <<-EOF
             }
         },
         {
-            "type": "tuic",
+            "type": "shadowsocks",
             "listen": "$serverip",
-            "listen_port": 50103,
+            "listen_port": 50101,
+            "method": "2022-blake3-aes-128-gcm",
+            "password": "PJBCXp8lJrg7XxRV7yfApA=="
+        },
+        {
+            "type": "vless",
+            "listen": "127.0.0.1",
+            "listen_port": 52004,
             "users": [
                 {
-                    "uuid": "b280fcbb-097b-4282-8e1d-cd144eb59716",
-                    "password": "461ece30"
+                    "uuid": "461edf16-8619-4f46-8e1e-e3994c8c00a2",
+                    "flow": "xtls-rprx-vision"
                 }
             ],
-            "congestion_control": "bbr",
             "tls": {
                 "enabled": true,
-                "alpn": [
-                    "h3"
-                ],
-                "certificate_path": "/root/cert/fullchain.cer",
-                "key_path": "/root/cert/$servername.key"
+                "server_name": "www.lovelive-anime.jp",
+                "reality": {
+                    "enabled": true,
+                    "handshake": {
+                        "server": "www.lovelive-anime.jp",
+                        "server_port": 443
+                    },
+                    "private_key": "kOi18qSHQVA-mc6Db3ayv9gu8vgN82KsLb36d5-OCXg",
+                    "short_id": [
+                        "b2c86d5449d237fa"
+                    ]
+                }
             }
         }
     ],
@@ -115,9 +105,9 @@ systemctl stop nginx
 rm -rf /dev/shm/*
 
 # 443端口转发到实际端口
-grep "upstream singbox-naive" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\tnaive.$servername singbox-naive;" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream singbox-naive {\n\t\tserver 127.0.0.1:52003;\n\t}" /etc/nginx/nginx.conf
+grep "upstream singbox-reality" /etc/nginx/nginx.conf || {
+  sed -i "/\$ssl_preread_server_name/a\\\t\treality.$servername singbox-reality;" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream singbox-reality {\n\t\tserver 127.0.0.1:52004;\n\t}" /etc/nginx/nginx.conf
 }
 
 # (re)start nginx
