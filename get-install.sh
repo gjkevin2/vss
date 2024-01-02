@@ -48,15 +48,9 @@ start_menu(){
     red " ===================================="
     yellow " 3. 安装vless"
     red " ===================================="
-    yellow " 4. 加装trojan"
+    yellow " 4. 安装ssrust"
     red " ===================================="
-    yellow " 5. 卸载trojan"
-    red " ===================================="
-    yellow " 6. 加装trojango"
-    red " ===================================="
-    yellow " 7. 卸载trojango"
-    red " ===================================="
-    yellow " 8. 安装ssrust"
+    yellow " 5. 安装singbox"
     red " ===================================="
     yellow " 0. 退出脚本"
     red " ===================================="
@@ -73,19 +67,11 @@ start_menu(){
     install_vless
     ;;
     4)
-    install_trojan
+    install_ssrust
     ;;
     5)
-    remove_trojan
-    ;;
-    6)
-    install_trojango
-    ;;
-    7)
-    remove_trojango
-    ;;
-    8)
-    install_ssrust
+    install-singbox
+    
     ;;
     0)
     exit 1
