@@ -75,54 +75,6 @@ mkdir $HOME/cert
 # --reloadcmd     "service nginx force-reload"
 
 
-#install nginx and fake web
-if check_sys packageManager yum; then
-    yum install yum-utils
-    cat >/etc/yum.repos.d/nginx.repo<<\EOF
-[nginx-stable]
-name=nginx stable repo
-baseurl=http://nginx.org/packages/centos/$releasever/$basearch/
-gpgcheck=1
-enabled=1
-gpgkey=https://nginx.org/keys/nginx_signing.key
-module_hotfixes=true
-
-[nginx-mainline]
-name=nginx mainline repo
-baseurl=http://nginx.org/packages/mainline/centos/$releasever/$basearch/
-gpgcheck=1
-enabled=0
-gpgkey=https://nginx.org/keys/nginx_signing.key
-module_hotfixes=true
-EOF
-    yum -y install nginx
-elif check_sys packageManager apt; then
-    apt -y install curl gnupg2 ca-certificates lsb-release
-    echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/debian `lsb_release -cs` nginx" |tee /etc/apt/sources.list.d/nginx.list
-    echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" | sudo tee /etc/apt/preferences.d/99nginx
-    apt update
-    #systemctl unmask nginx.service
-    apt -y install nginx
-
-    # remove nginx
-    # apt -y autoremove --purge nginx
-    # # reinstrall nginx
-    # apt -y install nginx
-fi
-
-# install Docker
-# wget -qO- get.docker.com | bash
-# # 查看 Docker 版本
-# #docker version
-
-# # set Docker start on boot
-# systemctl start docker
-# systemctl enable docker
-
-# # pull mirror and set auto renew software
-# docker pull nginx
-# docker pull containrrr/watchtower
-
 # fakesite
 mkdir /usr/share/nginx/html/static >/dev/null 2>&1
 rm /usr/share/nginx/html/index.html
@@ -132,11 +84,5 @@ if [ ! -e /usr/share/nginx/html/fakesite.zip ];then
 fi
 unzip fakesite.zip >/dev/null 2>&1
 
-# sed -i 's#/var/run/nginx.pid#/run/nginx.pid#g' /etc/nginx/nginx.conf
-sed -i "/ExecStartPost/d" /lib/systemd/system/nginx.service
-sed -i "/PIDFile/a\ExecStartPost=/bin/sleep 0.1" /lib/systemd/system/nginx.service
-systemctl daemon-reload
-systemctl enable nginx
 systemctl stop nginx
 systemctl start nginx
-# docker run -p 80:80 -p 443:443 --name nginx --restart=always -v /etc/nginx/nginx.conf:/etc/nginx/nginx.conf -v /etc/nginx/conf.d:/etc/nginx/conf.d -v /usr/share/nginx/html:/usr/share/nginx/html -v /var/log/nginx:/var/log/nginx -v /root/.acme.sh/$domain:/root/.acme.sh/$domain -d nginx

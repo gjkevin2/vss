@@ -15,15 +15,17 @@ red(){
 systempwd="/usr/lib/systemd/system/"
 
 function getall(){
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/ready_os.sh -O ready_os.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/TlsFakeSet.sh -O TlsFakeSet.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/nginxset.sh -O nginxset.sh
-    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-xray.sh -O install-xray.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/bbr.sh -O bbr.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-xray.sh -O install-xray.sh    
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-ssrust.sh -O install-ssrust.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-singbox.sh -O install-singbox.sh
 }
 
 function get_cert_bbr(){
+    bash ready_os.sh
     bash TlsFakeSet.sh
     bash nginxset.sh
     bash bbr.sh
@@ -33,44 +35,8 @@ function install_vless(){
     bash install-xray.sh
 }
 
-function install_trojan(){
-    bash install-trojan-after.sh
-}
-
-function install_trojango(){
-    bash install-trojango-after.sh
-}
-
 function install_ssrust(){
     bash install-ssrust.sh
-}
-
-function remove_trojan(){
-    red "================================"
-    red "即将卸载trojan"
-    red "================================"
-    systemctl stop trojan
-    systemctl disable trojan
-    rm -f ${systempwd}trojan.service
-    rm -rf /usr/src/trojan*
-    bash install-xray.sh
-    green "=============="
-    green "trojan删除完毕"
-    green "=============="
-}
-
-function remove_trojango(){
-    red "================================"
-    red "即将卸载trojango"
-    red "================================"
-    systemctl stop trojan-go
-    systemctl disable trojan-go
-    rm -f ${systempwd}trojan-go.service
-    rm -rf /usr/local/bin/trojan-go
-    bash install-xray.sh
-    green "=============="
-    green "trojango删除完毕"
-    green "=============="
 }
 
 start_menu(){
