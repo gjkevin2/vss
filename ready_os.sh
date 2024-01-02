@@ -91,7 +91,7 @@ EOF
     # 更新
     apt -y update && apt -y upgrade
     # "build-essential",它包含了 GNU 编辑器集合，GNU 调试器，和其他编译软件所必需的开发库和工具。
-    apt -y install curl wget make vim screen npm build-essential python3-venv
+    apt -y install curl wget make vim screen npm build-essential python3-venv python3-pip
 fi
 
 # 安装并更新nodejs
