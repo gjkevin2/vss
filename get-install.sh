@@ -39,6 +39,10 @@ function install_ssrust(){
     bash install-ssrust.sh
 }
 
+function install_singbox(){
+    bash install-singbox.sh
+}
+
 start_menu(){
     clear
     red " ===================================="
@@ -70,7 +74,7 @@ start_menu(){
     install_ssrust
     ;;
     5)
-    install-singbox
+    install_singbox
     
     ;;
     0)
