@@ -70,31 +70,28 @@ if check_sys packageManager yum; then
     mv /usr/bin/as /usr/bin/as-bak
     ln -s /opt/rh/$toolset/root/bin/as /usr/bin/as
 elif check_sys packageManager apt; then
+    # 此处为debian11
     # 若为国内服务器，修改镜像源
     originsource=mirrors.ustc.edu.cn
-    grep cdrom /etc/apt/sources.list && {
-        cat>/etc/apt/sources.list<<-EOF
-deb https://$originsource/debian/ bookworm main contrib non-free non-free-firmware
-deb-src https://$originsource/debian/ bookworm main contrib non-free non-free-firmware
-deb https://$originsource/debian/ bookworm-updates main contrib non-free non-free-firmware
-deb-src https://$originsource/debian/ bookworm-updates main contrib non-free non-free-firmware
-deb https://$originsource/debian/ bookworm-backports main contrib non-free non-free-firmware
-deb-src https://$originsource/debian/ bookworm-backports main contrib non-free non-free-firmware
-deb https://$originsource/debian-security/ bookworm-security main contrib non-free non-free-firmware
-deb-src https://$originsource/debian-security/ bookworm-security main contrib non-free non-free-firmware
+    cat>/etc/apt/sources.list<<-EOF
+deb https://deb.debian.org/debian/ bullseye main contrib non-free
+deb-src https://deb.debian.org/debian/ bullseye main contrib non-free
+
+deb https://deb.debian.org/debian/ bullseye-updates main contrib non-free
+deb-src https://deb.debian.org/debian/ bullseye-updates main contrib non-free
+
+deb https://deb.debian.org/debian/ bullseye-backports main contrib non-free
+deb-src https://deb.debian.org/debian/ bullseye-backports main contrib non-free
+
+deb https://deb.debian.org/debian-security/ bullseye-security main contrib non-free
+deb-src https://deb.debian.org/debian-security/ bullseye-security main contrib non-free
 EOF
-    }||{
-        [[ $stat==1 ]] && sed -i "s@http://\(deb\|security\).debian.org@http://$originsource@g" /etc/apt/sources.list
-        [[ $stat==1 ]] && sed -i "s@//.*.ubuntu.com@//$originsource@g" /etc/apt/sources.list
-        # 更新
-        apt -y update
-        # 安装证书，更新源为https
-        apt -y install --reinstall ca-certificates
-        sed -i "s@http://mirrors@https://mirrors@g" /etc/apt/sources.list
-    }    
+    [[ $stat==1 ]] && sed -i "s@deb.debian.org@$originsource@g" /etc/apt/sources.list
+    [[ $stat==1 ]] && sed -i "s@//.*.ubuntu.com@//$originsource@g" /etc/apt/sources.list
+    # 更新
     apt -y update && apt -y upgrade
     # "build-essential",它包含了 GNU 编辑器集合，GNU 调试器，和其他编译软件所必需的开发库和工具。
-    apt -y install curl wget make vim screen npm build-essential python3-venv
+    apt -y install curl wget make vim screen npm build-essential python3-venv python3-pip
 fi
 
 # 安装并更新nodejs
