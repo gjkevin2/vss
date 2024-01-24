@@ -11,7 +11,7 @@ cp -f sing-box-*/sing-box /usr/local/bin && chmod +x /usr/local/bin/sing-box
 rm -rf sing-box-${latest_version}-linux-amd64.tar.gz sing-box-*
 
 # 获取ip和域名
-serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
+serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|grep -v 172.|awk -F '/' '{print $1}'|tr -d "inet ")
 testdomain=`sed -n "/^\s*server_name/p" /etc/nginx/conf.d/default.conf | awk -F' ' '{print $2}'`
 # 顶级域名和二级域名都可以提取到顶级域名
 a=${testdomain%.*}

@@ -7,8 +7,8 @@ bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release
 
 # 获取ip和域名
 # serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
-testdomain=`sed -n "/preread_server/{n;p;}" /etc/nginx/nginx.conf |awk -F ' ' '{print $1}'`
-servername=${testdomain#*.}
+# testdomain=`sed -n "/preread_server/{n;p;}" /etc/nginx/nginx.conf |awk -F ' ' '{print $1}'`
+# servername=${testdomain#*.}
 
 # 注:下面的私key对应的公key是：t9vXFAGogW4e9jP7uYemUY9-0TSf8dqNeFD5uPrTPj4
 cat > /usr/local/etc/xray/config.json <<-EOF
