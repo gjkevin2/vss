@@ -1,4 +1,8 @@
 {
+    "log":{
+        "disabled":false,
+        "level":"info"
+    },
     "dns": {
         "independent_cache": true,
         "rules": [{
@@ -64,19 +68,6 @@
             "tag": "dns-in",
             "type": "direct"
         },
-        //{
-		//  "domain_strategy": "",
-		//  "endpoint_independent_nat": true,
-		//  "inet4_address": [
-		//	"172.19.0.1/28"
-		//  ],
-		//  "mtu": 9000,
-		//  "sniff": true,
-		//  "sniff_override_destination": false,
-		//  "stack": "system",
-		//  "tag": "tun-in",
-		//  "type": "tun"
-		//},
         {
             "listen": "127.0.0.1",
             "listen_port": 10808,
@@ -86,13 +77,10 @@
             "type": "mixed"
         }
     ],
-    "log": {
-        "level": "panic"
-    },
     "outbounds": [{
             "tag": "proxy",
             "type": "hysteria2",
-            "server": "104.168.218.223",
+            "server": "154.9.238.181",
             "server_port": 50102,
             "password": "461ece30",
             "up_mbps": 30,
@@ -104,6 +92,14 @@
                     "h3"
                 ]
             }
+        },
+        {
+            "tag": "ss",
+            "type": "shadowsocks",
+            "server":"154.9.238.181",
+            "server_port":8390,
+            "method":"chacha20-ietf-poly1305",
+            "password":"mGvbWWay8ueP9IHnV5F1uWGN2BRToiVCAWJmWOTLU24="
         },
         {
             "tag": "direct",
@@ -128,6 +124,12 @@
                     53
                 ],
                 "outbound": "dns-out"
+            },
+            {
+                "domain_suffix":[
+                    "apkpure.com"
+                ],
+                "outbound":"ss"
             },
             {
                 "geosite": [
@@ -161,9 +163,7 @@
                     "cn"
                 ],
                 "geoip": [
-                    "cn"
-                ],
-                "geoip": [
+                    "cn",
                     "private"
                 ],
                 "outbound": "direct"
