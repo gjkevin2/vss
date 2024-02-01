@@ -140,7 +140,8 @@
                     "app-measurement.com",
                     "firebase.io",
                     "crashlytics.com",
-                    "google-analytics.com"
+                    "google-analytics.com",
+                    "tiangolo.com"
                 ],
                 "ip_cidr": [
                     "224.0.0.0/3",
