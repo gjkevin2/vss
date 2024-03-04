@@ -1,6 +1,8 @@
 name: get_channel_v3
 
-on: [push]
+on: 
+  schedule:
+    - cron: "0 8 * * *"
 
 jobs:
   get_channel_v3:
