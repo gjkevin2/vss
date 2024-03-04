@@ -8,3 +8,14 @@ jobs:
   setps:
     - name: get files
       run: curl -O https://packagecontrol.io/channel_v3.json
+    - name: Commit
+      run: |
+        git config --global user.email gjkevin2@163.com
+        git config --global user.name gjkevin
+        git add .
+        git commit -m"action:`date`"
+        git pull --rebase
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
