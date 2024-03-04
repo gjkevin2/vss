@@ -5,7 +5,8 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-  setps:
+  steps:
+    - uses: actions/checkout@v2
     - name: get files
       run: curl -O https://packagecontrol.io/channel_v3.json
     - name: Commit
