@@ -1,0 +1,24 @@
+name: get_channel_v3
+
+on: 
+  schedule:
+    - cron: "0 8 * * *"
+
+jobs:
+  get_channel_v3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: get files
+        run: curl -O https://packagecontrol.io/channel_v3.json
+      - name: Commit
+        run: |
+          git config --global user.email gjkevin2@163.com
+          git config --global user.name gjkevin
+          git add .
+          git commit -m"action:`date`"
+          git pull --rebase
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
