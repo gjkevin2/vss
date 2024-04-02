@@ -1,0 +1,5 @@
+0. singbox使用默认的网卡优先级，interfaceMetric越低，优先级越高。singbox使用最高的优先级网卡。
+1. Get-NetIPInterface命令：该命令可以获取网卡编号(ifIndex)，网卡别名(InterfaceAlias)，协议族(IPV4/IPV6),优先级(InterfaceMetric)等。其中metric值越小优先级越高。
+2.Set-NetIPInterface命令 修改优先级。将外网网卡优先级调低,低于内网一个跃点数即可
+Set-NetIPInterface -InterfaceIndex xx -InterfaceMetric 15
+
