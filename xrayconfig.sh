@@ -1,13 +1,18 @@
 #!/bin/bash
-testdomain=`sed -n "/preread_server/{n;p;}" /etc/nginx/nginx.conf |awk -F ' ' '{print $1}'`
-servername=${testdomain#*.}
+testdomain=`sed -n "/^\s*server_name/p" /etc/nginx/conf.d/default.conf | awk -F' ' '{print $2}'`
+# 顶级域名和二级域名都可以提取到顶级域名
+a=${testdomain%.*}
+servername=${a##*.}.${testdomain##*.}
+serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|grep -v 172.|awk -F '/' '{print $1}'|tr -d "inet ")
 
 systemctl stop nginx
 systemctl stop xray
 cat > /usr/local/etc/xray/config.json <<-EOF
 {
   "log": {
-    "loglevel": "warning"
+    "loglevel": "warning",
+    "error": "/var/log/xray/error.log",
+    "access": "/var/log/xray/access.log"
   },
   "inbounds": [
     {
@@ -23,34 +28,24 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "decryption": "none",
         "fallbacks": [
           {
-            "alpn": "h2",
-            "dest": "/dev/shm/h2c.sock",
-            "xver": 2
-          },
-          {
-            "dest": "/dev/shm/h1.sock",
+            "dest": "/dev/shm/web.sock",
             "xver": 2
           }
         ]
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "tls",
-        "tlsSettings": {
-          "certificates": [
-            {
-              "certificateFile": "/root/.acme.sh/$servername/fullchain.cer",
-              "keyFile": "/root/.acme.sh/$servername/$servername.key"
-            }
-          ]
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "dest": "www.lovelive-anime.jp:443",
+          "xver": 0,
+          "serverNames": ["www.lovelive-anime.jp"],
+          "privateKey": "OBoNu9hZWvPuxdmRoBUQSQyyZht0EycMw4ie3S0zFVA",
+          "shortIds": ["6ba85179e30d4fc2"]
         },
         "tcpSettings": {
           "acceptProxyProtocol": true
-        },
-        "sockopt": {
-            "tcpFastOpen": true,
-            "tcpKeepAliveIdle": 30,
-            "tcpKeepAliveInterval": 30
         }
       },
       "sniffing": {
@@ -60,59 +55,7 @@ cat > /usr/local/etc/xray/config.json <<-EOF
               "tls"
           ]
       }
-    },
-    {
-      "tag": "VLESS-TCP-Reality",
-      "listen":"0.0.0.0",
-      "protocol": "vless",
-      "port":4003,
-      "settings": {
-        "clients": [
-          {
-            "id": "1bacd758-db56-4713-a936-240fccce7f2f",
-            "flow": "xtls-rprx-vision"
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "reality",
-        "realitySettings": {
-          "show": false,
-          "dest": "/dev/shm/h2c.sock",
-          "serverNames": ["re.158742.xyz"],
-          "privateKey": "R6xEek-WTsP90wyi8X1uhkjVscuqY5bf9jOEqCOPV6k",
-          "shortIds": ["3f4d573ec4ce481c"]
-        }
-      }
-    },
-    {
-      "listen": "/dev/shm/vgrpc.sock,666",
-      "protocol": "vless",
-      "settings": {
-        "clients": [
-          {
-            "id": "0c131050-d263-45cf-8d84-db3785197031"
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "security": "none",
-        "grpcSettings": {
-          "serviceName": "test"
-        }
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-         "http",
-         "tls"
-        ]
-      }
-    },
+    },    
     {
       "port": 10630,
       "protocol": "shadowsocks",
@@ -121,6 +64,26 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "password": "PJBCXp8lJrg7XxRV7yfApA==",
         "network": "tcp,udp"
       }
+    },
+    {
+      "listen":"$serverip",
+      "port":18880,
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "286e1077-4f3a-4522-bd5a-317cc6b32af0",
+            "alterId": 0
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": {
+          "path": "/ray",
+          "host":"baidu.com"
+        }
+      }
     }
   ],
   "outbounds": [
@@ -128,8 +91,8 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "protocol": "freedom"
     },
     {
-            "protocol": "blackhole",
-            "tag": "blackhole"
+      "protocol": "blackhole",
+      "tag": "blackhole"
     }
   ],
  "routing": {
@@ -158,9 +121,11 @@ rm -rf /dev/shm/*
 systemctl start xray
 
 # 443端口转发到实际端口
-grep "v.$servername" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\tv.$servername vless;" /etc/nginx/nginx.conf
+grep "upstream vless" /etc/nginx/nginx.conf || {
+  sed -i "/\$ssl_preread_server_name/a\\\t\twww.lovelive-anime.jp vless;" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream vless {\n\t\tserver unix:/dev/shm/vless.sock;\n\t}" /etc/nginx/nginx.conf
 }
 
+# (re)start nginx
+systemctl daemon-reload
 systemctl start nginx
