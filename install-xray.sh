@@ -6,7 +6,7 @@
 bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install -u root
 
 # 获取ip和域名
-# serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|awk -F '/' '{print $1}'|tr -d "inet ")
+serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|grep -v 172.|awk -F '/' '{print $1}'|tr -d "inet ")
 # testdomain=`sed -n "/preread_server/{n;p;}" /etc/nginx/nginx.conf |awk -F ' ' '{print $1}'`
 # servername=${testdomain#*.}
 
@@ -65,6 +65,43 @@ cat > /usr/local/etc/xray/config.json <<-EOF
         "method": "2022-blake3-aes-128-gcm",
         "password": "PJBCXp8lJrg7XxRV7yfApA==",
         "network": "tcp,udp"
+      }
+    },
+    {
+      "listen":"$serverip",
+      "port":18880,
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "286e1077-4f3a-4522-bd5a-317cc6b32af0",
+            "alterId": 0
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": {
+          "path": "/ray?ed=2560"
+        }
+      }
+    },
+    {
+      "port":19990,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "6a57458f-e196-45d1-b686-3179abf4284f"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "httpupgrade",
+        "httpupgradeSettings": {
+          "path": "/ht?ed=2560"
+        }
       }
     }
   ],
