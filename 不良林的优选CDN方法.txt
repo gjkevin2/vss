@@ -1,0 +1,9 @@
+1.前提，首先将buliang0.cf加入代理列表，否则不能运行查询命令；bulianglin.com加入代理，否则不能打开优选网站
+2.优选IP只能用vmess协议，如果使用其他协议，则需要用同样的cdn建立一个vmess的，然后用vmess去优选IP
+3.优选的网址：https://bulianglin.com/archives/cdn.html
+4.测速工具nodesCatch2.0下载：https://github.com/bulianglin/demo  ，直接找到文件下，不在附件里
+
+5.用vmess优选获得的ip，填入需要更换的节点服务器里
+
+
+附： 前置cdn教程，基本不会被墙

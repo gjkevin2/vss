@@ -80,8 +80,25 @@ cat > /usr/local/etc/xray/config.json <<-EOF
       "streamSettings": {
         "network": "ws",
         "wsSettings": {
-          "path": "/ray",
-          "host":"baidu.com"
+          "path": "/ray?ed=2560"
+        }
+      }
+    },
+    {
+      "port":19990,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "6a57458f-e196-45d1-b686-3179abf4284f"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "httpupgrade",
+        "httpupgradeSettings": {
+          "path": "/ht?ed=2560"
         }
       }
     }
