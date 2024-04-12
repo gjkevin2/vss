@@ -1,140 +1,137 @@
 {
-  "log": {
-    "loglevel": "warning"
-  },
-
-  "dns": {
-    "servers": [        
-        "114.114.114.114",
-        {
-          "address": "1.1.1.1",
-          "port": 53,
-          "domains": [
-            "geosite:geolocation-!cn"
-          ]
-        },
-        "1.0.0.1",
-        "localhost"
-    ]
-  },
-  
-  "routing": {
-    "domainStrategy": "IPIfNonMatch",
-    "rules": [
-      {
-        "domain": ["geosite:category-ads-all"],
-        "type": "field",
-        "outboundTag": "adblock"       
-      },
-      {
-        "type": "field",
-        "domain": ["geosite:cn"],
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
-        "ip": [
-          "114.114.114.114",
-          "geoip:cn", 
-          "geoip:private"
-        ],
-        "outboundTag": "direct"
-      },
-      {
-        "type": "field",
-        "domain": [
-            "geosite:netflix",
-            "geosite:disney"
-        ],
-        "outboundTag": "ipv6-direct"
-      }
-    ]
-  },
-
-  "inbounds": [
-    {
-      "tag": "socks-in",
-      "protocol": "socks",
-      "listen": "127.0.0.1", 
-      "port": 10808, 
-      "settings": {
-        "udp": true
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-            "http",
-            "tls"
-        ],
-        "metadataOnly": false
-      }
+    "log": {
+        "loglevel": "warning"
     },
-    {
-      "tag": "http-in",
-      "protocol": "http",
-      "listen": "127.0.0.1",
-      "port": 10809
-    }
-  ],
-
-  "outbounds": [
-    {
-      "tag": "proxy",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "servername",
-            "port": 443,
-            "users": [
-              {
-                "id": "dc8dd6af-62fa-480d-81bb-53eec20f58d5",
-                "flow": "xtls-rprx-vision",
-                "encryption": "none"
-              }
-            ]
-          }
+    "dns": {
+        "servers": [
+            {
+                "address": "https://8.8.8.8/dns-query",
+                "domains": [
+                    "geosite:geolocation-!cn"
+                ]
+            },
+            {
+                "address": "https://223.5.5.5/dns-query",
+                "domains": [
+                    "geosite:cn"
+                ],
+                "expectIPs": [
+                    "geoip:cn"
+                ]
+            },
+            {
+                "address": "114.114.114.114",
+                "domains": [
+                    "geosite:cn"
+                ]
+            },
+            "localhost"
         ]
-      },
-      "streamSettings": {
-        "network": "tcp",
-        "security": "xtls",
-        "xtlsSettings": {
-          "serverName": "servername",
-          "allowInsecure": false,
-          "fingerprint": "chrome"
+    },
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "domain": [
+                    "geosite:category-ads-all"
+                ],
+                "type": "field",
+                "outboundTag": "block"
+            },
+            {
+                "type": "field",
+                "domain": [
+                    "geosite:cn"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:cn",
+                    "geoip:private"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
+                "domain": [
+                    "geosite:geolocation-!cn"
+                ],
+                "outboundTag": "proxy"
+            },
+            {
+                "type": "field",
+                "ip": [
+                    "223.5.5.5"
+                ],
+                "outboundTag": "direct"
+            }
+        ]
+    },
+    "inbounds": [
+        {
+            "tag": "socks-in",
+            "listen": "127.0.0.1",
+            "port": 10808,
+            "protocol": "socks",
+            "settings": {
+                "udp": true
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ],
+                "routeOnly": true
+            }
+        },
+        {
+            "tag": "http-in",
+            "protocol": "http",
+            "listen": "127.0.0.1",
+            "port": 10809
         }
-      }
-    },
-    // {
-    //   "tag":"proxy",
-    //   "protocol":"shadowsocks",
-    //   "settings": {
-    //     "servers": [
-    //       {
-    //         "address": "158742.xyz",
-    //         "port": 10630,
-    //         "method": "2022-blake3-aes-128-gcm",
-    //         "password": "PJBCXp8lJrg7XxRV7yfApA=="
-    //       }
-    //     ]
-    //   }
-    // },
-    {
-      "tag": "direct",
-      "protocol": "freedom"
-    },
-    {
-      "protocol": "freedom",
-      "settings": {
-          "domainStrategy": "UseIPv6"
-      },
-      "tag": "ipv6-direct"
-    },
-    {
-      "protocol": "blackhole",
-      "settings": {},
-      "tag": "adblock"
-    }
-  ]
+    ],
+    "outbounds": [
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "154.9.238.181",
+                        "port": 443,
+                        "users": [
+                            {
+                                "id": "dc8dd6af-62fa-480d-81bb-53eec20f58d5",
+                                "flow": "xtls-rprx-vision",
+                                "encryption": "none"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "reality",
+                "realitySettings": {
+                    "fingerprint": "chrome",
+                    "serverName": "www.lovelive-anime.jp",
+                    "publicKey": "t9vXFAGogW4e9jP7uYemUY9-0TSf8dqNeFD5uPrTPj4",
+                    "shortId": "6ba85179e30d4fc2"
+                }
+            },
+            "tag": "proxy"
+        },
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        }
+    ]
 }
