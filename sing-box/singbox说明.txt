@@ -1,5 +1,7 @@
-0. singbox使用默认的网卡优先级，interfaceMetric越低，优先级越高。singbox使用最高的优先级网卡。
-1. Get-NetIPInterface命令：该命令可以获取网卡编号(ifIndex)，网卡别名(InterfaceAlias)，协议族(IPV4/IPV6),优先级(InterfaceMetric)等。其中metric值越小优先级越高。
-2.Set-NetIPInterface命令 修改优先级。将外网网卡优先级调低,低于内网一个跃点数即可
-Set-NetIPInterface -InterfaceIndex xx -InterfaceMetric 15
+1、route print命令查看0.0.0.0的网关和跃点数。
+2、如果外网网关的跃点数高于内网网关，则默认流量走跃点数低的内网。
+3、sing-box的流量是走默认网关，不是默认走外网。所以需要修改内网网关的跃点数。
+4、打开“网络和Internet设置”--“更改适配器选项”--右键内网网卡“属性”---双击“IPv4”--“高级”，取消勾选“自动跃点数”，然后填入一个比route print里外网网关更高的跃点数
+
+附：再在cmd里输入route print查看
 
