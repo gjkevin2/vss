@@ -86,7 +86,10 @@ elif check_sys packageManager apt; then
     # 此处为debian11
     # 若为国内服务器，修改镜像源
     originsource=mirrors.ustc.edu.cn
-    cat>/etc/apt/sources.list<<-EOF
+    debversion=$(cat /etc/debian_version)
+    deb_main=${debversion%%.*}
+    if [[ $debversion==11 ]];then
+        cat>/etc/apt/sources.list<<-EOF
 deb https://deb.debian.org/debian/ bullseye main contrib non-free
 deb-src https://deb.debian.org/debian/ bullseye main contrib non-free
 
@@ -99,6 +102,18 @@ deb-src https://deb.debian.org/debian/ bullseye-backports main contrib non-free
 deb https://deb.debian.org/debian-security/ bullseye-security main contrib non-free
 deb-src https://deb.debian.org/debian-security/ bullseye-security main contrib non-free
 EOF
+    else
+        cat>/etc/apt/sources.list<<-EOF
+deb https://deb.debian.org/debian/ bookworm main non-free non-free-firmware contrib
+deb-src https://deb.debian.org/debian/ bookworm main non-free non-free-firmware contrib
+deb https://deb.debian.org/debian-security/ bookworm-security main
+deb-src https://deb.debian.org/debian-security/ bookworm-security main
+deb https://deb.debian.org/debian/ bookworm-updates main non-free non-free-firmware contrib
+deb-src https://deb.debian.org/debian/ bookworm-updates main non-free non-free-firmware contrib
+deb https://deb.debian.org/debian/ bookworm-backports main non-free non-free-firmware contrib
+deb-src https://deb.debian.org/debian/ bookworm-backports main non-free non-free-firmware contrib
+EOF
+    fi
     [[ $stat==1 ]] && sed -i "s@deb.debian.org@$originsource@g" /etc/apt/sources.list
     [[ $stat==1 ]] && sed -i "s@//.*.ubuntu.com@//$originsource@g" /etc/apt/sources.list
     # 更新
