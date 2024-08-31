@@ -56,6 +56,18 @@ else
     stat=1
 fi
 
+# mod ssh colors
+sed -i "s/# export LS/export LS/g" ~/.bashrc
+sed -i "s/# alias ls/alias ls/g" ~/.bashrc
+sed -i "s/# alias ll/alias ll/g" ~/.bashrc
+sed -i "s/# alias l/alias l/g" ~/.bashrc
+grep "^PS1" ~/.bashrc ||{
+    cat >>~/.bashrc<<\EOF
+PS1='\[\e[1;32m\][\u@\h \W]\$\[\e[0m\] '
+EOF
+}
+
+
 # some necessary packages
 if check_sys packageManager yum; then
     yum install -y epel-release curl wget make vim screen npm
