@@ -66,6 +66,7 @@ grep "^PS1" ~/.bashrc ||{
 PS1='\[\e[1;32m\][\u@\h \W]\$\[\e[0m\] '
 EOF
 }
+source ~/.bashrc
 
 
 # some necessary packages
