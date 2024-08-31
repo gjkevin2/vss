@@ -1,5 +1,0 @@
-{
-  "listen": "socks://127.0.0.1:10808",
-  "proxy": "https://wpstest:461ece30@n.158742.xyz:4043",
-  "log": ""
-}
