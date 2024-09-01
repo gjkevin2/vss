@@ -58,6 +58,7 @@ cd ~/.vim/pack
 
 if [ ! -d ".git" ]; then
     git init
+    git config --global init.defaultBranch master
 fi
 
 install_plugin(){
