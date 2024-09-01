@@ -85,41 +85,13 @@ if check_sys packageManager yum; then
 elif check_sys packageManager apt; then
     # 此处为debian11
     # 若为国内服务器，修改镜像源
-    originsource=mirrors.ustc.edu.cn
-    debversion=$(cat /etc/debian_version)
-    deb_main=${debversion%%.*}
-    if [[ $debversion==11 ]];then
-        cat>/etc/apt/sources.list<<-EOF
-deb https://deb.debian.org/debian/ bullseye main contrib non-free
-deb-src https://deb.debian.org/debian/ bullseye main contrib non-free
-
-deb https://deb.debian.org/debian/ bullseye-updates main contrib non-free
-deb-src https://deb.debian.org/debian/ bullseye-updates main contrib non-free
-
-deb https://deb.debian.org/debian/ bullseye-backports main contrib non-free
-deb-src https://deb.debian.org/debian/ bullseye-backports main contrib non-free
-
-deb https://deb.debian.org/debian-security/ bullseye-security main contrib non-free
-deb-src https://deb.debian.org/debian-security/ bullseye-security main contrib non-free
-EOF
-    else
-        cat>/etc/apt/sources.list<<-EOF
-deb https://deb.debian.org/debian/ bookworm main non-free non-free-firmware contrib
-deb-src https://deb.debian.org/debian/ bookworm main non-free non-free-firmware contrib
-deb https://deb.debian.org/debian-security/ bookworm-security main
-deb-src https://deb.debian.org/debian-security/ bookworm-security main
-deb https://deb.debian.org/debian/ bookworm-updates main non-free non-free-firmware contrib
-deb-src https://deb.debian.org/debian/ bookworm-updates main non-free non-free-firmware contrib
-deb https://deb.debian.org/debian/ bookworm-backports main non-free non-free-firmware contrib
-deb-src https://deb.debian.org/debian/ bookworm-backports main non-free non-free-firmware contrib
-EOF
-    fi
+    originsource=mirrors.ustc.edu.cn       
     [[ $stat==1 ]] && sed -i "s@deb.debian.org@$originsource@g" /etc/apt/sources.list
     [[ $stat==1 ]] && sed -i "s@//.*.ubuntu.com@//$originsource@g" /etc/apt/sources.list
     # 更新
     apt -y update && apt -y upgrade
     # "build-essential",它包含了 GNU 编辑器集合，GNU 调试器，和其他编译软件所必需的开发库和工具。
-    apt -y install curl wget make vim screen npm build-essential python3-venv python3-pip
+    apt -y install curl wget make screen build-essential vim npm python3-pip python3-venv
 fi
 
 # 安装并更新nodejs
@@ -132,6 +104,11 @@ if [[ $stat==1 ]];then
 fi
 n latest
 
+# enable ssh login; virtualbox need port transfer in web settings in virtualbox
+sed -i "s/^#Port 22/Port 22/g" /etc/ssh/sshd_config
+sed -i "s/^#PermitRootLogin.*$/PermitRootLogin yes/g" /etc/ssh/sshd_config
+sed -i "s/#PasswordAuthentication/PasswordAuthentication/g" /etc/ssh/sshd_config
+systemctl restart sshd
 
 # install nginx
 if check_sys sysRelease centos; then
