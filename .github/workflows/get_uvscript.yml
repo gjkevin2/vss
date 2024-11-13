@@ -3,6 +3,8 @@ name: get_uvinstall
 on: 
   schedule:
     - cron: "0 8 * * *"
+  push:
+    branches: [master]
 
 jobs:
   get_uvinstall:
