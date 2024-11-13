@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: get uvscipt
-        run: curl -O https://astral.sh/uv/install.ps1
+        run: curl -L -O https://astral.sh/uv/install.ps1
       - name: Commit
         run: |
           git config --global user.email gjkevin2@163.com
