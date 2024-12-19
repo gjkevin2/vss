@@ -1,120 +1,113 @@
 {
-  "log": {
-    "level": "info",
-    "timestamp": true
-  },
-  "dns": {
-    "servers": [
-      {
-        "tag": "google",
-        "address": "https://dns.google/dns-query",
-        "address_resolver": "resolver"
-      },
-      {
-        "tag": "local",
-        "address": "https://dns.alidns.com/dns-query",
-        "address_resolver": "resolver",
-        "detour": "direct"
-      },
-      {
-        "tag": "resolver",
-        "address": "114.114.114.114",
-        "detour": "direct"
-      }
-    ],
-    "rules": [
-      {
-        "outbound": "any",
-        "server": "resolver"
-      },
-      {
-        "clash_mode": "Direct",
-        "server": "local"
-      },
-      {
-        "clash_mode": "Global",
-        "server": "google"
-      },
-      {
-        "rule_set": "geosite-geolocation-cn",
-        "server": "local"
-      },
-      {
-        "type": "logical",
-        "mode": "and",
-        "rules": [
-          {
-            "rule_set": "geosite-geolocation-!cn",
-            "invert": true
-          },
-          {
-            "rule_set": "geoip-cn"
-          }
+    "log":{
+        "level":"info",
+        "timestamp":true
+    },
+    "dns":{
+        "servers":[
+            {
+                "tag":"resolver",
+                "address":"114.114.114.114",
+                "detour":"direct"
+            },
+            {
+                "tag":"google",
+                "address":"https://dns.google/dns-query",
+                "address_resolver":"resolver"
+            },
+            {
+                "tag":"local",
+                "address":"https://dns.alidns.com/dns-query",
+                "address_resolver":"resolver",
+                "detour":"direct"
+            }
         ],
-        "server": "google",
-        "client_subnet": "1.0.8.0/24"
-      }
-    ]
-  },
-    "inbounds": [
+        "rules":[
+            {
+                "outbound":"any",
+                "server":"resolver"
+            },
+            {
+                "rule_set":"geosite-geolocation-cn",
+                "server":"local"
+            },
+            {
+                "type":"logical",
+                "mode":"and",
+                "rules":[
+                    {
+                        "rule_set":"geosite-geolocation-!cn",
+                        "invert":true
+                    },
+                    {
+                        "rule_set":"geoip-cn"
+                    }
+                ],
+                "server":"google",
+                "client_subnet":"1.0.8.0/24"
+            }
+        ]
+    },
+    "inbounds":[
         {
-            "listen": "127.0.0.1",
-            "listen_port": 10808,
-            "tag": "mixed-in",
-            "type": "mixed"
+            "listen":"127.0.0.1",
+            "listen_port":10808,
+            "tag":"mixed-in",
+            "type":"mixed"
         },
         {
-            "listen": "127.0.0.1",
-            "listen_port": 10809,
-            "tag": "http",
-            "type": "http"
+            "listen":"127.0.0.1",
+            "listen_port":10809,
+            "tag":"http",
+            "type":"http"
         }
     ],
-    "outbounds": [{
-        "tag": "proxy",
-        "type": "vless",
-        "server": "154.9.238.181",
-        "server_port": 443,
-        "uuid": "461edf16-8619-4f46-8e1e-e3994c8c00a2",
-        "flow": "xtls-rprx-vision",
-        "tls": {
-          "enabled": true,
-          "server_name": "www.microsoft.com",
-          "utls": {
-              "enabled": true,
-              "fingerprint": "chrome"
-            },
-            "reality": {
-              "enabled": true,
-              "public_key": "Y8cBV8RyH9hSkdy0ATDC9T4s0hzMq1rUXU_YmH6Fgj4",
-              "short_id": "b2c86d5449d237fa"
+    "outbounds":[
+        {
+            "tag":"proxy",
+            "type":"vless",
+            "server":"154.9.238.181",
+            "server_port":443,
+            "uuid":"461edf16-8619-4f46-8e1e-e3994c8c00a2",
+            "flow":"xtls-rprx-vision",
+            "tls":{
+                "enabled":true,
+                "server_name":"www.microsoft.com",
+                "utls":{
+                    "enabled":true,
+                    "fingerprint":"chrome"
+                },
+                "reality":{
+                    "enabled":true,
+                    "public_key":"Y8cBV8RyH9hSkdy0ATDC9T4s0hzMq1rUXU_YmH6Fgj4",
+                    "short_id":"b2c86d5449d237fa"
+                }
             }
-          }
         },
         {
-            "tag": "ss",
-            "type": "shadowsocks",
+            "tag":"ss",
+            "type":"shadowsocks",
             "server":"154.9.238.181",
             "server_port":8390,
             "method":"chacha20-ietf-poly1305",
             "password":"mGvbWWay8ueP9IHnV5F1uWGN2BRToiVCAWJmWOTLU24="
         },
         {
-            "tag": "direct",
-            "type": "direct"
+            "tag":"direct",
+            "type":"direct"
         }
     ],
-    "route": {
-        "rules": [
+    "route":{
+        "rules":[
             {
                 "action":"sniff"
             },
             {
-                "protocol": "dns",
+                "protocol":"dns",
                 "action":"hijack-dns"
             },
             {
-                "domain_suffix": [
+                "domain_suffix":[
                     "appcenter.ms",
                     "app-measurement.com",
                     "firebase.io",
@@ -122,53 +115,46 @@
                     "google-analytics.com",
                     "tiangolo.com"
                 ],
-                "action": "reject"
+                "action":"reject"
             },
             {
-               "rule_set":"geoip-cn",
-               "outbound":"direct"
+                "rule_set":"geoip-cn",
+                "outbound":"direct"
             },
             {
-               "rule_set":"geosite-cn",
-               "outbound":"direct"
+                "rule_set":"geosite-cn",
+                "outbound":"direct"
             }
         ],
         "rule_set":[
-			{
-				"tag":"geosite-cn",
-				"type":"remote",
-				"format":"binary",
-				"url":"https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs",
-				"download_detour":"proxy"
-			},
-			{
-				"tag": "geoip-cn",
-				"type": "remote",
-				"format": "binary",
-				"url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
-				"download_detour": "proxy"
-			  },
-			  {
-				"tag": "geoip-us",
-				"type": "remote",
-				"format": "binary",
-				"url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-us.srs",
-				"download_detour": "proxy"
-			  },
-              {
-                "type": "remote",
-                "tag": "geosite-geolocation-cn",
-                "format": "binary",
-                "url": "https://ghproxy.net/https://raw.githubusercontent.com/lyc8503/sing-box-rules/rule-set-geosite/geosite-geolocation-cn.srs",
-                "download_detour": "direct"
-              },
-              {
-                "type": "remote",
-                "tag": "geosite-geolocation-!cn",
-                "format": "binary",
-                "url": "https://ghproxy.net/https://raw.githubusercontent.com/lyc8503/sing-box-rules/rule-set-geosite/geosite-geolocation-!cn.srs",
-                "download_detour": "direct"
-              }
+            {
+                "tag":"geosite-cn",
+                "type":"remote",
+                "format":"binary",
+                "url":"https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs",
+                "download_detour":"proxy"
+            },
+            {
+                "tag":"geoip-cn",
+                "type":"remote",
+                "format":"binary",
+                "url":"https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+                "download_detour":"proxy"
+            },
+            {
+                "type":"remote",
+                "tag":"geosite-geolocation-cn",
+                "format":"binary",
+                "url":"https://ghproxy.net/https://raw.githubusercontent.com/lyc8503/sing-box-rules/rule-set-geosite/geosite-geolocation-cn.srs",
+                "download_detour":"direct"
+            },
+            {
+                "type":"remote",
+                "tag":"geosite-geolocation-!cn",
+                "format":"binary",
+                "url":"https://ghproxy.net/https://raw.githubusercontent.com/lyc8503/sing-box-rules/rule-set-geosite/geosite-geolocation-!cn.srs",
+                "download_detour":"direct"
+            }
         ]
     }
 }
