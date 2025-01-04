@@ -6,12 +6,12 @@
 <#
 .SYNOPSIS
 
-The installer for uv 0.5.11
+The installer for uv 0.5.14
 
 .DESCRIPTION
 
 This script detects what platform you're on and fetches an appropriate archive from
-https://github.com/astral-sh/uv/releases/download/0.5.11
+https://github.com/astral-sh/uv/releases/download/0.5.14
 then unpacks the binaries and installs them to the first of the following locations
 
     $env:XDG_BIN_HOME
@@ -33,7 +33,7 @@ Print help
 
 param (
     [Parameter(HelpMessage = "The URL of the directory where artifacts can be fetched from")]
-    [string]$ArtifactDownloadUrl = 'https://github.com/astral-sh/uv/releases/download/0.5.11',
+    [string]$ArtifactDownloadUrl = 'https://github.com/astral-sh/uv/releases/download/0.5.14',
     [Parameter(HelpMessage = "Don't add the install directory to PATH")]
     [switch]$NoModifyPath,
     [Parameter(HelpMessage = "Print Help")]
@@ -41,7 +41,7 @@ param (
 )
 
 $app_name = 'uv'
-$app_version = '0.5.11'
+$app_version = '0.5.14'
 if ($env:UV_INSTALLER_GHE_BASE_URL) {
   $installer_base_url = $env:UV_INSTALLER_GHE_BASE_URL
 } elseif ($env:UV_INSTALLER_GITHUB_BASE_URL) {
@@ -52,13 +52,17 @@ if ($env:UV_INSTALLER_GHE_BASE_URL) {
 if ($env:INSTALLER_DOWNLOAD_URL) {
   $ArtifactDownloadUrl = $env:INSTALLER_DOWNLOAD_URL
 } else {
-  $ArtifactDownloadUrl = "$installer_base_url/astral-sh/uv/releases/download/0.5.11"
+  $ArtifactDownloadUrl = "$installer_base_url/astral-sh/uv/releases/download/0.5.14"
 }
 
 $receipt = @"
-{"binaries":["CARGO_DIST_BINS"],"binary_aliases":{},"cdylibs":["CARGO_DIST_DYLIBS"],"cstaticlibs":["CARGO_DIST_STATICLIBS"],"install_layout":"unspecified","install_prefix":"AXO_INSTALL_PREFIX","modify_path":true,"provider":{"source":"cargo-dist","version":"0.25.2-prerelease.3"},"source":{"app_name":"uv","name":"uv","owner":"astral-sh","release_type":"github"},"version":"0.5.11"}
+{"binaries":["CARGO_DIST_BINS"],"binary_aliases":{},"cdylibs":["CARGO_DIST_DYLIBS"],"cstaticlibs":["CARGO_DIST_STATICLIBS"],"install_layout":"unspecified","install_prefix":"AXO_INSTALL_PREFIX","modify_path":true,"provider":{"source":"cargo-dist","version":"0.27.0"},"source":{"app_name":"uv","name":"uv","owner":"astral-sh","release_type":"github"},"version":"0.5.14"}
 "@
-$receipt_home = "${env:LOCALAPPDATA}\uv"
+if ($env:XDG_CONFIG_HOME) {
+  $receipt_home = "${env:XDG_CONFIG_HOME}\uv"
+} else {
+  $receipt_home = "${env:LOCALAPPDATA}\uv"
+}
 
 if ($env:UV_DISABLE_UPDATE) {
   $install_updater = $false
@@ -101,8 +105,28 @@ function Install-Binary($install_args) {
       }
       "aliases_json" = '{}'
     }
+    "i686-pc-windows-gnu" = @{
+      "artifact_name" = "uv-i686-pc-windows-msvc.zip"
+      "bins" = @("uv.exe", "uvx.exe")
+      "libs" = @()
+      "staticlibs" = @()
+      "zip_ext" = ".zip"
+      "aliases" = @{
+      }
+      "aliases_json" = '{}'
+    }
     "i686-pc-windows-msvc" = @{
       "artifact_name" = "uv-i686-pc-windows-msvc.zip"
+      "bins" = @("uv.exe", "uvx.exe")
+      "libs" = @()
+      "staticlibs" = @()
+      "zip_ext" = ".zip"
+      "aliases" = @{
+      }
+      "aliases_json" = '{}'
+    }
+    "x86_64-pc-windows-gnu" = @{
+      "artifact_name" = "uv-x86_64-pc-windows-msvc.zip"
       "bins" = @("uv.exe", "uvx.exe")
       "libs" = @()
       "staticlibs" = @()
@@ -137,7 +161,16 @@ $_
   }
 }
 
-function Get-TargetTriple() {
+function Get-TargetTriple($platforms) {
+  $double = Get-Arch
+  if ($platforms.Contains("$double-msvc")) {
+    return "$double-msvc"
+  } else {
+    return "$double-gnu"
+  }
+}
+
+function Get-Arch() {
   try {
     # NOTE: this might return X64 on ARM64 Windows, which is OK since emulation is available.
     # It works correctly starting in PowerShell Core 7.3 and Windows PowerShell in Win 11 22H2.
@@ -151,10 +184,10 @@ function Get-TargetTriple() {
     # Rust supported platforms: https://doc.rust-lang.org/stable/rustc/platform-support.html
     switch ($p.GetValue($null).ToString())
     {
-      "X86" { return "i686-pc-windows-msvc" }
-      "X64" { return "x86_64-pc-windows-msvc" }
-      "Arm" { return "thumbv7a-pc-windows-msvc" }
-      "Arm64" { return "aarch64-pc-windows-msvc" }
+      "X86" { return "i686-pc-windows" }
+      "X64" { return "x86_64-pc-windows" }
+      "Arm" { return "thumbv7a-pc-windows" }
+      "Arm64" { return "aarch64-pc-windows" }
     }
   } catch {
     # The above was added in .NET 4.7.1, so Windows PowerShell in versions of Windows
@@ -166,14 +199,14 @@ function Get-TargetTriple() {
   # This is available in .NET 4.0. We already checked for PS 5, which requires .NET 4.5.
   Write-Verbose("Get-TargetTriple: falling back to Is64BitOperatingSystem.")
   if ([System.Environment]::Is64BitOperatingSystem) {
-    return "x86_64-pc-windows-msvc"
+    return "x86_64-pc-windows"
   } else {
-    return "i686-pc-windows-msvc"
+    return "i686-pc-windows"
   }
 }
 
 function Download($download_url, $platforms) {
-  $arch = Get-TargetTriple
+  $arch = Get-TargetTriple $platforms
 
   if (-not $platforms.ContainsKey($arch)) {
     $platforms_json = ConvertTo-Json $platforms
@@ -256,7 +289,7 @@ function Download($download_url, $platforms) {
 
 function Invoke-Installer($artifacts, $platforms) {
   # Replaces the placeholder binary entry with the actual list of binaries
-  $arch = Get-TargetTriple
+  $arch = Get-TargetTriple $platforms
 
   if (-not $platforms.ContainsKey($arch)) {
     $platforms_json = ConvertTo-Json $platforms
