@@ -37,6 +37,21 @@
       "tcp_multi_path": false,
       "udp_fragment": false,
       "users": []
+    },
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "",
+      "address": [
+        "172.18.0.1/30",
+        "fdfe:dcba:9876::1/126"
+      ],
+      "mtu": 9000,
+      "auto_route": true,
+      "strict_route": true,
+      "route_address": [],
+      "endpoint_independent_nat": false,
+      "stack": "mixed"
     }
   ],
   "outbounds": [
@@ -45,7 +60,6 @@
       "tag": "proxy",
       "interrupt_exist_connections": true,
       "outbounds": [
-        "🎈 自动选择",
         "proxy",
         "ss"
       ]
@@ -225,6 +239,7 @@
     "disable_cache": false,
     "disable_expire": false,
     "independent_cache": false,
-    "final": "Remote-DNS"
+    "final": "Remote-DNS",
+    "strategy": "prefer_ipv4"
   }
 }
