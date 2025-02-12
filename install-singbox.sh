@@ -1,12 +1,12 @@
 #!/bin/bash
 #安装
 # 测试版
- bash -c "$(curl -L https://sing-box.vercel.app)" @ install --beta
- # bash -c "$(curl -L https://sing-box.vercel.app)" @ install
+ # bash -c "$(curl -L https://sing-box.vercel.app)" @ install --beta
+ bash -c "$(curl -L https://sing-box.vercel.app)" @ install
  # bash -c "$(curl -L sing-box.vercel.app)" @ remove
 
 # 获取ip和域名
-serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|grep -v 172.|awk -F '/' '{print $1}'|tr -d "inet ")
+# serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|grep -v 172.|awk -F '/' '{print $1}'|tr -d "inet ")
 testdomain=`sed -n "/^\s*server_name/p" /etc/nginx/conf.d/default.conf | awk -F' ' '{print $2}'`
 # 顶级域名和二级域名都可以提取到顶级域名
 a=${testdomain%.*}
@@ -22,7 +22,7 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
     "inbounds": [
         {
             "type": "hysteria2",
-            "listen": "$serverip",
+            "listen": "::",
             "listen_port": 50102,
             "users": [
                 {
@@ -40,7 +40,7 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
         },
         {
             "type": "shadowsocks",
-            "listen": "$serverip",
+            "listen": "::",
             "listen_port": 50101,
             "method": "2022-blake3-aes-128-gcm",
             "password": "PJBCXp8lJrg7XxRV7yfApA=="
@@ -80,7 +80,7 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
 }
 EOF
 systemctl stop sing-box
-systemctl stop xray
+# systemctl stop xray
 systemctl stop nginx
 #去除user，使用root读取证书
 #sed -i "s/User=nobody//" /etc/systemd/system/xray.service
@@ -97,5 +97,5 @@ grep "upstream singbox-reality" /etc/nginx/nginx.conf || {
 
 # (re)start nginx
 systemctl start sing-box
-systemctl start xray
+# systemctl start xray
 systemctl start nginx

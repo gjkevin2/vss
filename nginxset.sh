@@ -49,7 +49,8 @@ server {
 }
 
 server {
-    listen unix:/dev/shm/web.sock ssl http2 proxy_protocol;    
+    listen unix:/dev/shm/web.sock ssl proxy_protocol;
+    http2 on;
     server_name $domain www.$domain;
     # server_name ~^(?<www>www\.)?(.+)$;
     # if (\$www) {return 301 https://\$2\$request_uri;}
