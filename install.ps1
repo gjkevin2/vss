@@ -6,12 +6,12 @@
 <#
 .SYNOPSIS
 
-The installer for uv 0.5.14
+The installer for uv 0.5.31
 
 .DESCRIPTION
 
 This script detects what platform you're on and fetches an appropriate archive from
-https://github.com/astral-sh/uv/releases/download/0.5.14
+https://github.com/astral-sh/uv/releases/download/0.5.31
 then unpacks the binaries and installs them to the first of the following locations
 
     $env:XDG_BIN_HOME
@@ -33,7 +33,7 @@ Print help
 
 param (
     [Parameter(HelpMessage = "The URL of the directory where artifacts can be fetched from")]
-    [string]$ArtifactDownloadUrl = 'https://github.com/astral-sh/uv/releases/download/0.5.14',
+    [string]$ArtifactDownloadUrl = 'https://github.com/astral-sh/uv/releases/download/0.5.31',
     [Parameter(HelpMessage = "Don't add the install directory to PATH")]
     [switch]$NoModifyPath,
     [Parameter(HelpMessage = "Print Help")]
@@ -41,7 +41,7 @@ param (
 )
 
 $app_name = 'uv'
-$app_version = '0.5.14'
+$app_version = '0.5.31'
 if ($env:UV_INSTALLER_GHE_BASE_URL) {
   $installer_base_url = $env:UV_INSTALLER_GHE_BASE_URL
 } elseif ($env:UV_INSTALLER_GITHUB_BASE_URL) {
@@ -52,11 +52,11 @@ if ($env:UV_INSTALLER_GHE_BASE_URL) {
 if ($env:INSTALLER_DOWNLOAD_URL) {
   $ArtifactDownloadUrl = $env:INSTALLER_DOWNLOAD_URL
 } else {
-  $ArtifactDownloadUrl = "$installer_base_url/astral-sh/uv/releases/download/0.5.14"
+  $ArtifactDownloadUrl = "$installer_base_url/astral-sh/uv/releases/download/0.5.31"
 }
 
 $receipt = @"
-{"binaries":["CARGO_DIST_BINS"],"binary_aliases":{},"cdylibs":["CARGO_DIST_DYLIBS"],"cstaticlibs":["CARGO_DIST_STATICLIBS"],"install_layout":"unspecified","install_prefix":"AXO_INSTALL_PREFIX","modify_path":true,"provider":{"source":"cargo-dist","version":"0.27.0"},"source":{"app_name":"uv","name":"uv","owner":"astral-sh","release_type":"github"},"version":"0.5.14"}
+{"binaries":["CARGO_DIST_BINS"],"binary_aliases":{},"cdylibs":["CARGO_DIST_DYLIBS"],"cstaticlibs":["CARGO_DIST_STATICLIBS"],"install_layout":"unspecified","install_prefix":"AXO_INSTALL_PREFIX","modify_path":true,"provider":{"source":"cargo-dist","version":"0.28.0"},"source":{"app_name":"uv","name":"uv","owner":"astral-sh","release_type":"github"},"version":"0.5.31"}
 "@
 if ($env:XDG_CONFIG_HOME) {
   $receipt_home = "${env:XDG_CONFIG_HOME}\uv"
@@ -95,8 +95,18 @@ function Install-Binary($install_args) {
 
   # Platform info injected by dist
   $platforms = @{
+    "aarch64-pc-windows-gnu" = @{
+      "artifact_name" = "uv-aarch64-pc-windows-msvc.zip"
+      "bins" = @("uv.exe", "uvx.exe")
+      "libs" = @()
+      "staticlibs" = @()
+      "zip_ext" = ".zip"
+      "aliases" = @{
+      }
+      "aliases_json" = '{}'
+    }
     "aarch64-pc-windows-msvc" = @{
-      "artifact_name" = "uv-x86_64-pc-windows-msvc.zip"
+      "artifact_name" = "uv-aarch64-pc-windows-msvc.zip"
       "bins" = @("uv.exe", "uvx.exe")
       "libs" = @()
       "staticlibs" = @()
@@ -461,7 +471,7 @@ function Invoke-Installer($artifacts, $platforms) {
     Add-Ci-Path $dest_dir
     if (Add-Path $dest_dir) {
         Write-Information ""
-        Write-Information "To add $dest_dir to your PATH, either restart your system or run:"
+        Write-Information "To add $dest_dir to your PATH, either restart your shell or run:"
         Write-Information ""
         Write-Information "    set Path=$dest_dir;%Path%   (cmd)"
         Write-Information "    `$env:Path = `"$dest_dir;`$env:Path`"   (powershell)"
@@ -483,54 +493,47 @@ function Add-Ci-Path($OrigPathToAdd) {
   }
 }
 
-# Try to add the given path to PATH via the registry
+# Try to permanently add the given path to the user-level
+# PATH via the registry
 #
 # Returns true if the registry was modified, otherwise returns false
 # (indicating it was already on PATH)
-function Add-Path($OrigPathToAdd) {
-  Write-Verbose "Adding $OrigPathToAdd to your PATH"
-  $RegistryPath = "HKCU:\Environment"
-  $PropertyName = "Path"
-  $PathToAdd = $OrigPathToAdd
+#
+# This is a lightly modified version of this solution:
+# https://stackoverflow.com/questions/69236623/adding-path-permanently-to-windows-using-powershell-doesnt-appear-to-work/69239861#69239861
+function Add-Path($LiteralPath) {
+  Write-Verbose "Adding $LiteralPath to your user-level PATH"
 
-  $Item = if (Test-Path $RegistryPath) {
-    # If the registry key exists, get it
-    Get-Item -Path $RegistryPath
-  } else {
-    # If the registry key doesn't exist, create it
-    Write-Verbose  "Creating $RegistryPath"
-    New-Item -Path $RegistryPath -Force
-  }
+  $RegistryPath = 'registry::HKEY_CURRENT_USER\Environment'
 
-  $OldPath = ""
-  try {
-    # Try to get the old PATH value. If that fails, assume we're making it from scratch.
-    # Otherwise assume there's already paths in here and use a ; separator
-    $OldPath = $Item | Get-ItemPropertyValue -Name $PropertyName
-    $PathToAdd = "$PathToAdd;"
-  } catch {
-    # We'll be creating the PATH from scratch
-    Write-Verbose "No $PropertyName Property exists on $RegistryPath (we'll make one)"
-  }
+  # Note the use of the .GetValue() method to ensure that the *unexpanded* value is returned.
+  # If 'Path' is not an existing item in the registry, '' is returned.
+  $CurrentDirectories = (Get-Item -LiteralPath $RegistryPath).GetValue('Path', '', 'DoNotExpandEnvironmentNames') -split ';' -ne ''
 
-  # Check if the path is already there
-  #
-  # We don't want to incorrectly match "C:\blah\" to "C:\blah\blah\", so we include the semicolon
-  # delimiters when searching, ensuring exact matches. To avoid corner cases we add semicolons to
-  # both sides of the input, allowing us to pretend we're always in the middle of a list.
-  Write-Verbose "Old $PropertyName Property is $OldPath"
-  if (";$OldPath;" -like "*;$OrigPathToAdd;*") {
-    # Already on path, nothing to do
-    Write-Verbose "install dir already on PATH, all done!"
+  if ($LiteralPath -in $CurrentDirectories) {
+    Write-Verbose "Install directory $LiteralPath already on PATH, all done!"
     return $false
-  } else {
-    # Actually update PATH
-    Write-Verbose "Actually mutating $PropertyName Property"
-    $NewPath = $PathToAdd + $OldPath
-    # We use -Force here to make the value already existing not be an error
-    $Item | New-ItemProperty -Name $PropertyName -Value $NewPath -PropertyType String -Force | Out-Null
-    return $true
   }
+
+  Write-Verbose "Actually mutating 'Path' Property"
+
+  # Add the new path to the front of the PATH.
+  # The ',' turns $LiteralPath into an array, which the array of
+  # $CurrentDirectories is then added to.
+  $NewPath = (,$LiteralPath + $CurrentDirectories) -join ';'
+
+  # Update the registry. Will create the property if it did not already exist.
+  # Note the use of ExpandString to create a registry property with a REG_EXPAND_SZ data type.
+  Set-ItemProperty -Type ExpandString -LiteralPath $RegistryPath Path $NewPath
+
+  # Broadcast WM_SETTINGCHANGE to get the Windows shell to reload the
+  # updated environment, via a dummy [Environment]::SetEnvironmentVariable() operation.
+  $DummyName = 'cargo-dist-' + [guid]::NewGuid().ToString()
+  [Environment]::SetEnvironmentVariable($DummyName, 'cargo-dist-dummy', 'User')
+  [Environment]::SetEnvironmentVariable($DummyName, [NullString]::value, 'User')
+
+  Write-Verbose "Successfully added $LiteralPath to your user-level PATH"
+  return $true
 }
 
 function Initialize-Environment() {
@@ -545,7 +548,7 @@ Upgrade PowerShell:
   }
 
   # show notification to change execution policy:
-  $allowedExecutionPolicy = @('Unrestricted', 'RemoteSigned', 'ByPass')
+  $allowedExecutionPolicy = @('Unrestricted', 'RemoteSigned', 'Bypass')
   If ((Get-ExecutionPolicy).ToString() -notin $allowedExecutionPolicy) {
     throw @"
 Error: PowerShell requires an execution policy in [$($allowedExecutionPolicy -join ", ")] to run $app_name. For example, to set the execution policy to 'RemoteSigned' please run:
