@@ -3,7 +3,6 @@
     "level": "warning"
   },
   "dns": {
-    "independent_cache": true,
     "servers": [
       {
         "tag": "dns-direct",
