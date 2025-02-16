@@ -1,9 +1,9 @@
 #!/bin/bash
 #安装
 # 测试版
- # bash -c "$(curl -L https://sing-box.vercel.app)" @ install --beta
- bash -c "$(curl -L https://sing-box.vercel.app)" @ install
- # bash -c "$(curl -L sing-box.vercel.app)" @ remove
+# bash -c "$(curl -L https://sing-box.vercel.app)" @ install --beta
+bash -c "$(curl -L https://sing-box.vercel.app)" @ install
+# bash -c "$(curl -L sing-box.vercel.app)" @ remove
 
 # 获取ip和域名
 # serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|grep -v 172.|awk -F '/' '{print $1}'|tr -d "inet ")
