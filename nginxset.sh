@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 echo '请输入顶级域名'
 read domain
 
