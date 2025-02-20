@@ -1,7 +1,7 @@
 #!/bin/bash
 
-AI=metaso
-port=8000
+AI=kimi
+port=8001
 
 # deploy free-api
 docker run -it -d --init --name ${AI}-free-api -p ${port}:${port} -e TZ=Asia/Shanghai vinlic/${AI}-free-api:latest
