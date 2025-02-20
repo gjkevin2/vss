@@ -15,6 +15,7 @@ cat >/etc/nginx/conf.d/${AI}.conf<<-EOF
 server {
     listen 80;
     listen [::]:80;
+    server_name $AI.$domain;
     return 301 https://\$host\$request_uri;
 }
 
