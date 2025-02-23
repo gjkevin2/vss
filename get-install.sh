@@ -14,7 +14,7 @@ red(){
 
 systempwd="/usr/lib/systemd/system/"
 
-function getall(){
+getall(){
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/ready_os.sh -O ready_os.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/TlsFakeSet.sh -O TlsFakeSet.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/updateCertForWeb.sh -O updateCertForWeb.sh
@@ -25,22 +25,22 @@ function getall(){
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-singbox.sh -O install-singbox.sh
 }
 
-function get_cert_bbr(){
+get_cert_bbr(){
     bash ready_os.sh
     bash TlsFakeSet.sh
     bash nginxset.sh
     bash bbr.sh
 }
 
-function install_vless(){
+install_vless(){
     bash install-xray.sh
 }
 
-function install_ssrust(){
+install_ssrust(){
     bash install-ssrust.sh
 }
 
-function install_singbox(){
+install_singbox(){
     bash install-singbox.sh
 }
 
