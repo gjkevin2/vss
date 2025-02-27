@@ -1,0 +1,7 @@
+1.新建用户：useradd -m 用户名
+2.密码  passwd 用户名
+3.添加到sudo组：sudo usermod -aG sudo 用户名
+4.设置sudo免密：
+root下，输入 sudo visudo 在文件的最后输入
+用户名 ALL=(ALL:ALL) NOPASSWD:ALL
+保存时，要是/etc/sudoers
