@@ -29,10 +29,6 @@
     ],
     "rules": [
       {
-        "server": "dns-direct",
-        "outbound": "any"
-      },
-      {
         "action": "reject",
         "rule_set": "geosite:category-ads-all"
       },
@@ -89,6 +85,10 @@
   ],
   "outbounds": [
     {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
       "tag": "proxy",
       "type": "vless",
       "server": "38.244.30.178",
@@ -122,10 +122,6 @@
       "server_port": 8390,
       "method": "chacha20-ietf-poly1305",
       "password": "mGvbWWay8ueP9IHnV5F1uWGN2BRToiVCAWJmWOTLU24="
-    },
-    {
-      "type": "direct",
-      "tag": "direct"
     }
   ],
   "route": {
