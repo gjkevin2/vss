@@ -5,3 +5,5 @@
 root下，输入 sudo visudo 在文件的最后输入
 用户名 ALL=(ALL:ALL) NOPASSWD:ALL
 保存时，要是/etc/sudoers
+5.修改默认的shell端，避免tab不能补全，终端无颜色
+root下修改/etc/passwd,将对应用户名最后的/bin/sh改为/bin/bash
