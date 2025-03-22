@@ -29,6 +29,10 @@
     ],
     "rules": [
       {
+        "server": "dns-direct",
+        "outbound": "any"
+      },
+      {
         "action": "reject",
         "rule_set": "geosite:category-ads-all"
       },
@@ -64,16 +68,10 @@
       "listen": "127.0.0.1",
       "listen_port": 10808,
       "tcp_fast_open": true,
-      "tcp_multi_path": false,
-      "udp_fragment": false,
       "users": []
     }
   ],
   "outbounds": [
-    {
-      "type": "direct",
-      "tag": "direct"
-    },
     {
       "tag": "proxy",
       "type": "vless",
@@ -108,6 +106,10 @@
       "server_port": 8390,
       "method": "chacha20-ietf-poly1305",
       "password": "mGvbWWay8ueP9IHnV5F1uWGN2BRToiVCAWJmWOTLU24="
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
     }
   ],
   "route": {
@@ -153,12 +155,19 @@
         "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
         "format": "binary",
         "download_detour": "direct"
+      },
+      {
+        "tag": "googleip",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/google.srs",
+        "format": "binary",
+        "download_detour": "direct"
       }
     ],
     "rules": [
       {
         "action": "sniff",
-        "inbound": "tun-in"
+        "inbound": "mixed-in"
       },
       {
         "action": "hijack-dns",

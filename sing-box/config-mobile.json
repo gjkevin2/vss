@@ -29,6 +29,10 @@
     ],
     "rules": [
       {
+        "server": "dns-direct",
+        "outbound": "any"
+      },
+      {
         "action": "reject",
         "rule_set": "geosite:category-ads-all"
       },
@@ -71,16 +75,6 @@
       "route_address": [],
       "endpoint_independent_nat": false,
       "stack": "mixed"
-    },
-    {
-      "type": "mixed",
-      "tag": "mixed-in",
-      "listen": "127.0.0.1",
-      "listen_port": 10808,
-      "tcp_fast_open": true,
-      "tcp_multi_path": false,
-      "udp_fragment": false,
-      "users": []
     }
   ],
   "outbounds": [
