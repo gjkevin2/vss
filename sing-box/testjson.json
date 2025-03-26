@@ -1,0 +1,196 @@
+{
+  "log": {
+    "level": "warning"
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "dns-direct",
+        "address": "https://223.5.5.5/dns-query",  // 国内 DNS（使用 DoH）
+        "address_resolver": "dns-local",
+        "detour": "direct"
+      },
+      {
+        "tag": "dns-local",
+        "address": "223.5.5.5",  // 国内 DNS（使用普通 DNS）
+        "detour": "direct"
+      },
+      {
+        "tag": "dns-remote",
+        "address": "tls://8.8.8.8",  // 国外 DNS（使用 DoH）
+        "address_resolver": "Remote-DNS-Resolver",
+        "detour": "proxy"
+      },
+      {
+        "tag": "Remote-DNS-Resolver",
+        "address": "8.8.8.8",  // 国外 DNS（使用普通 DNS）
+        "detour": "proxy"
+      }
+    ],
+    "rules": [
+      {
+        "server": "dns-direct",  // 对于中国大陆域名使用国内 DNS
+        "outbound": "direct"
+      },
+      {
+        "action": "reject",
+        "rule_set": "geosite:category-ads-all"  // 拒绝广告相关域名
+      },
+      {
+        "action": "reject",
+        "domain_suffix": [
+          "appcenter.ms",
+          "firebase.io",
+          "crashlytics.com"
+        ]  // 拒绝特定域名
+      },
+      {
+        "domain_suffix": [
+          "googleapis.cn"  // 对于 .cn 域名走国外 DNS
+        ],
+        "server": "dns-remote"
+      },
+      {
+        "rule_set": [
+          "geosite:cn"  // 对于中国大陆的域名走国内 DNS
+        ],
+        "server": "dns-direct"
+      }
+    ],
+    "final": "dns-remote",  // 默认 DNS 解析走国外 DNS
+    "disable_cache": true,
+    "strategy": "prefer_ipv4"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "",
+      "address": [
+        "172.20.0.1/30"
+      ],
+      "mtu": 9000,
+      "auto_route": true,
+      "strict_route": true,
+      "route_address": [],
+      "endpoint_independent_nat": false,
+      "stack": "mixed"
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "tag": "proxy",
+      "type": "vless",
+      "server": "172.1.1.1",
+      "server_port": 443,
+      "uuid": "461edf16-8619-4f46-8e1e-e3994c8c00a2",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.microsoft.com",
+        "alpn": [
+          "h2"
+        ],
+        "insecure": false,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "Y8cBV8RyH9hSkdy0ATDC9T4s0hzMq1rUXU_YmH6Fgj4",
+          "short_id": "b2c86d5449d237fa"
+        }
+      },
+      "packet_encoding": "",
+      "domain_strategy": "prefer_ipv4"
+    },
+    {
+      "tag": "ss",
+      "type": "shadowsocks",
+      "server": "172.1.1.1",
+      "server_port": 8390,
+      "method": "chacha20-ietf-poly1305",
+      "password": "mGvbWWay8ueP9IHnV5F1uWGN2BRToiVCAWJmWOTLU24="
+    }
+  ],
+  "route": {
+    "rule_set": [
+      {
+        "tag": "geosite:category-ads-all",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/category-ads-all.srs",
+        "format": "binary",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite:cn",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/cn.srs",
+        "format": "binary",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip:cn",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
+        "format": "binary",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geoip:private",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/private.srs",
+        "format": "binary",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "geosite:private",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/private.srs",
+        "format": "binary",
+        "download_detour": "direct"
+      },
+      {
+        "tag": "GeoLocation-!CN",
+        "type": "remote",
+        "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
+        "format": "binary",
+        "download_detour": "direct"
+      }
+    ],
+    "rules": [
+      {
+        "action": "sniff",
+        "inbound": "tun-in"
+      },
+      {
+        "action": "hijack-dns",
+        "protocol": "dns"
+      },
+      {
+        "action": "reject",
+        "rule_set": "geosite:category-ads-all"
+      },
+      {
+        "rule_set": [
+          "geosite:cn",
+          "geoip:cn",
+          "geosite:private",
+          "geoip:private"
+        ],
+        "outbound": "direct"  // 中国大陆域名走 direct
+      },
+      {
+        "rule_set": "GeoLocation-!CN",
+        "outbound": "proxy"  // 其他国外域名走 proxy
+      }
+    ],
+    "auto_detect_interface": true,
+    "final": "direct"
+  }
+}
