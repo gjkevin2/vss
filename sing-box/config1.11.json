@@ -3,6 +3,11 @@
     "level": "warning",
     "timestamp": true
   },
+  "experimental": {
+    "cache_file": {
+      "enabled": true
+    }
+  },
   "dns": {
     "independent_cache": true,
     "servers": [
@@ -12,9 +17,13 @@
         "detour": "direct"
       },
       {
+        "tag": "cf",
+        "address": "1.1.1.1"
+      },
+      {
         "tag": "google",
         "address": "https://dns.google/dns-query",
-        "address_resolver": "tx",
+        "address_resolver": "cf",
         "address_strategy": "ipv4_only",
         "strategy": "ipv4_only",
         "client_subnet": "1.0.1.0"
@@ -146,7 +155,8 @@
         "tag": "anti-ad",
         "type": "remote",
         "format": "binary",
-        "url": "https://anti-ad.net/anti-ad-sing-box.srs"
+        "url": "https://anti-ad.net/anti-ad-sing-box.srs",
+        "download_detour": "direct"
       },
       {
         "tag": "geosite-cn",
@@ -170,11 +180,5 @@
         "download_detour": "direct"
       }
     ]
-  },
-  "experimental": {
-    "cache_file": {
-      "enabled": true,
-      "store_rdrc": true
-    }
   }
 }
