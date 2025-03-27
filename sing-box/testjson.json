@@ -6,35 +6,35 @@
     "servers": [
       {
         "tag": "dns-direct",
-        "address": "https://223.5.5.5/dns-query",  // 国内 DNS（使用 DoH）
+        "address": "https://223.5.5.5/dns-query", // 国内 DNS（使用 DoH）
         "address_resolver": "dns-local",
         "detour": "direct"
       },
       {
         "tag": "dns-local",
-        "address": "223.5.5.5",  // 国内 DNS（使用普通 DNS）
+        "address": "223.5.5.5", // 国内 DNS（使用普通 DNS）
         "detour": "direct"
       },
       {
         "tag": "dns-remote",
-        "address": "tls://8.8.8.8",  // 国外 DNS（使用 DoH）
+        "address": "tls://8.8.8.8", // 国外 DNS（使用 DoH）
         "address_resolver": "Remote-DNS-Resolver",
         "detour": "proxy"
       },
       {
         "tag": "Remote-DNS-Resolver",
-        "address": "8.8.8.8",  // 国外 DNS（使用普通 DNS）
+        "address": "8.8.8.8", // 国外 DNS（使用普通 DNS）
         "detour": "proxy"
       }
     ],
     "rules": [
       {
-        "server": "dns-direct",  // 对于中国大陆域名使用国内 DNS
+        "server": "dns-direct", // 对于中国大陆域名使用国内 DNS
         "outbound": "direct"
       },
       {
         "action": "reject",
-        "rule_set": "geosite:category-ads-all"  // 拒绝广告相关域名
+        "rule_set": "geosite:category-ads-all" // 拒绝广告相关域名
       },
       {
         "action": "reject",
@@ -42,22 +42,22 @@
           "appcenter.ms",
           "firebase.io",
           "crashlytics.com"
-        ]  // 拒绝特定域名
+        ] // 拒绝特定域名
       },
       {
         "domain_suffix": [
-          "googleapis.cn"  // 对于 .cn 域名走国外 DNS
+          "googleapis.cn" // 对于 .cn 域名走国外 DNS
         ],
         "server": "dns-remote"
       },
       {
         "rule_set": [
-          "geosite:cn"  // 对于中国大陆的域名走国内 DNS
+          "geosite:cn" // 对于中国大陆的域名走国内 DNS
         ],
         "server": "dns-direct"
       }
     ],
-    "final": "dns-remote",  // 默认 DNS 解析走国外 DNS
+    "final": "dns-remote", // 默认 DNS 解析走国外 DNS
     "disable_cache": true,
     "strategy": "prefer_ipv4"
   },
@@ -85,7 +85,7 @@
     {
       "tag": "proxy",
       "type": "vless",
-      "server": "172.1.1.1",
+      "server": "38.244.30.178",
       "server_port": 443,
       "uuid": "461edf16-8619-4f46-8e1e-e3994c8c00a2",
       "flow": "xtls-rprx-vision",
@@ -112,7 +112,7 @@
     {
       "tag": "ss",
       "type": "shadowsocks",
-      "server": "172.1.1.1",
+      "server": "38.244.30.178",
       "server_port": 8390,
       "method": "chacha20-ietf-poly1305",
       "password": "mGvbWWay8ueP9IHnV5F1uWGN2BRToiVCAWJmWOTLU24="
@@ -183,11 +183,11 @@
           "geosite:private",
           "geoip:private"
         ],
-        "outbound": "direct"  // 中国大陆域名走 direct
+        "outbound": "direct" // 中国大陆域名走 direct
       },
       {
         "rule_set": "GeoLocation-!CN",
-        "outbound": "proxy"  // 其他国外域名走 proxy
+        "outbound": "proxy" // 其他国外域名走 proxy
       }
     ],
     "auto_detect_interface": true,
