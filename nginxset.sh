@@ -33,7 +33,7 @@ EOF
 
 # ssl相关配置及realip设置
 grep "ssl_certificate" /etc/nginx/nginx.conf || {
-  sed -i "/keepalive_timeout/a\\\tssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;\n\tssl_certificate \/root\/cert\/fullchain.cer;\n\tssl_certificate_key \/root\/cert\/$domain.key;\n\tssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4:!RSA;\n\tadd_header Strict-Transport-Security \"max-age=31536000; includeSubDomains; preload\" always;\n\tset_real_ip_from unix;\n\treal_ip_header proxy_protocol;" /etc/nginx/nginx.conf
+  sed -i "/keepalive_timeout/a\\\tssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;\n\tssl_certificate \/root\/cert\/fullchain.cer;\n\tssl_certificate_key \/root\/cert\/$domain.key;\n\tssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4:!RSA;\n\tadd_header Strict-Transport-Security \"max-age=31536000; includeSubDomains; preload\" always;\n\tset_real_ip_from 0.0.0.0/0;\n\treal_ip_header proxy_protocol;" /etc/nginx/nginx.conf
 }
 
     # ssl_protocols TLSv1.2 TLSv1.3;

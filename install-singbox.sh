@@ -7,7 +7,7 @@ bash -c "$(curl -L https://sing-box.vercel.app)" @ install
 
 # 获取ip和域名
 # serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|grep -v 172.|awk -F '/' '{print $1}'|tr -d "inet ")
-testdomain=`sed -n "/^\s*server_name/p" /etc/nginx/conf.d/default.conf | awk -F' ' '{print $2}'`
+testdomain=`sed -n "/^\s*server_name/p" /etc/nginx/conf.d/default.conf | awk -F' ' '{print $2}'|head -n 1`
 # 顶级域名和二级域名都可以提取到顶级域名
 a=${testdomain%.*}
 servername=${a##*.}.${testdomain##*.}

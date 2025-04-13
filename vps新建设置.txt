@@ -1,0 +1,2 @@
+0. 先获取基本脚本，运行后获取一些其他脚本：wget https://bit.ly/4bkvv1a -O get-install.sh
+1. 先安装基本设置，get_cert_bbr()
