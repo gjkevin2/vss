@@ -71,7 +71,7 @@ source ~/.bashrc
 
 # some necessary packages
 if check_sys packageManager yum; then
-    yum install -y epel-release curl wget make vim screen npm
+    yum install -y epel-release curl wget make vim screen npm git
     # 更新的开发工具
     toolset='gcc-toolset-11'
     yum -y install $toolset
@@ -91,7 +91,7 @@ elif check_sys packageManager apt; then
     # 更新
     apt -y update && apt -y upgrade
     # "build-essential",它包含了 GNU 编辑器集合，GNU 调试器，和其他编译软件所必需的开发库和工具。
-    apt -y install curl wget make screen build-essential vim npm python3-pip python3-venv
+    apt -y install curl wget make git screen build-essential vim npm python3-pip python3-venv
 fi
 
 # 安装并更新nodejs
