@@ -67,12 +67,16 @@
   },
   "inbounds": [
     {
-      "type": "mixed",
-      "tag": "mixed-in",
-      "listen": "127.0.0.1",
-      "listen_port": 10808,
-      "tcp_fast_open": true,
-      "users": []
+      "tag": "tun",
+      "type": "tun",
+      "interface_name": "",
+      "address": [
+        "172.20.0.1/30"
+      ],
+      "mtu": 9000,
+      "stack": "mixed",
+      "auto_route": true,
+      "strict_route": true
     }
   ],
   "outbounds": [
