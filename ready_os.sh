@@ -103,6 +103,8 @@ if [[ $stat==1 ]];then
     export N_NODE_MIRROR=https://npmmirror.com/mirrors/node
 fi
 n latest
+# 关闭捐赠
+npm config set fund false --location=global
 
 # enable ssh login; virtualbox need port transfer in web settings in virtualbox
 sed -i "s/^#Port 22/Port 22/g" /etc/ssh/sshd_config
