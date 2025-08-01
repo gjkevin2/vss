@@ -107,8 +107,11 @@ n latest
 npm config set fund false --location=global
 
 # enable ssh login; virtualbox need port transfer in web settings in virtualbox
-sed -i "s/^#Port 22/Port 22/g" /etc/ssh/sshd_config
-sed -i "s/^#PermitRootLogin.*$/PermitRootLogin yes/g" /etc/ssh/sshd_config
+# this hash password is generate by "openssl passwd -6 'vsst0515'"
+# delete user use "deluser xxx && rm -rf /home/xxx"
+useradd -m -p '$6$LOOPt/fopyySGn2/$6vR4IyGbB82BaSNJcdu9r9dI08lx27XWW4b.38s6CTpyKqcTRkR7HKIh05JLsb3m332q6/lG/pbT1dlJu643T/' vpstest
+sed -i "s/^#Port 22/Port 2323/g" /etc/ssh/sshd_config
+# sed -i "s/^#PermitRootLogin.*$/PermitRootLogin yes/g" /etc/ssh/sshd_config
 sed -i "s/#PasswordAuthentication/PasswordAuthentication/g" /etc/ssh/sshd_config
 systemctl restart sshd
 
