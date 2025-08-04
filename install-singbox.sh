@@ -46,6 +46,23 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
             "password": "PJBCXp8lJrg7XxRV7yfApA=="
         },
         {
+            "type": "shadowtls",
+            "listen": "::",
+            "listen_port": 443,
+            "detour": "shadowsocks-in",
+            "version": 3,
+            "users": [
+                {
+                    "password": "461ece"
+                }
+            ],
+            "handshake": {
+                "server": "", // 要求网站支持 TLS 1.3
+                "server_port": 443
+            },
+            "strict_mode": true
+        },
+        {
             "type": "vless",
             "listen": "127.0.0.1",
             "listen_port": 52004,

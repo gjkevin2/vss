@@ -1,6 +1,6 @@
 @echo off&setlocal EnableDelayedExpansion
 rem start C:\Program" "Files\Git\git-bash.exe --cd=.
-set path=%path%;"C:\Program Files\Git\cmd"
+rem set path=%path%;"C:\Program Files\Git\cmd"
 
 rem 切换到工程目录
 set /p adir=project folder (in the same parent folder of this document):
@@ -12,6 +12,8 @@ if not exist ".git" (
     git config --global user.email "gjkevin2@163.com"
     git config --global pull.rebase false
     git config --global credential.helper store
+
+    git config --global core.editor "notepad"
     git config --global init.defaultBranch master
     git remote add origin "https://gitee.com/gjkevin/!adir!.git"
 )

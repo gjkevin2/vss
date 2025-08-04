@@ -1,4 +1,5 @@
 @echo off&setlocal EnableDelayedExpansion
+rem correct access error: git remote set-url origin git@github.com:gjkevin2/vss.git
 rem start C:\Program" "Files\Git\git-bash.exe --cd=.
 set path=%path%;"C:\Program Files\Git\cmd"
 
@@ -16,8 +17,10 @@ if not exist ".git" (
     git init
     git config --global user.name "gjkevin2"
     git config --global user.email "gjkevin2@163.com"
-    rem git config --local http.proxy socks5://127.0.0.1:10808
-    rem git config --local https.proxy socks5://127.0.0.1:10808
+    git config --local http.proxy socks5://127.0.0.1:10808
+    git config --local https.proxy socks5://127.0.0.1:10808
+
+    git config --global core.editor "notepad"
     git config --global init.defaultBranch master
     git remote add origin https://github.com/gjkevin2/!bdir!.git
     rem add token to repos
