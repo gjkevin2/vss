@@ -1,16 +1,16 @@
-name: get_channel_v4
+name: get_channel
 
 on: 
   schedule:
     - cron: "0 8 * * *"
 
 jobs:
-  get_channel_v4:
+  get_channel:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: get files
-        run: curl -O https://packagecontrol.github.io/channel/channel_v4.json
+        run: curl -O https://packages.sublimetext.io/channel.json
       - name: Commit
         run: |
           git config --global user.email gjkevin2@163.com
