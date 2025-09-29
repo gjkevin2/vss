@@ -6,12 +6,12 @@
 <#
 .SYNOPSIS
 
-The installer for uv 0.8.4
+The installer for uv 0.8.22
 
 .DESCRIPTION
 
 This script detects what platform you're on and fetches an appropriate archive from
-https://github.com/astral-sh/uv/releases/download/0.8.4
+https://github.com/astral-sh/uv/releases/download/0.8.22
 then unpacks the binaries and installs them to the first of the following locations
 
     $env:XDG_BIN_HOME
@@ -33,7 +33,7 @@ Print help
 
 param (
     [Parameter(HelpMessage = "The URL of the directory where artifacts can be fetched from")]
-    [string]$ArtifactDownloadUrl = 'https://github.com/astral-sh/uv/releases/download/0.8.4',
+    [string]$ArtifactDownloadUrl = 'https://github.com/astral-sh/uv/releases/download/0.8.22',
     [Parameter(HelpMessage = "Don't add the install directory to PATH")]
     [switch]$NoModifyPath,
     [Parameter(HelpMessage = "Print Help")]
@@ -41,7 +41,7 @@ param (
 )
 
 $app_name = 'uv'
-$app_version = '0.8.4'
+$app_version = '0.8.22'
 if ($env:UV_INSTALLER_GHE_BASE_URL) {
   $installer_base_url = $env:UV_INSTALLER_GHE_BASE_URL
 } elseif ($env:UV_INSTALLER_GITHUB_BASE_URL) {
@@ -49,15 +49,17 @@ if ($env:UV_INSTALLER_GHE_BASE_URL) {
 } else {
   $installer_base_url = "https://github.com"
 }
-if ($env:INSTALLER_DOWNLOAD_URL) {
+if ($env:UV_DOWNLOAD_URL) {
+  $ArtifactDownloadUrl = $env:UV_DOWNLOAD_URL
+} elseif ($env:INSTALLER_DOWNLOAD_URL) {
   $ArtifactDownloadUrl = $env:INSTALLER_DOWNLOAD_URL
 } else {
-  $ArtifactDownloadUrl = "$installer_base_url/astral-sh/uv/releases/download/0.8.4"
+  $ArtifactDownloadUrl = "$installer_base_url/astral-sh/uv/releases/download/0.8.22"
 }
 $auth_token = $env:UV_GITHUB_TOKEN
 
 $receipt = @"
-{"binaries":["CARGO_DIST_BINS"],"binary_aliases":{},"cdylibs":["CARGO_DIST_DYLIBS"],"cstaticlibs":["CARGO_DIST_STATICLIBS"],"install_layout":"unspecified","install_prefix":"AXO_INSTALL_PREFIX","modify_path":true,"provider":{"source":"cargo-dist","version":"0.28.7-prerelease.2"},"source":{"app_name":"uv","name":"uv","owner":"astral-sh","release_type":"github"},"version":"0.8.4"}
+{"binaries":["CARGO_DIST_BINS"],"binary_aliases":{},"cdylibs":["CARGO_DIST_DYLIBS"],"cstaticlibs":["CARGO_DIST_STATICLIBS"],"install_layout":"unspecified","install_prefix":"AXO_INSTALL_PREFIX","modify_path":true,"provider":{"source":"cargo-dist","version":"0.30.0"},"source":{"app_name":"uv","name":"uv","owner":"astral-sh","release_type":"github"},"version":"0.8.22"}
 "@
 if ($env:XDG_CONFIG_HOME) {
   $receipt_home = "${env:XDG_CONFIG_HOME}\uv"
@@ -216,6 +218,44 @@ function Get-Arch() {
   }
 }
 
+function WebProxyFromUrl {
+    param([string]$ProxyUrl)
+
+    if ([string]::IsNullOrWhiteSpace($ProxyUrl)) {
+        return $null
+    }
+
+    try {
+        # Parse the proxy URL
+        $uri = [System.Uri]$ProxyUrl
+
+        # Create WebProxy instance
+        $webProxy = New-Object System.Net.WebProxy($uri)
+
+        # Set credentials if provided in URL
+        if (-not [string]::IsNullOrEmpty($uri.UserInfo)) {
+            $userInfo = $uri.UserInfo.Split(':')
+            $username = [System.Uri]::UnescapeDataString($userInfo[0])
+            $password = if ($null -eq $userInfo[1]) { "" } else { [System.Uri]::UnescapeDataString($userInfo[1]) }
+            $webProxy.Credentials = New-Object System.Net.NetworkCredential($username, $password)
+        }
+
+        return $webProxy
+    }
+    catch {
+        Write-Verbose("Failed to parse proxy URL '$ProxyUrl': $($_.Exception.Message)")
+        return $null
+    }
+}
+
+function WebProxyFromEnvironment {
+    $httpsProxy = [System.Environment]::GetEnvironmentVariable("HTTPS_PROXY")
+    $allProxy = [System.Environment]::GetEnvironmentVariable("ALL_PROXY")
+    $proxyUrl = if (-not [string]::IsNullOrWhiteSpace($httpsProxy)) { $httpsProxy } else { $allProxy }
+    $webProxy = WebProxyFromUrl -ProxyUrl $proxyUrl
+    return $webProxy
+}
+
 function Download($download_url, $platforms) {
   $arch = Get-TargetTriple $platforms
 
@@ -242,6 +282,10 @@ function Download($download_url, $platforms) {
   Write-Verbose "  from $url"
   Write-Verbose "  to $dir_path"
   $wc = New-Object Net.Webclient
+  $proxy = WebProxyFromEnvironment
+  if ($null -ne $proxy) {
+    $wc.Proxy = $proxy
+  }
   if ($auth_token) {
     $wc.Headers["Authorization"] = "Bearer $auth_token"
   }
