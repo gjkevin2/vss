@@ -7,10 +7,8 @@ bash -c "$(curl -L https://sing-box.vercel.app)" @ install
 
 # 获取ip和域名
 # serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|grep -v 172.|awk -F '/' '{print $1}'|tr -d "inet ")
-testdomain=`sed -n "/^\s*server_name/p" /etc/nginx/conf.d/default.conf | awk -F' ' '{print $2}'|head -n 1`
-# 顶级域名和二级域名都可以提取到顶级域名
-a=${testdomain%.*}
-servername=${a##*.}.${testdomain##*.}
+# serverip=$(hostname -I | awk '{print $1}')
+servername=$(sed -n 's/^\s*server_name\s\+//p' /etc/nginx/conf.d/default.conf | awk '{print $1}' | head -n1 | rev | cut -d. -f1-2 | rev)
 
 # 配置文件
 # sing-box generate uuid
@@ -46,21 +44,22 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
             "password": "PJBCXp8lJrg7XxRV7yfApA=="
         },
         {
-            "type": "shadowtls",
+            "type": "trojan",
             "listen": "::",
-            "listen_port": 443,
-            "detour": "shadowsocks-in",
-            "version": 3,
+            "listen_port": 51443,
             "users": [
                 {
-                    "password": "461ece"
+                    "password": "461ece30"
                 }
             ],
-            "handshake": {
-                "server": "", // 要求网站支持 TLS 1.3
-                "server_port": 443
+            "tls": {
+                "enabled": true,
+                "certificate_path": "/root/cert/fullchain.cer",
+                "key_path": "/root/cert/$servername.key"
             },
-            "strict_mode": true
+            "multiplex": {
+                "enabled": true
+            }
         },
         {
             "type": "vless",
@@ -105,8 +104,14 @@ systemctl stop nginx
 rm -rf /dev/shm/*
 
 # 443端口转发到实际端口，nginx还要移除proxy_protocol
+grep "upstream trojan" /etc/nginx/nginx.conf || {
+  sed -i "/\$ssl_preread_server_name/a\\\ttj.$servername trojan-proxy;" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream trojan {\n\t\tserver 127.0.0.1:51443;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/upstream set/a\\\tupstream trojan-proxy {\n\t\tserver 127.0.0.1:52443;\n\t}" /etc/nginx/nginx.conf
+  sed -i "/remove proxy_protocol/a\\\tserver {\n\t\tlisten 52443 proxy_protocol;\n\t\tproxy_pass trojan;\n\t}" /etc/nginx/nginx.conf
+}
 grep "upstream singbox-reality" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\t\twww.microsoft.com singbox-proxy;" /etc/nginx/nginx.conf
+  sed -i "/\$ssl_preread_server_name/a\\\twww.microsoft.com singbox-proxy;" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream singbox-reality {\n\t\tserver 127.0.0.1:52004;\n\t}" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream singbox-proxy {\n\t\tserver 127.0.0.1:52204;\n\t}" /etc/nginx/nginx.conf
   sed -i "/remove proxy_protocol/a\\\tserver {\n\t\tlisten 52204 proxy_protocol;\n\t\tproxy_pass singbox-reality;\n\t}" /etc/nginx/nginx.conf
