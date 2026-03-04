@@ -6,12 +6,12 @@
 <#
 .SYNOPSIS
 
-The installer for uv 0.10.7
+The installer for uv 0.10.8
 
 .DESCRIPTION
 
 This script detects what platform you're on and fetches an appropriate archive from
-https://github.com/astral-sh/uv/releases/download/0.10.7
+https://releases.astral.sh/github/uv/releases/download/0.10.8
 then unpacks the binaries and installs them to the first of the following locations
 
     $env:XDG_BIN_HOME
@@ -19,9 +19,6 @@ then unpacks the binaries and installs them to the first of the following locati
     $HOME/.local/bin
 
 It will then add that dir to PATH by editing your Environment.Path registry key
-
-.PARAMETER ArtifactDownloadUrl
-The URL of the directory where artifacts can be fetched from
 
 .PARAMETER NoModifyPath
 Don't add the install directory to PATH
@@ -32,8 +29,6 @@ Print help
 #>
 
 param (
-    [Parameter(HelpMessage = "The URL of the directory where artifacts can be fetched from")]
-    [string]$ArtifactDownloadUrl = 'https://github.com/astral-sh/uv/releases/download/0.10.7',
     [Parameter(HelpMessage = "Don't add the install directory to PATH")]
     [switch]$NoModifyPath,
     [Parameter(HelpMessage = "Print Help")]
@@ -41,25 +36,25 @@ param (
 )
 
 $app_name = 'uv'
-$app_version = '0.10.7'
-if ($env:UV_INSTALLER_GHE_BASE_URL) {
+$app_version = '0.10.8'
+if ($env:UV_DOWNLOAD_URL) {
+  $ArtifactDownloadUrls = @($env:UV_DOWNLOAD_URL)
+} elseif ($env:INSTALLER_DOWNLOAD_URL) {
+  $ArtifactDownloadUrls = @($env:INSTALLER_DOWNLOAD_URL)
+} elseif ($env:UV_INSTALLER_GHE_BASE_URL) {
   $installer_base_url = $env:UV_INSTALLER_GHE_BASE_URL
+  $ArtifactDownloadUrls = @("$installer_base_url/astral-sh/uv/releases/download/0.10.8")
 } elseif ($env:UV_INSTALLER_GITHUB_BASE_URL) {
   $installer_base_url = $env:UV_INSTALLER_GITHUB_BASE_URL
+  $ArtifactDownloadUrls = @("$installer_base_url/astral-sh/uv/releases/download/0.10.8")
 } else {
-  $installer_base_url = "https://github.com"
+  $ArtifactDownloadUrls = @("https://releases.astral.sh/github/uv/releases/download/0.10.8", "https://github.com/astral-sh/uv/releases/download/0.10.8")
 }
-if ($env:UV_DOWNLOAD_URL) {
-  $ArtifactDownloadUrl = $env:UV_DOWNLOAD_URL
-} elseif ($env:INSTALLER_DOWNLOAD_URL) {
-  $ArtifactDownloadUrl = $env:INSTALLER_DOWNLOAD_URL
-} else {
-  $ArtifactDownloadUrl = "$installer_base_url/astral-sh/uv/releases/download/0.10.7"
-}
+
 $auth_token = $env:UV_GITHUB_TOKEN
 
 $receipt = @"
-{"binaries":["CARGO_DIST_BINS"],"binary_aliases":{},"cdylibs":["CARGO_DIST_DYLIBS"],"cstaticlibs":["CARGO_DIST_STATICLIBS"],"install_layout":"unspecified","install_prefix":"AXO_INSTALL_PREFIX","modify_path":true,"provider":{"source":"cargo-dist","version":"0.30.4"},"source":{"app_name":"uv","name":"uv","owner":"astral-sh","release_type":"github"},"version":"0.10.7"}
+{"binaries":["CARGO_DIST_BINS"],"binary_aliases":{},"cdylibs":["CARGO_DIST_DYLIBS"],"cstaticlibs":["CARGO_DIST_STATICLIBS"],"install_layout":"unspecified","install_prefix":"AXO_INSTALL_PREFIX","modify_path":true,"provider":{"source":"cargo-dist","version":"0.31.0"},"source":{"app_name":"uv","name":"uv","owner":"astral-sh","release_type":"github"},"version":"0.10.8"}
 "@
 if ($env:XDG_CONFIG_HOME) {
   $receipt_home = "${env:XDG_CONFIG_HOME}\uv"
@@ -160,7 +155,34 @@ function Install-Binary($install_args) {
     }
   }
 
-  $fetched = Download "$ArtifactDownloadUrl" $platforms
+  $arch = Get-TargetTriple $platforms
+  if (-not $platforms.ContainsKey($arch)) {
+    $platforms_json = ConvertTo-Json $platforms
+    throw "ERROR: could not find binaries for this platform. Last platform tried: $arch platform info: $platforms_json"
+  }
+  Write-Information "downloading $app_name $app_version ($arch)"
+
+  $download_result = $false
+  $first_url = $true
+  foreach ($url in $ArtifactDownloadUrls) {
+    if (-not $first_url) {
+      Write-Information "trying alternative download URL"
+    }
+    $first_url = $false
+
+    try {
+      $fetched = Download -download_url "$url" -platforms $platforms -arch $arch
+      $download_result = $true
+      break
+    } catch {
+      Write-Information "failed to download from $url"
+      # keep going, maybe we have backup download URLs
+    }
+  }
+  if (-not $download_result) {
+    throw "failed to download binaries"
+  }
+
   # FIXME: add a flag that lets the user not do this step
   try {
     Invoke-Installer -artifacts $fetched -platforms $platforms "$install_args"
@@ -256,14 +278,7 @@ function WebProxyFromEnvironment {
     return $webProxy
 }
 
-function Download($download_url, $platforms) {
-  $arch = Get-TargetTriple $platforms
-
-  if (-not $platforms.ContainsKey($arch)) {
-    $platforms_json = ConvertTo-Json $platforms
-    throw "ERROR: could not find binaries for this platform. Last platform tried: $arch platform info: $platforms_json"
-  }
-
+function Download($download_url, $platforms, $arch) {
   # Lookup what we expect this platform to look like
   $info = $platforms[$arch]
   $zip_ext = $info["zip_ext"]
@@ -278,7 +293,6 @@ function Download($download_url, $platforms) {
 
   # Download and unpack!
   $url = "$download_url/$artifact_name"
-  Write-Information "Downloading $app_name $app_version ($arch)"
   Write-Verbose "  from $url"
   Write-Verbose "  to $dir_path"
   $wc = New-Object Net.Webclient
@@ -457,7 +471,7 @@ function Invoke-Installer($artifacts, $platforms) {
 
   $dest_dir = New-Item -Force -ItemType Directory -Path $dest_dir
   $dest_dir_lib = New-Item -Force -ItemType Directory -Path $dest_dir_lib
-  Write-Information "Installing to $dest_dir"
+  Write-Information "installing to $dest_dir"
   # Just copy the binaries from the temp location to the install dir
   foreach ($bin_path in $artifacts["bin_paths"]) {
     $installed_file = Split-Path -Path "$bin_path" -Leaf
@@ -627,7 +641,7 @@ function New-Temp-Dir() {
 }
 
 # PSScriptAnalyzer doesn't like how we use our params as globals, this calms it
-$Null = $ArtifactDownloadUrl, $NoModifyPath, $Help
+$Null = $ArtifactDownloadUrls, $NoModifyPath, $Help
 # Make Write-Information statements be visible
 $InformationPreference = "Continue"
 
