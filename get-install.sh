@@ -20,6 +20,7 @@ getall(){
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/updateCertForWeb.sh -O updateCertForWeb.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/nginxset.sh -O nginxset.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/bbr.sh -O bbr.sh
+    wget https://raw.githubusercontent.com/gjkevin2/vss/master/headscale.sh -O headscale.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-xray.sh -O install-xray.sh    
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-ssrust.sh -O install-ssrust.sh
     wget https://raw.githubusercontent.com/gjkevin2/vss/master/install-singbox.sh -O install-singbox.sh
@@ -44,6 +45,10 @@ install_singbox(){
     bash install-singbox.sh
 }
 
+install_headscale(){
+    bash headscale.sh
+}
+
 start_menu(){
     clear
     red " ===================================="
@@ -56,6 +61,8 @@ start_menu(){
     yellow " 4. 安装ssrust"
     red " ===================================="
     yellow " 5. 安装singbox"
+    red " ===================================="
+    yellow " 6. 安装headscale"
     red " ===================================="
     yellow " 0. 退出脚本"
     red " ===================================="
@@ -76,7 +83,9 @@ start_menu(){
     ;;
     5)
     install_singbox
-    
+    ;;
+    6)
+    install_headscale    
     ;;
     0)
     exit 1
