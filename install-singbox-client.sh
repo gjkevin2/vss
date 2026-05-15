@@ -1,8 +1,13 @@
 #!/bin/bash
 # 安装
-bash -c "$(curl -L https://sing-box.vercel.app)" @ install
+wget https://gitee.com/gjkevin/dfiles/releases/download/v0.5/sing-box-linux-amd64.tar.gz
+tar zxvf sing-box-linux-amd64.tar.gz
+rm -rf sing-box-linux-amd64.tar.gz sing-box
+mv sing-box-* sing-box
+chmod +x sing-box/sing-box
 
 # 配置
+mkdir -p /usr/local/etc/sing-box
 cat > /usr/local/etc/sing-box/config.json <<-EOF
 {
   "log": {
@@ -160,5 +165,29 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
   }
 }
 EOF
-systemctl stop sing-box
+
+# 创建systemd服务
+cat >/etc/systemd/system/sing-box.service<<-EOF
+[Unit]
+Description=Sing-box Proxy Service
+Documentation=https://sing-box.sagernet.org/
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=$HOME/sing-box/sing-box run -c /usr/local/etc/sing-box/config.json
+
+# 重启策略：在异常退出时自动重启
+Restart=on-failure
+RestartSec=5s
+
+# 优雅停止信号
+KillMode=mixed
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable sing-box
 systemctl start sing-box
