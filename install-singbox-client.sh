@@ -6,6 +6,8 @@ rm -rf sing-box-linux-amd64.tar.gz sing-box
 mv sing-box-* sing-box
 chmod +x sing-box/sing-box
 
+HOST_IP=$(ip route get 1 | awk '{print $7; exit}')
+
 # 配置
 mkdir -p /usr/local/etc/sing-box
 cat > /usr/local/etc/sing-box/config.json <<-EOF
@@ -51,7 +53,7 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
     {
       "type": "http",
       "tag": "http-in",
-      "listen": "127.0.0.1",
+      "listen": "${HOST_IP}",
       "listen_port": 7890,
       "tcp_fast_open": true,
       "users": []
