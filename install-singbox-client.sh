@@ -6,8 +6,6 @@ rm -rf sing-box-linux-amd64.tar.gz sing-box
 mv sing-box-* sing-box
 chmod +x sing-box/sing-box
 
-HOST_IP=$(ip route get 1 | awk '{print $7; exit}')
-
 # 配置
 mkdir -p /usr/local/etc/sing-box
 cat > /usr/local/etc/sing-box/config.json <<-EOF
@@ -53,7 +51,7 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
     {
       "type": "http",
       "tag": "http-in",
-      "listen": "${HOST_IP}",
+      "listen": "127.0.0.1",
       "listen_port": 7890,
       "tcp_fast_open": true,
       "users": []
@@ -153,15 +151,15 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
         "tag": "geosite-cn",
         "type": "remote",
         "format": "binary",
-        "url": "https://raw.githubusercontent.com/lyc8503/sing-box-rules/refs/heads/rule-set-geosite/geosite-cn.srs",
-        "download_detour": "proxy"
+        "url": "https://cdn.jsdelivr.net/gh/lyc8503/sing-box-rules@rule-set-geosite/geosite-cn.srs",
+        "download_detour": "direct"
       },
       {
         "tag": "geoip-cn",
         "type": "remote",
         "format": "binary",
-        "url": "https://raw.githubusercontent.com/lyc8503/sing-box-rules/refs/heads/rule-set-geoip/geoip-cn.srs",
-        "download_detour": "proxy"
+        "url": "https://cdn.jsdelivr.net/gh/lyc8503/sing-box-rules@rule-set-geoip/geoip-cn.srs",
+        "download_detour": "direct"
       }
     ]
   }
