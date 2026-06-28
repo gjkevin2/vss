@@ -1,0 +1,3 @@
+sing-box generate reality-keypair
+PrivateKey: iJk23GmjDAzoXoCYJGK25HybtMx0GH-FQjz5pqfhRV4
+PublicKey: qIv6zXKEKzPiJXkdL_NayrHGmbCV6cUd6TF96Sa1d38
