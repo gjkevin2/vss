@@ -67,17 +67,16 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
             "listen_port": 52004,
             "users": [
                 {
-                    "uuid": "461edf16-8619-4f46-8e1e-e3994c8c00a2",
-                    "flow": "xtls-rprx-vision"
+                    "uuid": "461edf16-8619-4f46-8e1e-e3994c8c00a2"
                 }
             ],
             "tls": {
                 "enabled": true,
-                "server_name": "www.microsoft.com",
+                "server_name": "cloudflare.com",
                 "reality": {
                     "enabled": true,
                     "handshake": {
-                        "server": "www.microsoft.com",
+                        "server": "cloudflare.com",
                         "server_port": 443
                     },
                     "private_key": "QBzN1AK91YVPC8ujyQ4BvZ1d4iexRrDUgLgVvXutIWw",
@@ -111,7 +110,7 @@ grep "upstream trojan" /etc/nginx/nginx.conf || {
   sed -i "/remove proxy_protocol/a\\\tserver {\n\t\tlisten 52443 proxy_protocol;\n\t\tproxy_pass trojan;\n\t}" /etc/nginx/nginx.conf
 }
 grep "upstream singbox-reality" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\twww.microsoft.com singbox-proxy;" /etc/nginx/nginx.conf
+  sed -i "/\$ssl_preread_server_name/a\\\tcloudflare singbox-proxy;" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream singbox-reality {\n\t\tserver 127.0.0.1:52004;\n\t}" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream singbox-proxy {\n\t\tserver 127.0.0.1:52204;\n\t}" /etc/nginx/nginx.conf
   sed -i "/remove proxy_protocol/a\\\tserver {\n\t\tlisten 52204 proxy_protocol;\n\t\tproxy_pass singbox-reality;\n\t}" /etc/nginx/nginx.conf
