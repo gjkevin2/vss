@@ -6,12 +6,12 @@
 <#
 .SYNOPSIS
 
-The installer for uv 0.12.9
+The installer for uv 0.12.10
 
 .DESCRIPTION
 
 This script detects what platform you're on and fetches an appropriate archive from
-https://releases.astral.sh/github/uv/releases/download/0.12.9
+https://releases.astral.sh/github/uv/releases/download/0.12.10
 then unpacks the binaries and installs them to the first of the following locations
 
     $env:XDG_BIN_HOME
@@ -36,25 +36,25 @@ param (
 )
 
 $app_name = 'uv'
-$app_version = '0.12.9'
+$app_version = '0.12.10'
 if ($env:UV_DOWNLOAD_URL) {
   $ArtifactDownloadUrls = @($env:UV_DOWNLOAD_URL)
 } elseif ($env:INSTALLER_DOWNLOAD_URL) {
   $ArtifactDownloadUrls = @($env:INSTALLER_DOWNLOAD_URL)
 } elseif ($env:UV_INSTALLER_GHE_BASE_URL) {
   $installer_base_url = $env:UV_INSTALLER_GHE_BASE_URL
-  $ArtifactDownloadUrls = @("$installer_base_url/astral-sh/uv/releases/download/0.12.9")
+  $ArtifactDownloadUrls = @("$installer_base_url/astral-sh/uv/releases/download/0.12.10")
 } elseif ($env:UV_INSTALLER_GITHUB_BASE_URL) {
   $installer_base_url = $env:UV_INSTALLER_GITHUB_BASE_URL
-  $ArtifactDownloadUrls = @("$installer_base_url/astral-sh/uv/releases/download/0.12.9")
+  $ArtifactDownloadUrls = @("$installer_base_url/astral-sh/uv/releases/download/0.12.10")
 } else {
-  $ArtifactDownloadUrls = @("https://releases.astral.sh/github/uv/releases/download/0.12.9", "https://github.com/astral-sh/uv/releases/download/0.12.9")
+  $ArtifactDownloadUrls = @("https://releases.astral.sh/github/uv/releases/download/0.12.10", "https://github.com/astral-sh/uv/releases/download/0.12.10")
 }
 
 $auth_token = $env:UV_GITHUB_TOKEN
 
 $receipt = @"
-{"binaries":["CARGO_DIST_BINS"],"binary_aliases":{},"cdylibs":["CARGO_DIST_DYLIBS"],"cstaticlibs":["CARGO_DIST_STATICLIBS"],"install_layout":"unspecified","install_prefix":"AXO_INSTALL_PREFIX","modify_path":true,"provider":{"source":"cargo-dist","version":"0.31.0"},"source":{"app_name":"uv","name":"uv","owner":"astral-sh","release_type":"github"},"version":"0.12.9"}
+{"binaries":["CARGO_DIST_BINS"],"binary_aliases":{},"cdylibs":["CARGO_DIST_DYLIBS"],"cstaticlibs":["CARGO_DIST_STATICLIBS"],"install_layout":"unspecified","install_prefix":"AXO_INSTALL_PREFIX","modify_path":true,"provider":{"source":"cargo-dist","version":"0.32.0"},"source":{"app_name":"uv","name":"uv","owner":"astral-sh","release_type":"github"},"version":"0.12.10"}
 "@
 if ($env:XDG_CONFIG_HOME) {
   $receipt_home = "${env:XDG_CONFIG_HOME}\uv"
@@ -176,6 +176,7 @@ function Install-Binary($install_args) {
       break
     } catch {
       Write-Information "failed to download from $url"
+      Write-Information "  $(Get-ExceptionMessage $_.Exception)"
       # keep going, maybe we have backup download URLs
     }
   }
@@ -278,6 +279,27 @@ function WebProxyFromEnvironment {
     return $webProxy
 }
 
+function Get-ExceptionMessage($exception) {
+  if ($null -eq $exception) {
+    return ""
+  }
+
+  while (($null -ne $exception.InnerException) -and (-not [string]::IsNullOrWhiteSpace($exception.InnerException.Message))) {
+    $exception = $exception.InnerException
+  }
+
+  return $exception.Message
+}
+
+function Invoke-DownloadFile($client, $url, $path) {
+  try {
+    $client.DownloadFile($url, $path)
+  } catch {
+    $message = Get-ExceptionMessage $_.Exception
+    throw "failed to download $url to ${path}: $message"
+  }
+}
+
 function Download($download_url, $platforms, $arch) {
   # Lookup what we expect this platform to look like
   $info = $platforms[$arch]
@@ -303,7 +325,7 @@ function Download($download_url, $platforms, $arch) {
   if ($auth_token) {
     $wc.Headers["Authorization"] = "Bearer $auth_token"
   }
-  $wc.downloadFile($url, $dir_path)
+  Invoke-DownloadFile -client $wc -url $url -path $dir_path
 
   Write-Verbose "Unpacking to $tmp"
 
@@ -348,7 +370,7 @@ function Download($download_url, $platforms, $arch) {
     $updater_url = "$download_url/$updater_id"
     $out_name = "$tmp\uv-update.exe"
 
-    $wc.downloadFile($updater_url, $out_name)
+    Invoke-DownloadFile -client $wc -url $updater_url -path $out_name
     $bin_paths += $out_name
   }
 
