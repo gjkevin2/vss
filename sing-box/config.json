@@ -92,6 +92,12 @@
       "tag": "direct"
     }
   ],
+  "http_clients": [
+    {
+      "tag": "direct",
+      "detour": "direct"
+    }
+  ],
   "route": {
     "default_domain_resolver": {
       "server": "google"
@@ -147,21 +153,27 @@
         "type": "remote",
         "format": "binary",
         "url": "https://anti-ad.net/anti-ad-sing-box.srs",
-        "download_detour": "direct"
+        "http_client": {
+          "detour": "direct"
+        }
       },
       {
         "tag": "geosite-cn",
         "type": "remote",
         "format": "binary",
-        "url": "https://cdn.jsdelivr.net/gh/lyc8503/sing-box-rules@rule-set-geosite/geosite-cn.srs",
-        "download_detour": "direct"
+        "url": "https://git.158742.xyz/raw/lyc8503/sing-box-rules/refs/heads/rule-set-geosite/geosite-cn.srs",
+        "http_client": {
+          "detour": "direct"
+        }
       },
       {
         "tag": "geoip-cn",
         "type": "remote",
         "format": "binary",
-        "url": "https://cdn.jsdelivr.net/gh/lyc8503/sing-box-rules@rule-set-geoip/geoip-cn.srs",
-        "download_detour": "direct"
+        "url": "https://git.158742.xyz/raw/lyc8503/sing-box-rules/refs/heads/rule-set-geoip/geoip-cn.srs",
+        "http_client": {
+          "detour": "direct"
+        }
       }
     ]
   }
