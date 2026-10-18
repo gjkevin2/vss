@@ -8,6 +8,12 @@
       "enabled": true
     }
   },
+  "http_clients": [
+    {
+      "tag": "rules-proxy",
+      "detour": "proxy"
+    }
+  ],
   "dns": {
     "servers": [
       {
@@ -15,26 +21,23 @@
         "type": "local"
       },
       {
-        "tag": "google",
         "type": "https",
-        "server": "dns.google",
-        "domain_resolver": "local",
+        "tag": "dns-proxy",
+        "server": "1.1.1.1",
+        "server_port": 443,
+        "path": "/dns-query",
         "detour": "proxy"
       }
     ],
     "rules": [
       {
         "rule_set": "geosite-cn",
-        "server": "local"
-      },
-      {
-        "rule_set": "anti-ad",
-        "action": "predefined",
-        "rcode": "REFUSED"
+        "action": "route",
+        "server": "dns-cn"
       }
     ],
-    "strategy": "ipv4_only",
-    "final": "google"
+    "final": "dns-proxy",
+    "strategy": "ipv4_only"
   },
   "inbounds": [
     {
@@ -79,29 +82,12 @@
       }
     },
     {
-      "tag": "ss",
-      "type": "shadowsocks",
-      "server": "158742.xyz",
-      "server_port": 8390,
-      "domain_resolver": "local",
-      "method": "chacha20-ietf-poly1305",
-      "password": "mGvbWWay8ueP9IHnV5F1uWGN2BRToiVCAWJmWOTLU24="
-    },
-    {
       "type": "direct",
       "tag": "direct"
     }
   ],
-  "http_clients": [
-    {
-      "tag": "direct"
-    }
-  ],
   "route": {
-    "default_domain_resolver": {
-      "server": "google"
-    },
-    "auto_detect_interface": true,
+    "default_domain_resolver": "local",
     "rules": [
       {
         "action": "sniff"
@@ -113,6 +99,10 @@
       {
         "rule_set": "anti-ad",
         "action": "reject"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "direct"
       },
       {
         "domain_suffix": [
@@ -141,33 +131,35 @@
           "geosite-cn"
         ],
         "outbound": "direct"
-      },
-      {
-        "outbound": "proxy"
       }
     ],
     "rule_set": [
       {
-        "tag": "anti-ad",
         "type": "remote",
+        "tag": "anti-ad",
         "format": "binary",
         "url": "https://anti-ad.net/anti-ad-sing-box.srs",
-        "http_client": "direct"
+        "http_client": "rules-proxy",
+        "update_interval": "24h"
       },
       {
+        "type": "remote",
         "tag": "geosite-cn",
-        "type": "remote",
         "format": "binary",
-        "url": "https://git.158742.xyz/raw/lyc8503/sing-box-rules/refs/heads/rule-set-geosite/geosite-cn.srs",
-        "http_client": "direct"
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs",
+        "http_client": "rules-proxy",
+        "update_interval": "24h"
       },
       {
-        "tag": "geoip-cn",
         "type": "remote",
+        "tag": "geoip-cn",
         "format": "binary",
-        "url": "https://git.158742.xyz/raw/lyc8503/sing-box-rules/refs/heads/rule-set-geoip/geoip-cn.srs",
-        "http_client": "direct"
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+        "http_client": "rules-proxy",
+        "update_interval": "24h"
       }
-    ]
+    ],
+    "final": "proxy",
+    "auto_detect_interface": true
   }
 }
