@@ -95,7 +95,7 @@ regions:
     nodes:
       - name: cn-1
         regionid: 901
-        hostname: 160.202.254.29
+        hostname: 160.202.254.54
         stunport: -1
         derpport: 18562
         stunonly: false
