@@ -37,32 +37,8 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
             }
         },
         {
-            "type": "shadowsocks",
-            "listen": "::",
-            "listen_port": 50101,
-            "method": "2022-blake3-aes-128-gcm",
-            "password": "PJBCXp8lJrg7XxRV7yfApA=="
-        },
-        {
-            "type": "trojan",
-            "listen": "::",
-            "listen_port": 51443,
-            "users": [
-                {
-                    "password": "461ece30"
-                }
-            ],
-            "tls": {
-                "enabled": true,
-                "certificate_path": "/root/cert/fullchain.cer",
-                "key_path": "/root/cert/$servername.key"
-            },
-            "multiplex": {
-                "enabled": true
-            }
-        },
-        {
             "type": "vless",
+            "tag": "vless-reality",
             "listen": "127.0.0.1",
             "listen_port": 52004,
             "users": [
@@ -73,11 +49,11 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
             ],
             "tls": {
                 "enabled": true,
-                "server_name": "www.microsoft.com",
+                "server_name": "www.apple.com",
                 "reality": {
                     "enabled": true,
                     "handshake": {
-                        "server": "www.microsoft.com",
+                        "server": "www.apple.com",
                         "server_port": 443
                     },
                     "private_key": "QBzN1AK91YVPC8ujyQ4BvZ1d4iexRrDUgLgVvXutIWw",
@@ -90,7 +66,8 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
     ],
     "outbounds": [
         {
-            "type": "direct"
+            "type": "direct",
+            "tag": "direct"
         }
     ]
 }
@@ -104,14 +81,8 @@ systemctl stop nginx
 rm -rf /dev/shm/*
 
 # 443端口转发到实际端口，nginx还要移除proxy_protocol
-grep "upstream trojan" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\ttj.$servername trojan-proxy;" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream trojan {\n\t\tserver 127.0.0.1:51443;\n\t}" /etc/nginx/nginx.conf
-  sed -i "/upstream set/a\\\tupstream trojan-proxy {\n\t\tserver 127.0.0.1:52443;\n\t}" /etc/nginx/nginx.conf
-  sed -i "/remove proxy_protocol/a\\\tserver {\n\t\tlisten 52443 proxy_protocol;\n\t\tproxy_pass trojan;\n\t}" /etc/nginx/nginx.conf
-}
 grep "upstream singbox-reality" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\twww.microsoft.com singbox-proxy;" /etc/nginx/nginx.conf
+  sed -i "/\$ssl_preread_server_name/a\\\tcloudflare singbox-proxy;" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream singbox-reality {\n\t\tserver 127.0.0.1:52004;\n\t}" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream singbox-proxy {\n\t\tserver 127.0.0.1:52204;\n\t}" /etc/nginx/nginx.conf
   sed -i "/remove proxy_protocol/a\\\tserver {\n\t\tlisten 52204 proxy_protocol;\n\t\tproxy_pass singbox-reality;\n\t}" /etc/nginx/nginx.conf
