@@ -33,7 +33,7 @@
     {
       "tag": "proxy",
       "type": "vless",
-      "server": "158742.xyz",
+      "server": "xxxxx",
       "server_port": 443,
       "uuid": "461edf16-8619-4f46-8e1e-e3994c8c00a2",
       "flow": "xtls-rprx-vision",

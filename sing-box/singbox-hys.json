@@ -87,7 +87,7 @@
             "down_mbps": 150,
             "tls": {
                 "enabled": true,
-                "server_name": "hysteria2.158742.xyz",
+                "server_name": "hysteria2.xxxxx",
                 "alpn": [
                     "h3"
                 ]
