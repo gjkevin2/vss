@@ -1,0 +1,68 @@
+{
+  "log": {
+    "level": "info"
+  },
+  "inbounds": [
+    {
+      "type": "mixed",
+      "tag": "from-c",
+      "listen": "0.0.0.0",
+      "listen_port": 7890
+    },
+    {
+      "type": "socks",
+      "listen": "::",
+      "listen_port": 7891
+    },
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "127.0.0.1",
+      "listen_port": 10808,
+      "tcp_fast_open": true,
+      "users": []
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "http",
+      "tag": "via-a",
+      "server": "10.108.75.120",
+      "server_port": 8888
+    },
+    {
+      "tag": "proxy",
+      "type": "vless",
+      "server": "158742.xyz",
+      "server_port": 443,
+      "uuid": "461edf16-8619-4f46-8e1e-e3994c8c00a2",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.apple.com",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "Y8cBV8RyH9hSkdy0ATDC9T4s0hzMq1rUXU_YmH6Fgj4",
+          "short_id": "b2c86d5449d237fa"
+        }
+      }
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "inbound": "from-c",
+        "outbound": "via-a"
+      },
+      {
+        "inbound": "mixed-in",
+        "outbound": "proxy"
+      }
+    ],
+    "final": "via-a"
+  }
+}
