@@ -1,6 +1,6 @@
 {
   "log": {
-    "level": "warning",
+    "level": "info",
     "timestamp": true
   },
   "experimental": {
@@ -17,8 +17,8 @@
   "dns": {
     "servers": [
       {
-        "tag": "local",
-        "type": "local"
+        "type": "local",
+        "tag": "local"
       },
       {
         "type": "https",
@@ -46,16 +46,6 @@
       "listen": "127.0.0.1",
       "listen_port": 10808,
       "tcp_fast_open": true,
-      "tcp_multi_path": false,
-      "udp_fragment": false,
-      "users": []
-    },
-    {
-      "type": "http",
-      "tag": "http-in",
-      "listen": "127.0.0.1",
-      "listen_port": 10809,
-      "tcp_fast_open": true,
       "users": []
     }
   ],
@@ -63,13 +53,13 @@
     {
       "tag": "proxy",
       "type": "vless",
-      "server": "158742.xyz",
+      "server": "xxxxx",
       "server_port": 443,
       "domain_resolver": "local",
       "uuid": "461edf16-8619-4f46-8e1e-e3994c8c00a2",
       "tls": {
         "enabled": true,
-        "server_name": "cloudflare.com",
+        "server_name": "www.apple.com",
         "utls": {
           "enabled": true,
           "fingerprint": "chrome"
@@ -105,31 +95,11 @@
         "outbound": "direct"
       },
       {
-        "domain_suffix": [
-          "appcenter.ms",
-          "firebase.io",
-          "crashlytics.com"
-        ],
-        "action": "reject"
-      },
-      {
-        "domain_suffix": [
-          "google.com",
-          "gstatic.com",
-          "googleapis.com",
-          "googlevideo.com"
-        ],
-        "outbound": "proxy"
-      },
-      {
-        "ip_is_private": true,
+        "rule_set": "geosite-cn",
         "outbound": "direct"
       },
       {
-        "rule_set": [
-          "geoip-cn",
-          "geosite-cn"
-        ],
+        "rule_set": "geoip-cn",
         "outbound": "direct"
       }
     ],
