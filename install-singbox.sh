@@ -9,6 +9,7 @@ bash -c "$(curl -L https://sing-box.vercel.app)" @ install
 # serverip=$(ip addr|grep inet|grep -v 127.0.0.1|grep -v inet6|grep -v 172.|awk -F '/' '{print $1}'|tr -d "inet ")
 # serverip=$(hostname -I | awk '{print $1}')
 servername=$(sed -n 's/^\s*server_name\s\+//p' /etc/nginx/conf.d/default.conf | awk '{print $1}' | head -n1 | rev | cut -d. -f1-2 | rev)
+sni_name=www.apple.com
 
 # 配置文件
 # sing-box generate uuid
@@ -49,11 +50,11 @@ cat > /usr/local/etc/sing-box/config.json <<-EOF
             ],
             "tls": {
                 "enabled": true,
-                "server_name": "www.apple.com",
+                "server_name": "$sni_name",
                 "reality": {
                     "enabled": true,
                     "handshake": {
-                        "server": "www.apple.com",
+                        "server": "$sni_name",
                         "server_port": 443
                     },
                     "private_key": "QBzN1AK91YVPC8ujyQ4BvZ1d4iexRrDUgLgVvXutIWw",
@@ -82,7 +83,7 @@ rm -rf /dev/shm/*
 
 # 443端口转发到实际端口，nginx还要移除proxy_protocol
 grep "upstream singbox-reality" /etc/nginx/nginx.conf || {
-  sed -i "/\$ssl_preread_server_name/a\\\tcloudflare singbox-proxy;" /etc/nginx/nginx.conf
+  sed -i "/\$ssl_preread_server_name/a\\\t$sni_name singbox-proxy;" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream singbox-reality {\n\t\tserver 127.0.0.1:52004;\n\t}" /etc/nginx/nginx.conf
   sed -i "/upstream set/a\\\tupstream singbox-proxy {\n\t\tserver 127.0.0.1:52204;\n\t}" /etc/nginx/nginx.conf
   sed -i "/remove proxy_protocol/a\\\tserver {\n\t\tlisten 52204 proxy_protocol;\n\t\tproxy_pass singbox-reality;\n\t}" /etc/nginx/nginx.conf
