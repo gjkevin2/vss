@@ -3,11 +3,12 @@
 #   WARP + Google 流量分流
 #   用途：本机发往 Google 网段的 TCP 流量走 Cloudflare WARP 出口，
 #         解决 VPS IP 被 Google「送中」/ 风控导致无法访问的问题。
-#         其它流量完全不动，不上全局 VPN。
+#         其它流量完全不动，不上全局 VPN；仅接管 TCP（QUIC/UDP 不转发）。
 #   系统：Debian 10+ / Ubuntu 18+ / CentOS 7+
 #   用法：bash warp-google.sh          → 菜单
 #         bash warp-google.sh install  → 也可直接指定动作
 #         bash warp-google.sh optimize → 优选 WARP 接入点（降延迟）
+#   注意：「优选接入点」会顺带改变 CF 出口 IP，正确顺序是先 optimize 再 refresh。
 #=================================================
 set -o pipefail
 
@@ -20,11 +21,11 @@ REDSOCKS_PORT=12345
 FW_SCRIPT="/usr/local/bin/warp-google"          # 负责增删 iptables 规则
 SVC_NAME="warp-google"
 ENDPOINT_FILE="/etc/warp-google.endpoint"       # 优选后的 WARP 接入点记录
-ACCEPT_MS=${ACCEPT_MS:-500}                     # 换 IP 时可接受的出口延迟（毫秒）
+ACCEPT_MS=${ACCEPT_MS:-500}                     # 优选接入点时的延迟告警阈值（毫秒）；换 IP 不看延迟
 
 # WARP 接入点候选网段与端口（ICMP 粗筛 → 逐个重连实测）
 EP_RANGES="162.159.192 162.159.193 162.159.195 162.159.204 188.114.96 188.114.97 188.114.98 188.114.99"
-EP_PORT=2408        # 默认 WireGuard 接入端口
+EP_PORT_DEFAULT=2408   # 默认 WireGuard 接入端口
 EP_PORTS=${EP_PORTS:-}   # 显式指定要实测的端口列表（如 "2408" 或 "2408 443"），默认按客户端当前接入点推断
 EP_STEP=8          # 每个 /24 的采样步长（8 = 32 个 IP）
 EP_SHORTLIST=5     # 进入实测阶段的最优候选数量
@@ -55,14 +56,29 @@ warp_mode_proxy() { wcli mode proxy || wcli proxy mode; }
 warp_ep_set() { wcli tunnel endpoint set "$1" || wcli --endpoint "$1"; }
 warp_ep_reset() { wcli tunnel endpoint reset || wcli --endpoint default; }
 
+# 注册是否有效（部分 warp-cli 版本无 registration show，取不到输出时不做判定）
+warp_reg_ok() {
+    local out
+    out=$(warp-cli --accept-tos registration show 2>/dev/null || warp-cli registration show 2>/dev/null)
+    [[ -z "$out" ]] && return 0
+    grep -qiE 'device|account' <<<"$out"
+}
+
 # 换出口 IP：注销旧注册 → 新注册 → 重连（接入点设置保持不变）
+# CF 对 registration new 有限流，这里校验注册结果并做一次退避重试
 rotate_warp() {
     wcli disconnect
     warp_reg_del
     warp_reg_new
+    if ! warp_reg_ok; then
+        sleep 5
+        warp_reg_new
+        warp_reg_ok || return 1
+    fi
     warp_mode_proxy
     wcli proxy port "$WARP_PORT"
     wcli connect
+    return 0
 }
 
 # SOCKS 可用性实测（部分 warp-cli 版本的 status 文案无法解析）
@@ -140,18 +156,25 @@ probe() {
     return 0
 }
 
-# 通过 WARP SOCKS 测到 Google 的端到端耗时（毫秒，取 3 次最快值），失败返回 1
+# 通过 WARP SOCKS 测到 Google 的端到端耗时
+# 结果放全局变量（调用方用 measure_google 而不是 $(measure_google)，否则取不到）：
+#   G_MS 3 次成功率的中位数耗时（毫秒）  G_OK 成功次数 0~3
+# 全部失败返回 1。单看最小值会被偶发抖动误导，所以同时给出成功次数。
 measure_google() {
-    local i t best=""
+    local i t vals=()
+    G_MS=""
+    G_OK=0
     for i in 1 2 3; do
         t=$(curl -s -x "$WARP_SOCKS" --max-time 8 -o /dev/null \
             -H 'Connection: close' -w '%{time_appconnect}' "$PROBE_204" 2>/dev/null) || continue
         t=$(awk -v t="$t" 'BEGIN{ if (t<=0) exit 1; printf "%d", t*1000 }') || continue
         [[ -z "$t" ]] && continue
-        [[ -z "$best" || "$t" -lt "$best" ]] && best=$t
+        vals+=("$t")
+        G_OK=$((G_OK + 1))
     done
-    [[ -z "$best" ]] && return 1
-    echo "$best"
+    [[ $G_OK -eq 0 ]] && return 1
+    G_MS=$(printf '%s\n' "${vals[@]}" | sort -n | awk '{a[NR]=$1} END{print a[int((NR+1)/2)]}')
+    return 0
 }
 
 do_test() {
@@ -176,13 +199,23 @@ install_warp() {
     echo "安装 Cloudflare WARP 官方客户端..."
     case $OS in
         ubuntu|debian)
+            local repo_tpl fallback
             apt-get update -qq
             apt-get install -y -qq gnupg curl lsb-release || return 1
             curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg \
                 | gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg || return 1
-            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ ${CODENAME} main" \
+            repo_tpl='deb [arch=%s signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ %s main\n'
+            fallback=bookworm; [[ $OS == ubuntu ]] && fallback=jammy
+            printf "$repo_tpl" "$(dpkg --print-architecture)" "${CODENAME:-$fallback}" \
                 > /etc/apt/sources.list.d/cloudflare-client.list
-            apt-get update -qq && apt-get install -y cloudflare-warp || return 1
+            # CF 官方源不一定跟得上新发行版代号，update 失败时回退到最近的已知代号
+            if ! apt-get update -qq; then
+                warn "CF 官方源没有 ${CODENAME:-$fallback} 的仓库，回退到 ${fallback}"
+                printf "$repo_tpl" "$(dpkg --print-architecture)" "$fallback" \
+                    > /etc/apt/sources.list.d/cloudflare-client.list
+                apt-get update -qq || return 1
+            fi
+            apt-get install -y cloudflare-warp || return 1
             ;;
         centos|rhel|rocky|almalinux|fedora)
             cat > /etc/yum.repos.d/cloudflare-warp.repo <<'EOF'
@@ -326,7 +359,7 @@ load_prefixes() {
 }
 
 start() {
-    local p prefixes n4=0 n6=0
+    local p prefixes n4=0 n6=0 conflict
     prefixes=$(load_prefixes)
     pkill -f "$REDSOCKS_CONF" 2>/dev/null
     redsocks -c "$REDSOCKS_CONF"
@@ -338,8 +371,16 @@ start() {
                n4=$((n4 + 1)) ;;
         esac
     done
-    iptables -t nat -C OUTPUT -j WARP_GOOGLE 2>/dev/null \
-        || iptables -t nat -A OUTPUT -j WARP_GOOGLE
+    # 插到链首：机上有 sing-box/xray 等透明代理时，追加在链尾会被它们的 REDIRECT 抢先截走
+    # 先清掉旧规则（含旧版追加在链尾的、以及可能的重复项），再固定插到第 1 位
+    while iptables -t nat -D OUTPUT -j WARP_GOOGLE 2>/dev/null; do :; done
+    iptables -t nat -I OUTPUT 1 -j WARP_GOOGLE
+    conflict=$(iptables -t nat -S OUTPUT 2>/dev/null \
+        | grep -E -- '-j (REDIRECT|TPROXY|DNAT)' | head -3)
+    if [[ -n $conflict ]]; then
+        echo "[WARN] nat OUTPUT 里还有其它透明代理规则（本分流已置链首优先匹配）："
+        printf '%s\n' "$conflict" | sed 's/^/       /'
+    fi
     # 让 Google 的 IPv6 立即失败，客户端快速回落 IPv4（避免等超时）
     mkdir -p "${V6_ROUTE_FILE%/*}"
     : > "$V6_ROUTE_FILE"
@@ -362,7 +403,7 @@ stop() {
     fi
     rm -f "$V6_ROUTE_FILE"
     ip -6 route del unreachable 2607:f8b0::/32 2>/dev/null   # 清理旧版本遗留的单条规则
-    iptables -t nat -D OUTPUT -j WARP_GOOGLE 2>/dev/null
+    while iptables -t nat -D OUTPUT -j WARP_GOOGLE 2>/dev/null; do :; done
     iptables -t nat -F WARP_GOOGLE 2>/dev/null
     iptables -t nat -X WARP_GOOGLE 2>/dev/null
     echo "WARP Google 分流已停止"
@@ -403,7 +444,15 @@ do_restart() {
 }
 
 # ────────────── 安装流程 ──────────────
+# WARP 客户端需要 TUN 设备；缺失时只告警不阻断（部分环境 proxy 模式仍可用）
+check_tun() {
+    [[ -c /dev/net/tun ]] && return 0
+    warn "未发现 /dev/net/tun，WARP 可能无法建立隧道（OpenVZ/LXC 需在宿主机开启 TUN）"
+    return 0
+}
+
 do_install() {
+    check_tun
     install_warp || return 1
     configure_warp
     install_redsocks    || { err "redsocks 安装失败"; return 1; }
@@ -415,8 +464,8 @@ do_install() {
     do_test
     echo ""
     echo "完成。本次只接管 Google 网段的 TCP 流量，其它流量不经过 WARP。"
-    warn "如仍提示送中/风控，请执行菜单 4「换 IP」"
-    warn "如果访问 Google 慢，请执行菜单 6「优选接入点」"
+    warn "如访问 Google 慢，先执行菜单 6「优选接入点」；仍送中/风控再执行菜单 4「换 IP」"
+    warn "顺序别反：优选接入点会顺带换掉出口 IP，所以先优选再换 IP"
 }
 
 do_uninstall() {
@@ -444,20 +493,22 @@ do_uninstall() {
     ok "已卸载"
 }
 
-# ────────────── 换 IP（解决送中/风控，择优取延迟低的）──────────────
-# 参数：最大尝试次数。前 N 次只接受「可用且到 Google ≤ ACCEPT_MS」的出口，
-#       若均为慢出口，则再试 N 次，只要能用就接受（保证不停在送中/风控 IP 上）。
+# ────────────── 换 IP（解决送中/风控）──────────────
+# 参数：最大尝试次数。只要求「新出口不送中/不被风控」，延迟交给「优选接入点」。
+#       保持接入点不变换注册，拿到的仍是同一 CF colo 的地址池，可能反复拿到同一批 IP。
 do_refresh() {
-    local max=${1:-10} hard_max i ip rc rtt relaxed=0
+    local max=${1:-10} i ip rc
     [[ "$max" =~ ^[0-9]+$ ]] || max=10
     command -v warp-cli >/dev/null 2>&1 || { err "未安装 WARP，请先执行安装"; return 1; }
-    hard_max=$((max * 2))
-    echo "开始更换 WARP 出口 IP（最多 ${hard_max} 次，接受延迟 ≤ ${ACCEPT_MS}ms）..."
-    for ((i = 1; i <= hard_max; i++)); do
-        (( i > max )) && relaxed=1
-        rotate_warp
+    echo "开始更换 WARP 出口 IP（最多 ${max} 次）..."
+    for ((i = 1; i <= max; i++)); do
+        if ! rotate_warp; then
+            warn "[$i/$max] 重新注册失败（可能被 CF 限流），5 秒后重试..."
+            sleep 5
+            continue
+        fi
         if ! wait_connected; then
-            warn "[$i/$hard_max] 连接超时，重试..."
+            warn "[$i/$max] 连接超时，重试..."
             continue
         fi
         sleep 2
@@ -465,26 +516,30 @@ do_refresh() {
         probe "$WARP_SOCKS"; rc=$?
         if [[ $rc -ne 0 ]]; then
             case $rc in
-                1) warn "[$i/$hard_max] ${ip:-未知} → 送中（google.com.hk），继续更换..." ;;
-                2) warn "[$i/$hard_max] ${ip:-未知} → 风控（/sorry），继续更换..." ;;
-                *) warn "[$i/$hard_max] ${ip:-未知} → 连不上 Google，继续更换..." ;;
+                1) warn "[$i/$max] ${ip:-未知} → 送中（google.com.hk），继续更换..." ;;
+                2) warn "[$i/$max] ${ip:-未知} → 风控（/sorry），继续更换..." ;;
+                *) warn "[$i/$max] ${ip:-未知} → 连不上 Google，继续更换..." ;;
             esac
             continue
         fi
-        rtt=$(measure_google) || rtt=""
-        if [[ $relaxed -eq 1 || -z "$rtt" || "$rtt" -le "$ACCEPT_MS" ]]; then
-            ok "[$i/$hard_max] ${ip:-未知} → 可用，到 Google ${rtt:-?}ms，采用"
-            return 0
-        fi
-        warn "[$i/$hard_max] ${ip:-未知} → 可用但到 Google ${rtt}ms > ${ACCEPT_MS}ms，继续找更快的..."
+        ok "[$i/$max] ${ip:-未知} → 可用（不送中），采用"
+        return 0
     done
-    err "已尝试 ${hard_max} 次仍未获得可用 IP，请稍后再试"
+    err "已尝试 ${max} 次仍未获得可用出口 IP"
+    # 终态兜底：不要把隧道留在「无注册 / 未连接」的半死状态
+    if ! warp_reg_ok; then
+        warn "未检测到有效注册，尝试重新注册一次..."
+        warp_reg_new && warp_reg_ok || warn "重新注册失败，请稍后执行 bash $0 install"
+    fi
+    wcli connect
+    wait_connected || { warn "隧道仍未连上，请执行 bash $0 diag 排查"; return 1; }
     return 1
 }
 
 # ────────────── 优选接入点（降低 VPS → CF → Google 延迟）──────────────
 # 阶段 1：对 CF WARP 候选网段做 ICMP 粗筛，取 RTT 最低的若干候选
-# 阶段 2：逐个设置接入点重建隧道，实测到 Google 的耗时，保留最快者
+# 阶段 2：逐个设置接入点重建隧道，实测到 Google 的耗时/成功率，保留最优者
+#         同时用 probe 过滤送中/风控（换入口会顺带换出口 IP）
 scan_endpoints() {
     local ranges=${1:-$EP_RANGES} net i
     for net in $ranges; do
@@ -500,7 +555,7 @@ scan_endpoints() {
 
 do_optimize() {
     local k=${1:-$EP_SHORTLIST} list rtt host ep cur_ep="" ms prev="" best_ep="" best_ms=""
-    local ep_port ports cur_ep_cfg="" fails=0 ranges=$EP_RANGES masque_ip=""
+    local ep_port ports cur_ep_cfg="" fails=0 ranges=$EP_RANGES masque_ip="" ms_ok=0 best_ok=0
     [[ "$k" =~ ^[0-9]+$ ]] || k=$EP_SHORTLIST
     command -v warp-cli >/dev/null 2>&1 || { err "未安装 WARP，请先执行安装"; return 1; }
     [[ -s "$ENDPOINT_FILE" ]] && prev=$(cat "$ENDPOINT_FILE")
@@ -512,7 +567,7 @@ do_optimize() {
     elif [[ -n "$cur_ep_cfg" ]]; then
         ports=${cur_ep_cfg##*:}
     else
-        ports="$EP_PORT 443"
+        ports="$EP_PORT_DEFAULT 443"
     fi
 
     # 先确认隧道能起来，否则逐候选重连毫无意义
@@ -584,14 +639,16 @@ do_optimize() {
                 echo "访问 Google 异常，跳过"
                 continue
             fi
-            ms=$(measure_google) || ms=""
-            if [[ -z "$ms" ]]; then
+            if ! measure_google; then
                 echo "测速失败，跳过"
                 continue
             fi
-            echo "→ 到 Google ${ms}ms"
-            if [[ -z "$best_ms" || "$ms" -lt "$best_ms" ]]; then
-                best_ms=$ms; best_ep=$ep
+            ms=$G_MS; ms_ok=$G_OK
+            echo "→ 到 Google ${ms}ms（${ms_ok}/3 次成功）"
+            # 先比成功率再比中位耗时，避免偶发抖动胜出
+            if [[ -z "$best_ms" || "$ms_ok" -gt "$best_ok" \
+                || ( "$ms_ok" -eq "$best_ok" && "$ms" -lt "$best_ms" ) ]]; then
+                best_ms=$ms; best_ok=$ms_ok; best_ep=$ep
             fi
         done <<< "$list"
         [[ -n "$best_ep" ]] && break
@@ -600,16 +657,26 @@ do_optimize() {
 
     if [[ -n "$best_ep" ]]; then
         if [[ "$cur_ep" == "$best_ep" ]]; then
-            echo "当前接入点已是最优：${best_ep}（${best_ms}ms）"
+            echo "当前接入点已是最优：${best_ep}（${best_ms}ms，${best_ok}/3 次成功）"
         else
-            echo "应用最优接入点 ${best_ep}（${best_ms}ms）..."
+            echo "应用最优接入点 ${best_ep}（${best_ms}ms，${best_ok}/3 次成功）..."
             wcli disconnect
             warp_ep_set "$best_ep" || { err "应用接入点失败"; return 1; }
             wcli connect
             wait_connected || warn "重连超时，请手动检查 warp-cli status"
         fi
         echo "$best_ep" > "$ENDPOINT_FILE"
-        ok "接入点优选完成：${best_ep}，到 Google ${best_ms}ms"
+        ok "接入点优选完成：${best_ep}"
+        # 换入口会顺带换掉 CF 出口 IP，应用后必须复测，否则可能优选完反而送中
+        if ! probe "$WARP_SOCKS"; then
+            warn "复测异常（送中/风控或未连上），请接着执行菜单 4「换 IP」"
+        elif ! measure_google; then
+            warn "复测测速失败，可执行菜单 3 再确认一次"
+        elif [[ "$G_MS" -gt "$ACCEPT_MS" ]]; then
+            warn "复测正常但到 Google ${G_MS}ms 高于 ${ACCEPT_MS}ms，可稍后重试优选"
+        else
+            ok "复测正常，到 Google ${G_MS}ms（${G_OK}/3 次成功）"
+        fi
         echo "提示：如需重新优选，可重复执行本功能；如需回默认接入点，执行 bash $0 reset-endpoint"
     else
         warn "没有测到可用接入点，恢复原设置..."
@@ -654,18 +721,20 @@ do_reset_endpoint() {
 
 # ────────────── 状态 ──────────────
 do_status() {
-    local warp_st rules
+    local warp_st rules conflict
     warp_st=$(warp_status | grep -E 'Status|Network' | tr '\n' ' ')
     if [[ -z "$warp_st" ]]; then
         warp_proxy_alive && warp_st="SOCKS 可用（状态文案为空）" || warp_st="未运行"
     fi
     rules=$(iptables -t nat -L WARP_GOOGLE -n 2>/dev/null | grep -c REDIRECT)
+    conflict=$(iptables -t nat -S OUTPUT 2>/dev/null | grep -E -- '-j (REDIRECT|TPROXY|DNAT)' | head -1)
     printf "  %-14s %s\n" "WARP 客户端:" "$(command -v warp-cli >/dev/null 2>&1 && echo 已安装 || echo 未安装)"
     printf "  %-14s %s\n" "WARP 状态:"   "${warp_st:-未运行}"
     printf "  %-14s %s\n" "透明代理:"    "$(pgrep -f "$REDSOCKS_CONF" >/dev/null 2>&1 && echo 运行中 || echo 未运行)"
     printf "  %-14s %s\n" "Google 规则:" "${rules:-0} 条"
     printf "  %-14s %s\n" "WARP 接入点:" "$([[ -s "$ENDPOINT_FILE" ]] && cat "$ENDPOINT_FILE" || echo 默认)"
     printf "  %-14s %s\n" "开机自启:"    "$(systemctl is-enabled "$SVC_NAME" 2>/dev/null || echo 未启用)"
+    [[ -n "$conflict" ]] && printf "  %-14s %s\n" "规则冲突:" "OUTPUT 链存在其它透明代理规则，Google 不生效时先查规则顺序"
 }
 
 # ────────────── 菜单 ──────────────
